@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
+    static private GameObject prefab_Panel_Button = null;
+
     //ボタンの各状態
     public enum eMainButton
     {
@@ -34,13 +36,8 @@ public class MainMenuController : MonoBehaviour
     //選択肢フォーカスの初期設定
     public void InitialSelectButton()
     {
-        gButton = new GameObject[iButton_MaxNumber];
-
-        for (int i = 0; i < iButton_MaxNumber; i++)
-        {
-            gButton[i] = GameObject.Find(sButtonName[i]);
-        }
-
+        ShowPanel_Button();
+ 
         gButton[iButton_Initialfocus].GetComponent<Button>().Select();
     }
 
@@ -53,9 +50,53 @@ public class MainMenuController : MonoBehaviour
     //ボタンを非表示/表示にする
     public void ShowHide_Button(bool IsShow)
     {
+        if(IsShow == true)
+        {
+            ShowPanel_Button();
+        }
+        else
+        {
+            HidePanel_Button();
+        }
+
+    }
+
+    //ボタングループ生成
+    private void ShowPanel_Button()
+    {
+        if (prefab_Panel_Button == null)
+        {
+            //ローカル変数定義
+            GameObject parentObject = null;
+
+            //親オブジェクトの指定
+            parentObject = GameObject.Find("Canvas");
+
+            //プレハブ指定
+            prefab_Panel_Button = (GameObject)Instantiate(
+                (GameObject)Resources.Load("Prefabs/Panel_Button"));
+            prefab_Panel_Button.transform.SetParent(parentObject.transform,false);
+
+            //ボタン定義
+            gButton = new GameObject[iButton_MaxNumber];
+
+            for (int i = 0; i < iButton_MaxNumber; i++)
+            {
+                gButton[i] = GameObject.Find(sButtonName[i]);
+            }
+        }
+    }
+
+    //ボタングループ消去
+    private void HidePanel_Button()
+    {
+        Destroy(prefab_Panel_Button);
+        prefab_Panel_Button = null;
+
         for (int i = 0; i < iButton_MaxNumber; i++)
         {
-            gButton[i].SetActive(IsShow);
+            Destroy(gButton[i]);
+            gButton[i] = null;
         }
     }
 

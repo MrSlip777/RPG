@@ -23,7 +23,7 @@ public class BattleStateManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         mMainMenuController.InitialSelectButton();
-        mMainMenuController.ShowHide_Button(true);
+        //mMainMenuController.ShowHide_Button(true);
         mCharacterStatusController.InitialSelectCharacter();
         mCharacterStatusController.ActiveCharacter();
         
