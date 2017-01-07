@@ -6,8 +6,16 @@ using UnityEngine.UI;
 
 public class CharacterStatusController : MonoBehaviour
 {
+    //キャラクターステータスの番号
+    public enum eCharacterNum
+    {
+        eCharacter1 = 0,
+        eCharacter2 = 1,
+        eCharacter3 = 2,
+        eCharacter4 = 3,
+    };
 
-    //各ボタンの名前
+    //キャラクターステータスの名前
     private string[] sCharacterNum = {
         "Character1" ,
         "Character2",
@@ -15,11 +23,25 @@ public class CharacterStatusController : MonoBehaviour
         "Character4"
     };
 
+    //UIの設定値
+    private float f_maxColor = 255;
+    private float[] f_focusColor = {125,233,255};
+
     //キャラクター状態の初期設定
     public void InitialSelectCharacter()
     {
-        GameObject initial_character
-            = GameObject.Find(sCharacterNum[0]);
+        SetFocus_Character(eCharacterNum.eCharacter4);
+    }
+
+    //キャラクターのフォーカス指定
+    public void SetFocus_Character(eCharacterNum focusCharacter)
+    {
+        GameObject tergetCharacter
+            = GameObject.Find(sCharacterNum[(int)focusCharacter]);
+        tergetCharacter.GetComponent<Image>().color
+            = new Color(f_focusColor[0] / f_maxColor
+            , f_focusColor[1] / f_maxColor
+            , f_focusColor[2] / f_maxColor);
     }
 
     //キャラクター状態表示にする
@@ -34,15 +56,4 @@ public class CharacterStatusController : MonoBehaviour
            //HP、MPゲージ
         }
     }
-
-    //キャラクター状態をアクティブ状態にする
-    public void ActiveCharacter()
-    {
-        GameObject terget_status
-                = GameObject.Find("Character1");
-
-        Animator _anim = terget_status.GetComponent<Animator>();
-        _anim.Play("Character1", 0, 0.0f);
-    }
-
 }

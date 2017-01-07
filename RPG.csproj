@@ -75,10 +75,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Resources\Script\BaseButtonController.cs" />
     <Compile Include="Assets\Resources\Script\Battle\BattleStateManager.cs" />
     <Compile Include="Assets\Resources\Script\CharacterStatusController.cs" />
     <Compile Include="Assets\Resources\Script\DataBase\CharactorDataSingleton.cs" />
     <Compile Include="Assets\Resources\Script\MainMenuController.cs" />
+    <Compile Include="Assets\Resources\Script\SampleButtonController.cs" />
     <Compile Include="Assets\Resources\Script\SubMenuController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

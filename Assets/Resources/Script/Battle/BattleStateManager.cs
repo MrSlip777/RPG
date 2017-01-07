@@ -1,4 +1,9 @@
-﻿using System.Collections;
+﻿/*
+*参考URL http://fantastic-works.com/archives/148
+*
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,10 +28,8 @@ public class BattleStateManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         mMainMenuController.InitialSelectButton();
-        //mMainMenuController.ShowHide_Button(true);
         mCharacterStatusController.InitialSelectCharacter();
-        mCharacterStatusController.ActiveCharacter();
-        
+       
         //UI状態　選択肢表示がデフォルト
         mUIstate = eUIStatus.eUIStatus_Main;
     }
@@ -38,39 +41,41 @@ public class BattleStateManager : MonoBehaviour {
         if (Input.GetKey(KeyCode.Escape) == true
             || Input.GetMouseButton(1) == true) {
 
-            
-            if (mUIstate == eUIStatus.eUIStatus_focusEnemy)
+            switch (mUIstate)
             {
-                UIState(true, false);
-                //フォーカスを攻撃ボタンにする
-                mMainMenuController.
+                case eUIStatus.eUIStatus_focusEnemy:
+                    UIState(true, false);
+                    //フォーカスを攻撃ボタンにする
+                    mMainMenuController.
                     SetFocus_Button(MainMenuController.eMainButton.eButton_Attack);
-            }
+                    break;
+                case eUIStatus.eUIStatus_Skill:
 
-            if (mUIstate == eUIStatus.eUIStatus_Skill)
-            {
-                //スクロールビューを表示させる
-                mSubMenuController.HideScrollView();
-                mMainMenuController.EnableDisable_Button(true);
-                //フォーカスをスキルボタンにする
-                mMainMenuController.
-                    SetFocus_Button(MainMenuController.eMainButton.eButton_Skill);
-            }
+                    //スクロールビューを表示させる
+                    mSubMenuController.HideScrollView();
+                    mMainMenuController.EnableDisable_Button(true);
+                    //フォーカスをスキルボタンにする
+                    mMainMenuController.
+                        SetFocus_Button(MainMenuController.eMainButton.eButton_Skill);
+                    break;
 
-            if (mUIstate == eUIStatus.eUIStatus_Item)
-            {
-                //スクロールビューを表示させる
-                mSubMenuController.HideScrollView();
-                mMainMenuController.EnableDisable_Button(true);
-                //フォーカスをスキルボタンにする
-                mMainMenuController.
-                    SetFocus_Button(MainMenuController.eMainButton.eButton_Item);
+                case eUIStatus.eUIStatus_Item:
+
+                    //スクロールビューを表示させる
+                    mSubMenuController.HideScrollView();
+                    mMainMenuController.EnableDisable_Button(true);
+                    //フォーカスをスキルボタンにする
+                    mMainMenuController.
+                        SetFocus_Button(MainMenuController.eMainButton.eButton_Item);
+                    break;
+                default:
+                    break;
             }
         }
     }
 
     //攻撃ボタンを押下時の処理
-    public void OnClick_Button_Attack()
+    public void Implement_Button_Attack()
     {
         //敵ターゲット表示させる
         UIState(false,true);
@@ -79,7 +84,7 @@ public class BattleStateManager : MonoBehaviour {
     }
 
     //スキルボタンを押下時の処理
-    public void OnClick_Button_Skill()
+    public void Implement_Button_Skill()
     {
         //スクロールビューを表示させる
         mSubMenuController.ShowScrollView(MainMenuController.eMainButton.eButton_Skill);
@@ -90,8 +95,8 @@ public class BattleStateManager : MonoBehaviour {
         mUIstate = eUIStatus.eUIStatus_Skill;
     }
 
-    //スキルボタンを押下時の処理
-    public void OnClick_Button_Item()
+    //アイテムボタンを押下時の処理
+    public void Implement_Button_Item()
     {
         //スクロールビューを表示させる
         mSubMenuController.ShowScrollView(MainMenuController.eMainButton.eButton_Item);
@@ -100,6 +105,18 @@ public class BattleStateManager : MonoBehaviour {
 
         //UI状態をアイテム選択状態にする
         mUIstate = eUIStatus.eUIStatus_Item;
+    }
+
+    //逃げるボタンを押下時の処理
+    public void Implement_Button_Escape()
+    {
+        //シーン終了処理？
+    }
+
+    //ボタン名の取得
+    public string getButtonName(MainMenuController.eMainButton tergetButton)
+    {
+        return mMainMenuController.sButtonName[(int)tergetButton];
     }
 
     //UI表示をフラグで切り替える

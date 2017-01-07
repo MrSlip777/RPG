@@ -18,7 +18,7 @@ public class MainMenuController : MonoBehaviour
     };
 
     //各ボタンの名前
-    private string[] sButtonName = {
+    public string[] sButtonName = {
         "Button_Attack" ,
         "Button_Skill",
         "Button_Item",
