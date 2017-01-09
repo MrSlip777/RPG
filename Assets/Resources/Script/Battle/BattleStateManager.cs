@@ -14,6 +14,9 @@ public class BattleStateManager : MonoBehaviour {
     CharacterStatusController mCharacterStatusController
         = new CharacterStatusController();
 
+    CharacterDataSingleton mCharacterDataSingleton
+        = new CharacterDataSingleton();
+
     //UIの状態
     private enum eUIStatus
     {
@@ -32,6 +35,8 @@ public class BattleStateManager : MonoBehaviour {
        
         //UI状態　選択肢表示がデフォルト
         mUIstate = eUIStatus.eUIStatus_Main;
+
+        mCharacterDataSingleton.GetCharacterData();
     }
 	
 	// Update is called once per frame
