@@ -9,13 +9,37 @@ using UnityEngine;
 
 public class BattleStateManager : MonoBehaviour {
 
+    //インスタンス定義
+    private static BattleStateManager mInstance;
+
+    // 唯一のインスタンスを取得します。
+    public static BattleStateManager Instance
+    {
+
+        get
+        {
+            if (mInstance == null)
+            {
+                mInstance = new BattleStateManager();
+            }
+
+            return mInstance;
+        }
+
+    }
+
+    //シングルトン実装
+    private BattleStateManager()
+    {
+
+    }
+
     MainMenuController mMainMenuController = new MainMenuController();
     SubMenuController mSubMenuController = new SubMenuController();
     CharacterStatusController mCharacterStatusController
         = new CharacterStatusController();
 
-    CharacterDataSingleton mCharacterDataSingleton
-        = new CharacterDataSingleton();
+    static CharacterDataSingleton mCharacterDataSingleton;
 
     //UIの状態
     private enum eUIStatus
@@ -30,17 +54,21 @@ public class BattleStateManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+
+        //インスタンス取得
+        mCharacterDataSingleton = CharacterDataSingleton.Instance;
+
         mMainMenuController.InitialSelectButton();
         mCharacterStatusController.InitialSelectCharacter();
        
         //UI状態　選択肢表示がデフォルト
         mUIstate = eUIStatus.eUIStatus_Main;
 
-        mCharacterDataSingleton.GetCharacterData();
+        mCharacterDataSingleton.SetBattleCharacterObject();
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
 
         //キャンセル動作
         if (Input.GetKey(KeyCode.Escape) == true
@@ -54,6 +82,7 @@ public class BattleStateManager : MonoBehaviour {
                     mMainMenuController.
                     SetFocus_Button(MainMenuController.eMainButton.eButton_Attack);
                     break;
+
                 case eUIStatus.eUIStatus_Skill:
 
                     //スクロールビューを表示させる
@@ -92,7 +121,8 @@ public class BattleStateManager : MonoBehaviour {
     public void Implement_Button_Skill()
     {
         //スクロールビューを表示させる
-        mSubMenuController.ShowScrollView(MainMenuController.eMainButton.eButton_Skill);
+        mSubMenuController
+            .ShowScrollView(mCharacterDataSingleton.GetSkillName(1));
         //メインメニューを有効／無効にする
         mMainMenuController.EnableDisable_Button(false);
 
@@ -103,8 +133,12 @@ public class BattleStateManager : MonoBehaviour {
     //アイテムボタンを押下時の処理
     public void Implement_Button_Item()
     {
+        //コンテンツ
+        string[] ContentName = { "アイテム１", "アイテム２" };
+
         //スクロールビューを表示させる
-        mSubMenuController.ShowScrollView(MainMenuController.eMainButton.eButton_Item);
+        mSubMenuController
+            .ShowScrollView(ContentName);
         //メインメニューを有効／無効にする
         mMainMenuController.EnableDisable_Button(false);
 

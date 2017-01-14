@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SampleButtonController : BaseButtonController
 {
-　  BattleStateManager mBattleStateManager = new BattleStateManager();
+　  BattleStateManager mBattleStateManager = BattleStateManager.Instance;
 
     protected override void OnClick(string objectName)
     {
