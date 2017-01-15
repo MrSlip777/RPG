@@ -56,51 +56,6 @@ public class learningsObject
     public int skillId;
 }
 
-public class SkillsObject
-{
-    public int id = 0;
-    public int animationId;
-    public damageObject damage;
-    public string description;
-    public effectsObject[] effects;
-    public int hitType;
-    public int iconIndex;
-    public string message1;
-    public string message2;
-    public int mpCost;
-    public string name;
-    public string note;
-    public int occasion;
-    public int repeat;
-    public int requireWtypeId1;
-    public int requireWtypeId2;
-    public int scope;
-    public int speed;
-    public int stypeId;
-    public int successRate;
-    public int tpCost;
-    public int tpGain;
-}
-
-public class damageObject
-{
-    public bool critical;
-    public int elementId;
-    public string formula;
-    public int type;
-    public int variance;
-
-
-}
-
-public class effectsObject
-{
-    public int code;
-    public int dataId;
-    public int value1;
-    public int value2;
-}
-
 public class BattleCharacterObject
 {
     public int[] skillIndex;
@@ -114,8 +69,6 @@ public class BattleCharacterObject
 
     private CharacterObject[] mCharacterObject;
     private ClassesObject[] mClassesObject;
-    private SkillsObject[] mSkillsObject;
-
     private BattleCharacterObject[] mBattleCharacterObject;
 
     // 唯一のインスタンスを取得します。
@@ -137,12 +90,11 @@ public class BattleCharacterObject
     //シングルトン実装
     private CharacterDataSingleton()
     {
-        GetCharacterData();
-        GetClassesData();
-        GetSkillData();
+        FileRead_CharacterData();
+        FileRead_ClassesData();
     }
 
-    private void GetCharacterData() {
+    private void FileRead_CharacterData() {
 
         string folderpath = Application.dataPath + "/Resources/data/";
         string filePath = folderpath + "Actors.json";
@@ -160,11 +112,11 @@ public class BattleCharacterObject
 
         mBattleCharacterObject[1].skillIndex = new int[3];
         mBattleCharacterObject[1].skillIndex[0] = 0;
-        mBattleCharacterObject[1].skillIndex[1] = 5;
-        mBattleCharacterObject[1].skillIndex[2] = 6;
+        mBattleCharacterObject[1].skillIndex[1] = 9;
+        mBattleCharacterObject[1].skillIndex[2] = 10;
     }
 
-    private void GetClassesData()
+    private void FileRead_ClassesData()
     {
 
         string folderpath = Application.dataPath + "/Resources/data/";
@@ -178,33 +130,15 @@ public class BattleCharacterObject
 
     }
 
-    private void GetSkillData()
+    //キャラクターの所持スキルを渡す
+    public int[] GetSkillIndex(int characterId)
     {
+        int[] result = null;
 
-        string folderpath = Application.dataPath + "/Resources/data/";
-        string filePath = folderpath + "Skills.json";
-
-        if (!File.Exists(filePath)) return;
-
-        string jsonText = File.ReadAllText(filePath);
-        mSkillsObject = LitJson.JsonMapper.ToObject<SkillsObject[]>(jsonText);
-
-    }
-
-    public string[] GetSkillName(int characterId)
-    {
-        int[] skillindex = mBattleCharacterObject[characterId].skillIndex;
-
-        string[] skillnames = new string[skillindex.Length];
-
-        for (int i=0; i< skillindex.Length; i++) {
-            if (mSkillsObject[i] != null)
-            {
-                skillnames[i] = mSkillsObject[skillindex[i]].name;
-            }
+        if (characterId>0 && characterId<=mBattleCharacterObject.Length) {
+            result = mBattleCharacterObject[characterId].skillIndex;
         }
-        
 
-        return skillnames;
+        return result;
     }
 }

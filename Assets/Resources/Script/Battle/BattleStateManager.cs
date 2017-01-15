@@ -6,6 +6,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class BattleStateManager : MonoBehaviour {
 
@@ -70,6 +72,20 @@ public class BattleStateManager : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
+        //ボタンフォーカス時にコンテンツの説明文を更新する（作成中）
+        //GameObject temp1 = GameObject.Find("contentNo1(Clone)");
+        //GameObject temp2 = GameObject.Find("contentNo2(Clone)");
+
+        //GUI.FocusControl("contentNo2(Clone)");
+        //temp1.GetComponent<Button>().OnPointerEnter(PointerEventData eventData);
+
+        /*
+        if (temp1 != null)
+        {
+            bool flag2 = temp2.GetComponent<Button>().IsActive();
+        }
+        */
+
         //キャンセル動作
         if (Input.GetKey(KeyCode.Escape) == true
             || Input.GetMouseButton(1) == true) {
@@ -85,8 +101,8 @@ public class BattleStateManager : MonoBehaviour {
 
                 case eUIStatus.eUIStatus_Skill:
 
-                    //スクロールビューを表示させる
-                    mSubMenuController.HideScrollView();
+                    //スクロールビューを非表示にする
+                    mSubMenuController.HideSubMenu();
                     mMainMenuController.EnableDisable_Button(true);
                     //フォーカスをスキルボタンにする
                     mMainMenuController.
@@ -95,10 +111,10 @@ public class BattleStateManager : MonoBehaviour {
 
                 case eUIStatus.eUIStatus_Item:
 
-                    //スクロールビューを表示させる
-                    mSubMenuController.HideScrollView();
+                    //スクロールビューを非表示にする
+                    mSubMenuController.HideSubMenu();
                     mMainMenuController.EnableDisable_Button(true);
-                    //フォーカスをスキルボタンにする
+                    //フォーカスをアイテムボタンにする
                     mMainMenuController.
                         SetFocus_Button(MainMenuController.eMainButton.eButton_Item);
                     break;
@@ -120,9 +136,14 @@ public class BattleStateManager : MonoBehaviour {
     //スキルボタンを押下時の処理
     public void Implement_Button_Skill()
     {
-        //スクロールビューを表示させる
+        //設定
         mSubMenuController
-            .ShowScrollView(mCharacterDataSingleton.GetSkillName(1));
+            .SetContents(MainMenuController.eMainButton.eButton_Skill,
+            mCharacterDataSingleton.GetSkillIndex(1));
+
+        //サブメニュー表示
+        mSubMenuController.ShowSubMenu();
+
         //メインメニューを有効／無効にする
         mMainMenuController.EnableDisable_Button(false);
 
@@ -133,12 +154,11 @@ public class BattleStateManager : MonoBehaviour {
     //アイテムボタンを押下時の処理
     public void Implement_Button_Item()
     {
-        //コンテンツ
-        string[] ContentName = { "アイテム１", "アイテム２" };
-
-        //スクロールビューを表示させる
         mSubMenuController
-            .ShowScrollView(ContentName);
+            .SetContents(MainMenuController.eMainButton.eButton_Item,null);
+        //サブメニュー表示
+        mSubMenuController.ShowSubMenu();
+
         //メインメニューを有効／無効にする
         mMainMenuController.EnableDisable_Button(false);
 
