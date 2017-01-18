@@ -86,6 +86,7 @@
     <Compile Include="Assets\Resources\Script\MainMenuController.cs" />
     <Compile Include="Assets\Resources\Script\SampleButtonController.cs" />
     <Compile Include="Assets\Resources\Script\SubMenuController.cs" />
+    <Compile Include="Assets\Resources\Script\TapOverComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\dll\memo.txt" />

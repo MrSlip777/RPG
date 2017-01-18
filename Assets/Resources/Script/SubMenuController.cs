@@ -15,23 +15,12 @@ public class SubMenuController : MonoBehaviour {
     //スクロービューのコンテンツ名
     private static string[] mContentName;
 
-    //スクロービューのコンテンツ名
+    //スクロービューのコンテンツ説明文
     private static string[] mContentDescription;
 
     //アイテムコンテンツ（仮）
     string[] ItemContentName = { "アイテム１", "アイテム２" };
     string[] ItemContentDescription = { "アイテム１説明", "アイテム２説明" };
-
-    // Use this for initialization
-    void Start () {
-
-    }
-	
-	// Update is called once per frame
-	void Update () {
-
-
-    }
 
     //キャラクターから所持スキルの名前、スキルの説明文を取得、設定する
     public void SetContents(MainMenuController.eMainButton pushbutton, int[] index)
@@ -102,7 +91,7 @@ public class SubMenuController : MonoBehaviour {
         {
             Transform gText = obj.transform.FindChild("Text");
 
-            obj.name = "contentNo" + i;
+            obj.name = "contentNo_" + i + "_";
 
             //暫定的なコンテンツの名前
             gText.GetComponent<Text>().text = mContentName[i];
@@ -161,6 +150,17 @@ public class SubMenuController : MonoBehaviour {
     {
         GameObject tergetObject = GameObject.Find("Panel_Text(Clone)");
         Destroy(tergetObject);
+    }
+
+    //コンテンツ説明用のテキストを変更する
+    public void ChangeDescription(string ContentName)
+    {
+        string st_temp = ContentName;
+        string[] st_split = st_temp.Split('_');
+        if (st_split[0] == "contentNo")
+        {
+            SetDescription(mContentDescription[int.Parse(st_split[1])]);
+        }
     }
 
 }

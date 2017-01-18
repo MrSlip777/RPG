@@ -6,10 +6,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using UnityEngine.UI;
+
 using UnityEngine.EventSystems;
 
-public class BattleStateManager : MonoBehaviour {
+public class BattleStateManager : MonoBehaviour
+{
 
     //インスタンス定義
     private static BattleStateManager mInstance;
@@ -72,19 +75,13 @@ public class BattleStateManager : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
-        //ボタンフォーカス時にコンテンツの説明文を更新する（作成中）
-        //GameObject temp1 = GameObject.Find("contentNo1(Clone)");
-        //GameObject temp2 = GameObject.Find("contentNo2(Clone)");
-
-        //GUI.FocusControl("contentNo2(Clone)");
-        //temp1.GetComponent<Button>().OnPointerEnter(PointerEventData eventData);
-
-        /*
-        if (temp1 != null)
+        //選択中のオブジェクトを取得する
+        GameObject gEvent = EventSystem.current.currentSelectedGameObject;
+        if (gEvent != null && 
+            (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)))
         {
-            bool flag2 = temp2.GetComponent<Button>().IsActive();
+            mSubMenuController.ChangeDescription(gEvent.name);
         }
-        */
 
         //キャンセル動作
         if (Input.GetKey(KeyCode.Escape) == true

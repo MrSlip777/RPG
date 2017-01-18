@@ -40,8 +40,9 @@ GameObject:
   - component: {fileID: 114305177258452832}
   - component: {fileID: 114959049293900834}
   - component: {fileID: 114557010987959946}
+  - component: {fileID: 114629976416216446}
   m_Layer: 5
-  m_Name: contentNo1
+  m_Name: contentNo_2_
   m_TagString: Node
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -159,6 +160,17 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &114629976416216446
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1466414726172966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 859d0e23decad2041b73a55d87b9ef72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114865574717513268
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -191,7 +203,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u30A2\u30A4\u30C6\u30E0\uFF12"
+  m_Text: "\u30B9\u30D1\u30FC\u30AF"
 --- !u!114 &114959049293900834
 MonoBehaviour:
   m_ObjectHideFlags: 1
