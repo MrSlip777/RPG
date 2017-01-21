@@ -43,6 +43,12 @@ public class BattleStateManager : MonoBehaviour
     SubMenuController mSubMenuController = new SubMenuController();
     CharacterStatusController mCharacterStatusController
         = new CharacterStatusController();
+    EnemyGraphicController mEnemyGraphicController
+        = new EnemyGraphicController();
+
+    TergetController mTergetController = new TergetController();
+
+    Game_Action action = new Game_Action();
 
     static CharacterDataSingleton mCharacterDataSingleton;
 
@@ -55,7 +61,26 @@ public class BattleStateManager : MonoBehaviour
         eUIStatus_Item = 2,
     };
 
+    //UIの状態
     private static eUIStatus mUIstate;
+    private static eUIStatus mUIpreviousstate;
+
+    //キー判定フラグ
+    private bool IsPush = false;
+
+    //キーが押されたか判定
+    private void JudgePushDown()
+    {
+        if (Input.anyKeyDown)
+        {
+            IsPush = true;
+        }
+        else
+        {
+            IsPush = false;
+        }
+
+    }
 
     // Use this for initialization
     void Start () {
@@ -65,15 +90,22 @@ public class BattleStateManager : MonoBehaviour
 
         mMainMenuController.InitialSelectButton();
         mCharacterStatusController.InitialSelectCharacter();
-       
+
+        mEnemyGraphicController.ShowEnemy();
+        mTergetController.ShowHide_Terget(false);
+
         //UI状態　選択肢表示がデフォルト
         mUIstate = eUIStatus.eUIStatus_Main;
+        mUIpreviousstate = mUIstate;
 
         mCharacterDataSingleton.SetBattleCharacterObject();
     }
 
     // Update is called once per frame
     void Update () {
+
+        //キーが押されたか判定
+        JudgePushDown();
 
         //選択中のオブジェクトを取得する
         GameObject gEvent = EventSystem.current.currentSelectedGameObject;
@@ -84,16 +116,36 @@ public class BattleStateManager : MonoBehaviour
         }
 
         //キャンセル動作
-        if (Input.GetKey(KeyCode.Escape) == true
-            || Input.GetMouseButton(1) == true) {
+        if (IsPush == true 
+            &&(Input.GetKey(KeyCode.Escape) == true
+            || Input.GetMouseButton(1) == true)) {
 
             switch (mUIstate)
             {
                 case eUIStatus.eUIStatus_focusEnemy:
-                    UIState(true, false);
-                    //フォーカスを攻撃ボタンにする
-                    mMainMenuController.
-                    SetFocus_Button(MainMenuController.eMainButton.eButton_Attack);
+                    if (mUIpreviousstate == eUIStatus.eUIStatus_Main) {
+                        UIState(true, false);
+                        //フォーカスを攻撃ボタンにする
+                        mMainMenuController.
+                        SetFocus_Button(MainMenuController.eMainButton.eButton_Attack);
+
+                        //UI状態をメインの項目選択状態にする
+                        mUIstate = eUIStatus.eUIStatus_Main;
+
+                        //前の状態を更新する
+                        mUIpreviousstate = mUIstate;
+                    }
+                    else if (mUIpreviousstate == eUIStatus.eUIStatus_Skill)
+                    {
+                        UIState(true, false);
+                        Implement_Button_Skill();
+                    }
+                    else if (mUIpreviousstate == eUIStatus.eUIStatus_Item)
+                    {
+                        UIState(true, false);
+                        Implement_Button_Item();
+                    }
+
                     break;
 
                 case eUIStatus.eUIStatus_Skill:
@@ -104,6 +156,12 @@ public class BattleStateManager : MonoBehaviour
                     //フォーカスをスキルボタンにする
                     mMainMenuController.
                         SetFocus_Button(MainMenuController.eMainButton.eButton_Skill);
+
+                    //UI状態をメインの項目選択状態にする
+                    mUIstate = eUIStatus.eUIStatus_Main;
+
+                    //前の状態を更新する
+                    mUIpreviousstate = mUIstate;
                     break;
 
                 case eUIStatus.eUIStatus_Item:
@@ -114,6 +172,12 @@ public class BattleStateManager : MonoBehaviour
                     //フォーカスをアイテムボタンにする
                     mMainMenuController.
                         SetFocus_Button(MainMenuController.eMainButton.eButton_Item);
+
+                    //UI状態をメインの項目選択状態にする
+                    mUIstate = eUIStatus.eUIStatus_Main;
+
+                    //前の状態を更新する
+                    mUIpreviousstate = mUIstate;
                     break;
                 default:
                     break;
@@ -121,11 +185,17 @@ public class BattleStateManager : MonoBehaviour
         }
     }
 
+
     //攻撃ボタンを押下時の処理
     public void Implement_Button_Attack()
     {
+
         //敵ターゲット表示させる
         UIState(false,true);
+
+        //前の状態を更新する
+        mUIpreviousstate = mUIstate;
+
         //UI状態を敵ターゲット選択状態にする
         mUIstate = eUIStatus.eUIStatus_focusEnemy;
     }
@@ -144,6 +214,9 @@ public class BattleStateManager : MonoBehaviour
         //メインメニューを有効／無効にする
         mMainMenuController.EnableDisable_Button(false);
 
+        //前の状態を更新する
+        mUIpreviousstate = mUIstate;
+
         //UI状態をスキル選択状態にする
         mUIstate = eUIStatus.eUIStatus_Skill;
     }
@@ -159,6 +232,9 @@ public class BattleStateManager : MonoBehaviour
         //メインメニューを有効／無効にする
         mMainMenuController.EnableDisable_Button(false);
 
+        //前の状態を更新する
+        mUIpreviousstate = mUIstate;
+
         //UI状態をアイテム選択状態にする
         mUIstate = eUIStatus.eUIStatus_Item;
     }
@@ -167,6 +243,21 @@ public class BattleStateManager : MonoBehaviour
     public void Implement_Button_Escape()
     {
         //シーン終了処理？
+    }
+
+    //サブメニュー内のボタンが押されたときの処理
+    public void Implement_Button_Content()
+    {
+        //敵ターゲット表示させる
+        UIState(false, true);
+        //サブメニュー非表示
+        mSubMenuController.HideSubMenu();
+
+        //前の状態を更新する
+        mUIpreviousstate = mUIstate;
+
+        //UI状態を敵選択状態にする（暫定的）
+        mUIstate = eUIStatus.eUIStatus_focusEnemy;
     }
 
     //ボタン名の取得
@@ -181,10 +272,6 @@ public class BattleStateManager : MonoBehaviour
         //選択肢ボタンを表示/非表示にする
         mMainMenuController.ShowHide_Button(IsShowMain);
         //ターゲット画像を表示/非表示する
-        GameObject terget_image
-                = GameObject.Find("terget");
-        terget_image.GetComponent<SpriteRenderer>()
-            .enabled = IsShowEnemyTerget;
-
+        mTergetController.ShowHide_Terget(IsShowEnemyTerget);
     }
 }

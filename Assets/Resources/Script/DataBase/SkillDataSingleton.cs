@@ -87,13 +87,10 @@ public class SkillDataSingleton : MonoBehaviour {
 
     private void FileRead_SkillData()
     {
+        string fileName = "Skills";
+        TextAsset txt = Instantiate(Resources.Load("data/" + fileName)) as TextAsset;
+        string jsonText = txt.text;
 
-        string folderpath = Application.dataPath + "/Resources/data/";
-        string filePath = folderpath + "Skills.json";
-
-        if (!File.Exists(filePath)) return;
-
-        string jsonText = File.ReadAllText(filePath);
         mSkillsObject = LitJson.JsonMapper.ToObject<SkillsObject[]>(jsonText);
 
     }

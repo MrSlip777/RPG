@@ -11,6 +11,22 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 1466414726172966}
   m_IsPrefabParent: 1
+--- !u!1 &1159765643166702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4295578247711432}
+  - component: {fileID: 114990210191656344}
+  m_Layer: 0
+  m_Name: VirtualButton
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1327940647445882
 GameObject:
   m_ObjectHideFlags: 0
@@ -41,8 +57,9 @@ GameObject:
   - component: {fileID: 114959049293900834}
   - component: {fileID: 114557010987959946}
   - component: {fileID: 114629976416216446}
+  - component: {fileID: 114757593471716840}
   m_Layer: 5
-  m_Name: contentNo_2_
+  m_Name: Node
   m_TagString: Node
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,6 +82,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &4295578247711432
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1159765643166702}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.9143945, y: 0.40120435, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 224369578673505034}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114096315653194374
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -157,7 +187,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 114305177258452832}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 114757593471716840}
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &114629976416216446
@@ -171,6 +212,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 859d0e23decad2041b73a55d87b9ef72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114757593471716840
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1466414726172966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b38a06dcf85e3144fb7c80a69110c4eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 114990210191656344}
 --- !u!114 &114865574717513268
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -222,6 +275,18 @@ MonoBehaviour:
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
+--- !u!114 &114990210191656344
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1159765643166702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7348fe9d755239043bdcb908480c1b6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 0}
 --- !u!222 &222411531434671068
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -270,6 +335,7 @@ RectTransform:
   m_Children:
   - {fileID: 224509017781033268}
   - {fileID: 224341717140995116}
+  - {fileID: 4295578247711432}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

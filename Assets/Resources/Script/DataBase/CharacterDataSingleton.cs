@@ -96,13 +96,11 @@ public class BattleCharacterObject
 
     private void FileRead_CharacterData() {
 
-        string folderpath = Application.dataPath + "/Resources/data/";
-        string filePath = folderpath + "Actors.json";
+        string fileName = "Actors";
+        TextAsset txt = Instantiate(Resources.Load("data/" + fileName)) as TextAsset;
+        string jsonText = txt.text;
 
-        if (!File.Exists(filePath)) return;
-
-        string jsonText = File.ReadAllText(filePath);
-        mCharacterObject = LitJson.JsonMapper.ToObject<CharacterObject[]>(jsonText);
+       mCharacterObject = LitJson.JsonMapper.ToObject<CharacterObject[]>(jsonText);
     }
 
     public void SetBattleCharacterObject()
@@ -119,12 +117,10 @@ public class BattleCharacterObject
     private void FileRead_ClassesData()
     {
 
-        string folderpath = Application.dataPath + "/Resources/data/";
-        string filePath = folderpath + "Classes.json";
+        string fileName = "Classes";
+        TextAsset txt = Instantiate(Resources.Load("data/" + fileName)) as TextAsset;
+        string jsonText = txt.text;
 
-        if (!File.Exists(filePath)) return;
-
-        string jsonText = File.ReadAllText(filePath);
         string temp_jsonText = jsonText.Replace("params","_params");
         mClassesObject = LitJson.JsonMapper.ToObject<ClassesObject[]>(temp_jsonText);
 
@@ -141,4 +137,8 @@ public class BattleCharacterObject
 
         return result;
     }
+
+    //行動選択画面の選択状態
+
+    //行動者のターゲット状態
 }

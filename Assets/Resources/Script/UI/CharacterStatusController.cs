@@ -27,10 +27,24 @@ public class CharacterStatusController : MonoBehaviour
     private float f_maxColor = 255;
     private float[] f_focusColor = {125,233,255};
 
+    //役割の設定値
+    private static eCharacterNum mRole = eCharacterNum.eCharacter1;
+
+    //役割を次キャラに渡す
+    public void Increment_mRole(){
+        mRole++;
+    }
+
+    //役割を次キャラに渡す
+    public void decrement_mRole()
+    {
+        mRole--;
+    }
+
     //キャラクター状態の初期設定
     public void InitialSelectCharacter()
     {
-        SetFocus_Character(eCharacterNum.eCharacter4);
+        SetFocus_Character(mRole);
     }
 
     //キャラクターのフォーカス指定

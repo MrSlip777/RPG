@@ -78,15 +78,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Resources\Script\BaseButtonController.cs" />
     <Compile Include="Assets\Resources\Script\Battle\BattleStateManager.cs" />
-    <Compile Include="Assets\Resources\Script\CharacterStatusController.cs" />
     <Compile Include="Assets\Resources\Script\DataBase\CharacterDataSingleton.cs" />
     <Compile Include="Assets\Resources\Script\DataBase\SkillDataSingleton.cs" />
-    <Compile Include="Assets\Resources\Script\MainMenuController.cs" />
-    <Compile Include="Assets\Resources\Script\SampleButtonController.cs" />
-    <Compile Include="Assets\Resources\Script\SubMenuController.cs" />
-    <Compile Include="Assets\Resources\Script\TapOverComponent.cs" />
+    <Compile Include="Assets\Resources\Script\UI\BaseButtonController.cs" />
+    <Compile Include="Assets\Resources\Script\UI\CharacterStatusController.cs" />
+    <Compile Include="Assets\Resources\Script\UI\EnemyGraphicController.cs" />
+    <Compile Include="Assets\Resources\Script\UI\MainMenuController.cs" />
+    <Compile Include="Assets\Resources\Script\UI\SampleButtonController.cs" />
+    <Compile Include="Assets\Resources\Script\UI\SubMenuController.cs" />
+    <Compile Include="Assets\Resources\Script\UI\TapOverComponent.cs" />
+    <Compile Include="Assets\Resources\Script\UI\TergetController.cs" />
+    <Compile Include="Assets\Resources\Script\rpg_object\Game_Action.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\dll\memo.txt" />

@@ -30,7 +30,16 @@ public class SampleButtonController : BaseButtonController
         }
         else
         {
-            throw new System.Exception("Not implemented!!");
+            //サブメニュー内のボタン処理
+            string[] splitName = objectName.Split('_');
+
+            if (splitName[0] == "contentNo")
+            {
+                mBattleStateManager.Implement_Button_Content();
+            }
+            else {
+                throw new System.Exception("Not implemented!!");
+            }
         }
     }
 }
