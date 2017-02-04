@@ -9,14 +9,15 @@ public class CharacterStatusController : MonoBehaviour
     //キャラクターステータスの番号
     public enum eCharacterNum
     {
-        eCharacter1 = 0,
-        eCharacter2 = 1,
-        eCharacter3 = 2,
-        eCharacter4 = 3,
+        eCharacter1 = 1,
+        eCharacter2 = 2,
+        eCharacter3 = 3,
+        eCharacter4 = 4,
     };
 
     //キャラクターステータスの名前
     private string[] sCharacterNum = {
+        "",
         "Character1" ,
         "Character2",
         "Character3",
@@ -26,32 +27,40 @@ public class CharacterStatusController : MonoBehaviour
     //UIの設定値
     private float f_maxColor = 255;
     private float[] f_focusColor = {125,233,255};
+    private float[] f_DefaultColor = { 255, 255, 255 };
 
     //役割の設定値
-    private static eCharacterNum mRole = eCharacterNum.eCharacter1;
-
-    //役割を次キャラに渡す
-    public void Increment_mRole(){
-        mRole++;
-    }
-
-    //役割を次キャラに渡す
-    public void decrement_mRole()
-    {
-        mRole--;
-    }
+    private static int mSelectingCharacter = (int)eCharacterNum.eCharacter1;
 
     //キャラクター状態の初期設定
     public void InitialSelectCharacter()
     {
-        SetFocus_Character(mRole);
+        SetFocus_Character(mSelectingCharacter);
     }
 
     //キャラクターのフォーカス指定
-    public void SetFocus_Character(eCharacterNum focusCharacter)
+    public void SetFocus_Character(int SelectingCharacter)
     {
-        GameObject tergetCharacter
-            = GameObject.Find(sCharacterNum[(int)focusCharacter]);
+        GameObject tergetCharacter = null;
+
+        //色の初期化
+        foreach (string tempname in sCharacterNum)
+        {
+            tergetCharacter = GameObject.Find(tempname);
+
+            if (tergetCharacter != null)
+            {
+                tergetCharacter.GetComponent<Image>().color
+                    = new Color(f_DefaultColor[0] / f_maxColor
+                    , f_DefaultColor[1] / f_maxColor
+                    , f_DefaultColor[2] / f_maxColor);
+            }
+
+        }
+
+        //フォーカス色の設定
+        tergetCharacter
+            = GameObject.Find(sCharacterNum[SelectingCharacter]);
         tergetCharacter.GetComponent<Image>().color
             = new Color(f_focusColor[0] / f_maxColor
             , f_focusColor[1] / f_maxColor

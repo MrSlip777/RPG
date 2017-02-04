@@ -51,6 +51,7 @@ public class SkillDataSingleton : MonoBehaviour {
     //インスタンス定義
     private static SkillDataSingleton mInstance;
 
+    //オブジェクト定義
     private SkillsObject[] mSkillsObject;
 
     // 唯一のインスタンスを取得します。

@@ -30,46 +30,22 @@ public class CharacterObject{
 
 }
 
-public class ClassesObject
-{
-
-    public int id = 0;
-    public int[] expParams;
-    public traitsObject[] traits;
-    public learningsObject[] learnings;
-    public string name;
-    public string note;
-    public int[][] _params;
-}
-
-public class traitsObject
-{
-    public int code;
-    public int dataId;
-    public double value;
-}
-
-public class learningsObject
-{
-    public int level;
-    public string note;
-    public int skillId;
-}
-
 public class BattleCharacterObject
 {
     public int[] skillIndex;
 
 }
 
-    public class CharacterDataSingleton:MonoBehaviour{
+public class CharacterDataSingleton:MonoBehaviour{
 
     //インスタンス定義
     private static CharacterDataSingleton mInstance;
 
     private CharacterObject[] mCharacterObject;
-    private ClassesObject[] mClassesObject;
     private BattleCharacterObject[] mBattleCharacterObject;
+
+    //行動キャラ
+    private static int mSelectingCharacterNum = 1;
 
     // 唯一のインスタンスを取得します。
     public static CharacterDataSingleton Instance
@@ -91,9 +67,9 @@ public class BattleCharacterObject
     private CharacterDataSingleton()
     {
         FileRead_CharacterData();
-        FileRead_ClassesData();
     }
 
+    //jsonデータ読み込み
     private void FileRead_CharacterData() {
 
         string fileName = "Actors";
@@ -103,6 +79,7 @@ public class BattleCharacterObject
        mCharacterObject = LitJson.JsonMapper.ToObject<CharacterObject[]>(jsonText);
     }
 
+    //オブジェクトに各種データを設定する
     public void SetBattleCharacterObject()
     {
         mBattleCharacterObject = new BattleCharacterObject[mCharacterObject.Length];
@@ -112,18 +89,6 @@ public class BattleCharacterObject
         mBattleCharacterObject[1].skillIndex[0] = 0;
         mBattleCharacterObject[1].skillIndex[1] = 9;
         mBattleCharacterObject[1].skillIndex[2] = 10;
-    }
-
-    private void FileRead_ClassesData()
-    {
-
-        string fileName = "Classes";
-        TextAsset txt = Instantiate(Resources.Load("data/" + fileName)) as TextAsset;
-        string jsonText = txt.text;
-
-        string temp_jsonText = jsonText.Replace("params","_params");
-        mClassesObject = LitJson.JsonMapper.ToObject<ClassesObject[]>(temp_jsonText);
-
     }
 
     //キャラクターの所持スキルを渡す
@@ -138,7 +103,32 @@ public class BattleCharacterObject
         return result;
     }
 
-    //行動選択画面の選択状態
+    //行動選択画面の選択状態の取得
+    public int GetSelectingCharacter()
+    {
+        return mSelectingCharacterNum;
+    }
+
+    //次の選択状態キャラ変更
+    public int NextSelectingCharacter()
+    {
+        //自キャラのHP判定後にインクリメントするかを判断する
+        //実装中　Slip
+        mSelectingCharacterNum++;
+
+        return mSelectingCharacterNum;
+    }
+
+    //前の選択状態キャラ変更
+    public int BeforeSelectingCharacter()
+    {
+        //自キャラのHP判定後にデクリメントするかを判断する
+        //実装中　Slip
+        mSelectingCharacterNum--;
+
+        return mSelectingCharacterNum;
+    }
 
     //行動者のターゲット状態
+
 }

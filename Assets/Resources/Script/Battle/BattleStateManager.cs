@@ -39,6 +39,7 @@ public class BattleStateManager : MonoBehaviour
 
     }
 
+    //各種インスタンス定義
     MainMenuController mMainMenuController = new MainMenuController();
     SubMenuController mSubMenuController = new SubMenuController();
     CharacterStatusController mCharacterStatusController
@@ -107,7 +108,7 @@ public class BattleStateManager : MonoBehaviour
         //キーが押されたか判定
         JudgePushDown();
 
-        //選択中のオブジェクトを取得する
+        //選択中のオブジェクトを取得し、スキル、アイテムであれば、説明ウインドウを更新する
         GameObject gEvent = EventSystem.current.currentSelectedGameObject;
         if (gEvent != null && 
             (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)))
@@ -115,25 +116,28 @@ public class BattleStateManager : MonoBehaviour
             mSubMenuController.ChangeDescription(gEvent.name);
         }
 
-        //キャンセル動作
-        if (IsPush == true 
-            &&(Input.GetKey(KeyCode.Escape) == true
-            || Input.GetMouseButton(1) == true)) {
+        //キャンセル処理
+        Implement_Cancel();
+
+        //行動決定時の処理
+        Implement_DecideAct();
+    }
+
+    //キャンセル動作
+    private void Implement_Cancel()
+    {
+        if (IsPush == true
+            && (Input.GetKey(KeyCode.Escape) == true
+            || Input.GetMouseButton(1) == true))
+        {
 
             switch (mUIstate)
             {
                 case eUIStatus.eUIStatus_focusEnemy:
-                    if (mUIpreviousstate == eUIStatus.eUIStatus_Main) {
-                        UIState(true, false);
-                        //フォーカスを攻撃ボタンにする
-                        mMainMenuController.
-                        SetFocus_Button(MainMenuController.eMainButton.eButton_Attack);
-
-                        //UI状態をメインの項目選択状態にする
-                        mUIstate = eUIStatus.eUIStatus_Main;
-
-                        //前の状態を更新する
-                        mUIpreviousstate = mUIstate;
+                    if (mUIpreviousstate == eUIStatus.eUIStatus_Main)
+                    {
+                        //フォーカスを攻撃にして、メイン選択ウインドウを表示
+                        SetUIDefault();
                     }
                     else if (mUIpreviousstate == eUIStatus.eUIStatus_Skill)
                     {
@@ -179,12 +183,23 @@ public class BattleStateManager : MonoBehaviour
                     //前の状態を更新する
                     mUIpreviousstate = mUIstate;
                     break;
+                case eUIStatus.eUIStatus_Main:
+                    //パーティ最小人数は1であり、1以下である場合はなにも処理を実行しない
+                    if (1 < mCharacterDataSingleton.GetSelectingCharacter())
+                    {
+                        //次のキャラを行動可能状態にする
+                        mCharacterStatusController
+                            .SetFocus_Character(mCharacterDataSingleton.BeforeSelectingCharacter());
+                        //行動をデフォルトに戻す
+                        SetUIDefault();
+                    }
+                    break;
+
                 default:
                     break;
             }
         }
     }
-
 
     //攻撃ボタンを押下時の処理
     public void Implement_Button_Attack()
@@ -260,10 +275,49 @@ public class BattleStateManager : MonoBehaviour
         mUIstate = eUIStatus.eUIStatus_focusEnemy;
     }
 
+    //行動決定時の処理
+    private void Implement_DecideAct()
+    {
+        if (IsPush == true && mUIstate == eUIStatus.eUIStatus_focusEnemy
+            && (Input.GetKey(KeyCode.KeypadEnter) == true
+            || Input.GetMouseButton(0) == true))
+        {
+            //パーティ最大人数は4であり、4以上である場合は行動選択画面を終了する
+            if (4 > mCharacterDataSingleton.GetSelectingCharacter())
+            {
+
+                //次のキャラを行動可能状態にする
+                mCharacterStatusController
+                    .SetFocus_Character(mCharacterDataSingleton.NextSelectingCharacter());
+                //行動をデフォルトに戻す
+                SetUIDefault();
+            }
+            else
+            {
+                //行動選択画面を終了し、自動画面へ移行するロジックは実装中
+            }
+        }
+    }
+
     //ボタン名の取得
     public string getButtonName(MainMenuController.eMainButton tergetButton)
     {
         return mMainMenuController.sButtonName[(int)tergetButton];
+    }
+
+    //UIの初期設定
+    private void SetUIDefault()
+    {
+        UIState(true, false);
+        //フォーカスを攻撃ボタンにする
+        mMainMenuController.
+        SetFocus_Button(MainMenuController.eMainButton.eButton_Attack);
+
+        //UI状態をメインの項目選択状態にする
+        mUIstate = eUIStatus.eUIStatus_Main;
+
+        //前の状態を更新する
+        mUIpreviousstate = mUIstate;
     }
 
     //UI表示をフラグで切り替える

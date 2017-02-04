@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Assets\Resources\Script\Battle\BattleStateManager.cs" />
     <Compile Include="Assets\Resources\Script\DataBase\CharacterDataSingleton.cs" />
+    <Compile Include="Assets\Resources\Script\DataBase\ClassesDataSingleton.cs" />
     <Compile Include="Assets\Resources\Script\DataBase\SkillDataSingleton.cs" />
     <Compile Include="Assets\Resources\Script\UI\BaseButtonController.cs" />
     <Compile Include="Assets\Resources\Script\UI\CharacterStatusController.cs" />
