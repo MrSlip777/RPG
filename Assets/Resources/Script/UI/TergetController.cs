@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;   //imageで必要
 
 public class TergetController : MonoBehaviour {
 
@@ -24,7 +25,7 @@ public class TergetController : MonoBehaviour {
         parentObject = GameObject.Find("Enemy(Clone)");
 
         parentObject.transform.FindChild("terget").
-            GetComponent<SpriteRenderer>().enabled = IsShow;
+            GetComponent<Image>().enabled = IsShow;
 
     }
 
