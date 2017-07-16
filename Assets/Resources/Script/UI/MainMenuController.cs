@@ -6,6 +6,31 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
+
+    //シングルトン実装
+    private static MainMenuController mInstance;
+
+    // 唯一のインスタンスを取得します。
+    public static MainMenuController Instance
+    {
+
+        get
+        {
+            if (mInstance == null)
+            {
+                mInstance = new MainMenuController();
+            }
+
+            return mInstance;
+        }
+
+    }
+
+    private MainMenuController()
+    {
+
+    }
+
     static private GameObject prefab_Panel_Button = null;
 
     //ボタンの各状態

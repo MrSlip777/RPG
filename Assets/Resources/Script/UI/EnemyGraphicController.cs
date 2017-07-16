@@ -6,10 +6,15 @@ public class EnemyGraphicController : MonoBehaviour {
 
     static private GameObject prefab_Enemy = null;
 
+    static public EnemiesDataSingleton mEnemiesDataSingleton;
+    static public TroopsDataSingleton mTroopsDataSingleton;
+
+
     // Use this for initialization
     void Start () {
-		
-	}
+
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -21,6 +26,12 @@ public class EnemyGraphicController : MonoBehaviour {
     {
         if (prefab_Enemy == null)
         {
+            mEnemiesDataSingleton = EnemiesDataSingleton.Instance;
+            mTroopsDataSingleton = TroopsDataSingleton.Instance;
+
+
+            //バトラーの画像を読み込んで表示する
+
             //ローカル変数定義
             GameObject parentObject = null;
 

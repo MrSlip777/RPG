@@ -6,6 +6,31 @@ using UnityEngine.UI;
 
 public class CharacterStatusController : MonoBehaviour
 {
+    //シングルトン実装
+    private static CharacterStatusController mInstance;
+
+
+    // 唯一のインスタンスを取得します。
+    public static CharacterStatusController Instance
+    {
+
+        get
+        {
+            if (mInstance == null)
+            {
+                mInstance = new CharacterStatusController();
+            }
+
+            return mInstance;
+        }
+
+    }
+
+    private CharacterStatusController()
+    {
+
+    }
+
     //キャラクターステータスの番号
     public enum eCharacterNum
     {
@@ -43,6 +68,23 @@ public class CharacterStatusController : MonoBehaviour
     {
         GameObject tergetCharacter = null;
 
+        //フォーカスなし状態
+        SetNoFocus();
+
+        //フォーカス色の設定
+        tergetCharacter
+            = GameObject.Find(sCharacterNum[SelectingCharacter]);
+        tergetCharacter.GetComponent<Image>().color
+            = new Color(f_focusColor[0] / f_maxColor
+            , f_focusColor[1] / f_maxColor
+            , f_focusColor[2] / f_maxColor);
+    }
+
+    //フォーカスしない状態（自動行動状態への遷移中）
+    public void SetNoFocus()
+    {
+        GameObject tergetCharacter = null;
+
         //色の初期化
         foreach (string tempname in sCharacterNum)
         {
@@ -57,14 +99,6 @@ public class CharacterStatusController : MonoBehaviour
             }
 
         }
-
-        //フォーカス色の設定
-        tergetCharacter
-            = GameObject.Find(sCharacterNum[SelectingCharacter]);
-        tergetCharacter.GetComponent<Image>().color
-            = new Color(f_focusColor[0] / f_maxColor
-            , f_focusColor[1] / f_maxColor
-            , f_focusColor[2] / f_maxColor);
     }
 
     //キャラクター状態表示にする

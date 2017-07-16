@@ -9,6 +9,30 @@ using UnityEngine.UI;
 
 public class SubMenuController : MonoBehaviour {
 
+    //シングルトン実装
+    private static SubMenuController mInstance;
+
+    // 唯一のインスタンスを取得します。
+    public static SubMenuController Instance
+    {
+
+        get
+        {
+            if (mInstance == null)
+            {
+                mInstance = new SubMenuController();
+            }
+
+            return mInstance;
+        }
+
+    }
+
+    private SubMenuController()
+    {
+
+    }
+
     //インスタンス定義
     private static SkillDataSingleton mSkillDataSingleton;
 
@@ -89,7 +113,7 @@ public class SubMenuController : MonoBehaviour {
 
         for (int i = 1; i < mContentName.Length; i++)
         {
-            Transform gText = obj.transform.FindChild("Text");
+            Transform gText = obj.transform.Find("Text");
 
             obj.name = "contentNo_" + i + "_";
 
@@ -139,7 +163,7 @@ public class SubMenuController : MonoBehaviour {
 
         parentObject = GameObject.Find("Panel_Text(Clone)");
 
-        Transform gText = parentObject.transform.FindChild("Text");
+        Transform gText = parentObject.transform.Find("Text");
 
         //暫定的なコンテンツの名前
         gText.GetComponent<Text>().text = Descriptions;

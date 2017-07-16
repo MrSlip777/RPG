@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 public class TapOverComponent : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    SubMenuController mSubMenuController = new SubMenuController();
+    SubMenuController mSubMenuController = SubMenuController.Instance;
 
     public Button btContent { get { return GetComponent<Button>(); } }
 

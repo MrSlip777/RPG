@@ -3,30 +3,30 @@ using System.Collections;
 
 public class SampleButtonController : BaseButtonController
 {
-　  BattleStateManager mBattleStateManager = BattleStateManager.Instance;
+    BattleSelectState mInstance = BattleSelectState.Instance;
 
     protected override void OnClick(string objectName)
     {
         // 渡されたオブジェクト名で処理を分岐
-        if (mBattleStateManager.getButtonName
+        if (mInstance.getButtonName
             (MainMenuController.eMainButton.eButton_Attack).Equals(objectName))
         {
-            mBattleStateManager.Implement_Button_Attack();
+            mInstance.Implement_Button_Attack();
         }
-        else if (mBattleStateManager.getButtonName
+        else if (mInstance.getButtonName
             (MainMenuController.eMainButton.eButton_Skill).Equals(objectName))
         {
-            mBattleStateManager.Implement_Button_Skill();
+            mInstance.Implement_Button_Skill();
         }
-        else if (mBattleStateManager.getButtonName
+        else if (mInstance.getButtonName
             (MainMenuController.eMainButton.eButton_Item).Equals(objectName))
         {
-            mBattleStateManager.Implement_Button_Item();
+            mInstance.Implement_Button_Item();
         }
-        else if (mBattleStateManager.getButtonName
+        else if (mInstance.getButtonName
             (MainMenuController.eMainButton.eButton_Escape).Equals(objectName))
         {
-            mBattleStateManager.Implement_Button_Escape();
+            mInstance.Implement_Button_Escape();
         }
         else
         {
@@ -35,7 +35,7 @@ public class SampleButtonController : BaseButtonController
 
             if (splitName[0] == "contentNo")
             {
-                mBattleStateManager.Implement_Button_Content();
+                mInstance.Implement_Button_Content();
             }
             else {
                 throw new System.Exception("Not implemented!!");

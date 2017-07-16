@@ -24,7 +24,7 @@ public class TergetController : MonoBehaviour {
         //親オブジェクトの指定
         parentObject = GameObject.Find("Enemy(Clone)");
 
-        parentObject.transform.FindChild("terget").
+        parentObject.transform.Find("terget").
             GetComponent<Image>().enabled = IsShow;
 
     }
