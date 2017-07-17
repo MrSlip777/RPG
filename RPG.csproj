@@ -97,6 +97,7 @@
     <Compile Include="Assets\Resources\FT_Infinity_lite\Scripts\FT_LoopSwitch.cs" />
     <Compile Include="Assets\Resources\Script\Battle\BattleAutoState.cs" />
     <Compile Include="Assets\Resources\Script\Battle\BattleSelectState.cs" />
+    <Compile Include="Assets\Resources\Script\Battle\BattleStateDataSinglton.cs" />
     <Compile Include="Assets\Resources\Script\Battle\BattleStateManager.cs" />
     <Compile Include="Assets\Resources\Script\DataBase\CharacterDataSingleton.cs" />
     <Compile Include="Assets\Resources\Script\DataBase\ClassesDataSingleton.cs" />

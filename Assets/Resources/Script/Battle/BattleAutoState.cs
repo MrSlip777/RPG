@@ -32,66 +32,104 @@ public class BattleAutoState : MonoBehaviour {
 
     }
 
+    //自動行動の状態
+    public enum eAutoStatus
+    {
+        eAutoStatus_Start = 0,
+        eAutoStatus_Act = 1,
+        eAutoStatus_End = 2,
+
+    };
+
+    //自動行動の状態
+    private static eAutoStatus mAutoStatus;
+
     private BattleAutoState()
     {
-
+        mAutoStatus = eAutoStatus.eAutoStatus_Start;
     }
 
-    //キャラクターステータス表示ウインドウ
+    //各インスタンス定義
+        //キャラクターステータス表示ウインドウ
     CharacterStatusController mCharacterStatusController
         = CharacterStatusController.Instance;
 
-    //行動フラグ
-    private static bool flag = false;
+        //戦闘画面状態データ
+    BattleStateDataSinglton mBattleStateDataSinglton = BattleStateDataSinglton.Instance;
 
+    //ターン開始時の初期化
+    public void TurnStart()
+    {
+        mAutoStatus = eAutoStatus.eAutoStatus_Start;
+    }
 
     // Use this for initialization
     //エフェクトを自動で表示
-    public void StartAction () {
+    public void _Update() {
 
-        if (flag == false)
+        //一時的なゲームオブジェクト
+        GameObject temp = null;
+
+        switch (mAutoStatus)
         {
-            flag = true;
+            case eAutoStatus.eAutoStatus_Start:
+                mAutoStatus = eAutoStatus.eAutoStatus_Act;
 
-            //行動対象キャラクターにフォーカス移動
-            mCharacterStatusController.SetFocus_Character(1);
+                //行動対象キャラクターにフォーカス移動
+                mCharacterStatusController.SetFocus_Character(1);
 
-            //テストコード　2017/07/09
-            EffectManager mtest = new EffectManager();
-            mtest.MakePrefab();
+                
+                //ローカル変数定義
+                GameObject parentObject = null;
+                parentObject = GameObject.Find("Canvas");
 
-            //ローカル変数定義
-            GameObject parentObject = null;
-            parentObject = GameObject.Find("Canvas");
+                //技名
+                GameObject prefab_ActionText = null;
+                //親を指定し、技名ウインドウを作成する
+                prefab_ActionText = Instantiate((GameObject)Resources.Load("Prefabs/Action_Text"));
+                prefab_ActionText.transform.SetParent(parentObject.transform);
+                prefab_ActionText.GetComponent<DestoroyAtTime>().delayTime = 0.0f;
 
-            //技名
-            GameObject prefab_ActionText = null;
-            //親を指定し、技名ウインドウを作成する
-            prefab_ActionText = Instantiate((GameObject)Resources.Load("Prefabs/Action_Text"));
-            prefab_ActionText.transform.SetParent(parentObject.transform);
 
-            //ダメージを表示させる
-            GameObject prefab_Damage = null;
-            //親を指定し、技名ウインドウを作成する
-            prefab_Damage = Instantiate((GameObject)Resources.Load("Prefabs/Damage_Text"));
-            prefab_Damage.transform.SetParent(parentObject.transform);
+                //エフェクト表示
+                EffectManager mEffectManager = new EffectManager();
+                mEffectManager.MakePrefab("FT_Infinity_lite/_Prefabs/Buff/Discharge_Lightning");
+
+                //ダメージを表示させる
+                GameObject prefab_Damage = null;
+                //親を指定し、技名ウインドウを作成する
+                prefab_Damage = Instantiate((GameObject)Resources.Load("Prefabs/Damage_Text"));
+                prefab_Damage.transform.SetParent(parentObject.transform);
+
+                break;
+            case eAutoStatus.eAutoStatus_Act:
+                //攻撃エフェクト～ダメージ消去まで表示されたら終了ステータスへ
+                temp = GameObject.FindGameObjectWithTag("AutoState_Act");
+
+                if (temp == null){
+                    GameObject dummy = new GameObject();
+                    dummy.tag = "AutoState_End";
+                    Destroy(dummy, 5.0f);
+
+                    mAutoStatus = eAutoStatus.eAutoStatus_End;
+                }
+
+                break;
+            case eAutoStatus.eAutoStatus_End:
+                //ウェイト時間経過後に次の行動へ移行する
+                temp = GameObject.FindGameObjectWithTag("AutoState_End");
+
+                if (temp == null)
+                {
+                    //mAutoStatus = eAutoStatus.eAutoStatus_Start;
+                    mBattleStateDataSinglton.BattleStateMode
+                        = BattleStateDataSinglton.eBattleState.eBattleState_AutoEnd;
+                }
+
+                break;
+            default:
+                break;
         }
     }
 
-    // Update is called once per frame
-    public void _Update () {
-		
-	}
-
-    /// <summary>
-    /// 渡された処理を指定時間後に実行する
-    /// </summary>
-    /// <param name="waitTime">遅延時間[ミリ秒]</param>
-    /// <param name="action">実行したい処理</param>
-    /// <returns></returns>
-    IEnumerator DelayMethod(float waitTime, Action action)
-    {
-        yield return new WaitForSeconds(waitTime);
-        action();
-    }
 }

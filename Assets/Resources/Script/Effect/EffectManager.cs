@@ -8,31 +8,14 @@ public class EffectManager : MonoBehaviour {
 
 	// Use this for initialization
 
-    public void MakePrefab()
+    public void MakePrefab(string prefabName)
     {
         //プレハブ指定
         if (prefab_Effect == null)
         {
             prefab_Effect
-                = Instantiate((GameObject)Resources.
-                Load("FT_Infinity_lite/_Prefabs/Buff/Discharge_Lightning"));
+                = Instantiate((GameObject)Resources.Load(prefabName));
                 //Load("FT_Infinity_lite/_Prefabs/Charge/Charge_Fire"));
         }
-    }
-
-    // Update is called once per frame
-    void Update () {
-		
-	}
-
-    public void DoEffect()
-    {
-        StartCoroutine(Delay());
-    }
-
-    private IEnumerator Delay()
-    {
-        yield return new WaitForSeconds(5);
-        MakePrefab();
     }
 }

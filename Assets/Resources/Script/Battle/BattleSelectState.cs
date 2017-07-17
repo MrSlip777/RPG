@@ -37,13 +37,12 @@ public class BattleSelectState : MonoBehaviour {
     }
 
     //UIの状態
-    public enum eUIStatus
+    private enum eUIStatus
     {
         eUIStatus_Main = 0,
         eUIStatus_focusEnemy = 10,
         eUIStatus_Skill = 1,
         eUIStatus_Item = 2,
-        eUIStatus_Auto = 20,//自動実行状態（選択UI非表示）
     };
 
     //UIの状態
@@ -51,8 +50,12 @@ public class BattleSelectState : MonoBehaviour {
     private static eUIStatus mUIpreviousstate;
 
     //各種インスタンス定義
+        //UI関係
     MainMenuController mMainMenuController = MainMenuController.Instance;
     SubMenuController mSubMenuController = SubMenuController.Instance;
+
+    //戦闘状態データ
+    BattleStateDataSinglton mBattleStateDataSingleton = BattleStateDataSinglton.Instance;
 
     //ターゲット表示
     TergetController mTergetController = new TergetController();
@@ -62,7 +65,8 @@ public class BattleSelectState : MonoBehaviour {
         = CharacterStatusController.Instance;
 
     //キャラクターのデータ（シングルトン）
-    static CharacterDataSingleton mCharacterDataSingleton;
+    static CharacterDataSingleton mCharacterDataSingleton
+         = CharacterDataSingleton.Instance;
 
     //キー判定フラグ
     private bool IsPush = false;
@@ -84,7 +88,18 @@ public class BattleSelectState : MonoBehaviour {
     // Use this for initialization
     public void _Start()
     {
+        //データ初期化
+        mCharacterDataSingleton.SetBattleCharacterObject();
 
+        //UI表示
+        mCharacterStatusController.ShowCharacterStatus();
+
+        TurnStart();
+    }
+
+    //ターン開始時の初期化
+    public void TurnStart()
+    {
         mMainMenuController.InitialSelectButton();
 
         //UI状態　選択肢表示がデフォルト
@@ -94,15 +109,12 @@ public class BattleSelectState : MonoBehaviour {
         //ターゲットの初期化
         mTergetController.ShowHide_Terget(false);
 
-        //インスタンス取得
-        mCharacterDataSingleton = CharacterDataSingleton.Instance;
-        //データ初期化
-        mCharacterDataSingleton.SetBattleCharacterObject();
-
         //キャラクターステータス表示ウインドウの初期化
         mCharacterStatusController.InitialSelectCharacter();
-    }
 
+        //行動選択者の初期化
+        mCharacterDataSingleton.TurnStartCharacter();
+    }
 
     // Update is called once per frame
     public void _Update() {
@@ -122,13 +134,6 @@ public class BattleSelectState : MonoBehaviour {
 
         //行動決定時の処理
         Implement_DecideAct();
-    }
-
-    //UI状態取得
-    public eUIStatus getUIStatus
-    {
-        get{ return mUIstate; }
-
     }
 
     //UIの初期設定
@@ -260,8 +265,10 @@ public class BattleSelectState : MonoBehaviour {
                 //前の状態を更新する
                 mUIpreviousstate = mUIstate;
 
-                //UI状態を敵ターゲット選択状態にする
-                mUIstate = eUIStatus.eUIStatus_Auto;
+                //戦闘画面状態を敵ターゲット選択状態にする
+                mBattleStateDataSingleton.BattleStateMode
+                    = BattleStateDataSinglton.eBattleState.eBattleState_SelectEnd;
+
             }
         }
     }

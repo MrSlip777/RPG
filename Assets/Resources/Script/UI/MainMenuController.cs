@@ -98,7 +98,7 @@ public class MainMenuController : MonoBehaviour
             parentObject = GameObject.Find("Canvas");
 
             //プレハブ指定
-            prefab_Panel_Button = (GameObject)Instantiate(
+            prefab_Panel_Button = Instantiate(
                 (GameObject)Resources.Load("Prefabs/Panel_Button"));
             prefab_Panel_Button.transform.SetParent(parentObject.transform,false);
 

@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 114027524282043316}
   m_Layer: 5
   m_Name: Action_Text
-  m_TagString: Untagged
+  m_TagString: AutoState_Act
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -41,7 +41,7 @@ GameObject:
   - component: {fileID: 114375782193740408}
   m_Layer: 5
   m_Name: Text
-  m_TagString: Untagged
+  m_TagString: AutoState_Act
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

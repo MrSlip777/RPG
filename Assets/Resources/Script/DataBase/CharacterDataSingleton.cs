@@ -129,6 +129,16 @@ public class CharacterDataSingleton:MonoBehaviour{
         return mSelectingCharacterNum;
     }
 
+    //行動選択者の初期化
+    public int TurnStartCharacter()
+    {
+        //自キャラのHP判定後に値を適宜変更する
+        //実装中　Slip
+        mSelectingCharacterNum = 1;
+
+        return mSelectingCharacterNum;
+    }
+
     //行動者のターゲット状態
 
 }

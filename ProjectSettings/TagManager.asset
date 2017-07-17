@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Node
+  - AutoState_Act
+  - AutoState_End
+  - CharacterStatus
   layers:
   - Default
   - TransparentFX

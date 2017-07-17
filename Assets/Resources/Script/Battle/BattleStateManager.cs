@@ -35,25 +35,29 @@ public class BattleStateManager : MonoBehaviour
 
     }
 
+
     //インスタンス定義
-    BattleSelectState mState = BattleSelectState.Instance;
+    BattleSelectState mState = null;
 
     //下は後で統合する　Slip 2017/07/11
-    BattleAutoState mState1 = BattleAutoState.Instance;
+    BattleAutoState mState1 = null;
 
+    //戦闘画面の状態データ
+    BattleStateDataSinglton mBattleStateDataSinglton = null; 
 
     EnemyGraphicController mEnemyGraphicController
         = new EnemyGraphicController();
 
-
-    Game_Action action = new Game_Action();
-
-
-
     // Use this for initialization
     void Start () {
 
+        //インスタンス取得
+        mState = BattleSelectState.Instance;
+        mState1 = BattleAutoState.Instance;
+        mBattleStateDataSinglton = BattleStateDataSinglton.Instance;
 
+        mBattleStateDataSinglton.BattleStateMode
+            = BattleStateDataSinglton.eBattleState.eBattleState_Select;
         mEnemyGraphicController.ShowEnemy();
         mState._Start();
         
@@ -62,13 +66,27 @@ public class BattleStateManager : MonoBehaviour
     // Update is called once per frame
     void Update () {
 
-        if (BattleSelectState.eUIStatus.eUIStatus_Auto != mState.getUIStatus)
+        switch (mBattleStateDataSinglton.BattleStateMode)
         {
-            mState._Update();
+            case BattleStateDataSinglton.eBattleState.eBattleState_Select:
+                mState._Update();
+                break;
+            case BattleStateDataSinglton.eBattleState.eBattleState_SelectEnd:
+                mState1.TurnStart();
+                mBattleStateDataSinglton.BattleStateMode
+                    = BattleStateDataSinglton.eBattleState.eBattleState_Auto;
+                break;
+            case BattleStateDataSinglton.eBattleState.eBattleState_Auto:
+                mState1._Update();
+                break;
+            case BattleStateDataSinglton.eBattleState.eBattleState_AutoEnd:
+                mState.TurnStart();
+                mBattleStateDataSinglton.BattleStateMode
+                    = BattleStateDataSinglton.eBattleState.eBattleState_Select;
+                break;
+            default:
+                break;
         }
-        else
-        {
-            mState1.StartAction();
-        }
+
     }
 }
