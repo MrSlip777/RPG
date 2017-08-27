@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class BattleAutoState : MonoBehaviour {
 
@@ -54,13 +55,19 @@ public class BattleAutoState : MonoBehaviour {
     CharacterStatusController mCharacterStatusController
         = CharacterStatusController.Instance;
 
-        //戦闘画面状態データ
+    //戦闘画面状態データ
     BattleStateDataSinglton mBattleStateDataSinglton = BattleStateDataSinglton.Instance;
+
+    //スキルデータ
+    SkillDataSingleton mSkillDataSingleton = SkillDataSingleton.Instance;
 
     //ターン開始時の初期化
     public void TurnStart()
     {
         mAutoStatus = eAutoStatus.eAutoStatus_Start;
+
+        //行動順を設定
+        mBattleStateDataSinglton.SortActorSpeed();
     }
 
     // Use this for initialization
@@ -73,10 +80,14 @@ public class BattleAutoState : MonoBehaviour {
         switch (mAutoStatus)
         {
             case eAutoStatus.eAutoStatus_Start:
+                //状態フラグ変更
                 mAutoStatus = eAutoStatus.eAutoStatus_Act;
 
+                //行動者オブジェクト取得
+                ActorObject actor = mBattleStateDataSinglton.ActorObject;
+
                 //行動対象キャラクターにフォーカス移動
-                mCharacterStatusController.SetFocus_Character(1);
+                mCharacterStatusController.SetFocus_Character(actor.actorNum);
 
                 
                 //ローカル変数定義
@@ -89,17 +100,21 @@ public class BattleAutoState : MonoBehaviour {
                 prefab_ActionText = Instantiate((GameObject)Resources.Load("Prefabs/Action_Text"));
                 prefab_ActionText.transform.SetParent(parentObject.transform);
                 prefab_ActionText.GetComponent<DestoroyAtTime>().delayTime = 0.0f;
-
+                prefab_ActionText.GetComponentInChildren<Text>().text
+                    = mSkillDataSingleton.GetSkillName(actor.skillID);
 
                 //エフェクト表示
                 EffectManager mEffectManager = new EffectManager();
                 mEffectManager.MakePrefab("FT_Infinity_lite/_Prefabs/Buff/Discharge_Lightning");
+                mEffectManager.SetPosition(actor.tergetPos[actor.tergetNum]);
 
                 //ダメージを表示させる
                 GameObject prefab_Damage = null;
                 //親を指定し、技名ウインドウを作成する
                 prefab_Damage = Instantiate((GameObject)Resources.Load("Prefabs/Damage_Text"));
                 prefab_Damage.transform.SetParent(parentObject.transform);
+                Vector3 posDamage = new Vector3(actor.tergetPos[actor.tergetNum].x,400);
+                prefab_Damage.transform.position = posDamage;
 
                 break;
             case eAutoStatus.eAutoStatus_Act:
@@ -109,7 +124,11 @@ public class BattleAutoState : MonoBehaviour {
                 if (temp == null){
                     GameObject dummy = new GameObject();
                     dummy.tag = "AutoState_End";
-                    Destroy(dummy, 5.0f);
+                    //適当な時間待っている。調整は必要？そこまで必要ではない　Slip 2017/08/05
+                    Destroy(dummy, 0.1f);
+
+                    //行動後のオブジェクトを消去する
+                    mBattleStateDataSinglton.RemoveTopActor();
 
                     mAutoStatus = eAutoStatus.eAutoStatus_End;
                 }
@@ -121,9 +140,17 @@ public class BattleAutoState : MonoBehaviour {
 
                 if (temp == null)
                 {
-                    //mAutoStatus = eAutoStatus.eAutoStatus_Start;
-                    mBattleStateDataSinglton.BattleStateMode
-                        = BattleStateDataSinglton.eBattleState.eBattleState_AutoEnd;
+
+                    if (mBattleStateDataSinglton.ActorObject != null) {
+                        mAutoStatus = eAutoStatus.eAutoStatus_Start;
+
+                    }
+                    else
+                    {
+                        mBattleStateDataSinglton.BattleStateMode
+                            = BattleStateDataSinglton.eBattleState.eBattleState_AutoEnd;
+                            
+                    }
                 }
 
                 break;

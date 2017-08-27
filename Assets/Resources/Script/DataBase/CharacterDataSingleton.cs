@@ -33,7 +33,11 @@ public class CharacterObject{
 public class BattleCharacterObject
 {
     public int[] skillIndex;
-
+    public int HP;
+    public int MP;
+    public int Atk;
+    public int Def;
+    public int Speed;
 }
 
 public class CharacterDataSingleton:MonoBehaviour{
@@ -43,6 +47,10 @@ public class CharacterDataSingleton:MonoBehaviour{
 
     private CharacterObject[] mCharacterObject;
     private BattleCharacterObject[] mBattleCharacterObject;
+
+    //インスタンス定義
+    ClassesDataSingleton mClassesDataSingleton;
+    SkillDataSingleton mSkillDataSingleton;
 
     //行動キャラ
     private static int mSelectingCharacterNum = 1;
@@ -67,6 +75,9 @@ public class CharacterDataSingleton:MonoBehaviour{
     private CharacterDataSingleton()
     {
         FileRead_CharacterData();
+        //インスタンス取得
+        mClassesDataSingleton = ClassesDataSingleton.Instance;
+        mSkillDataSingleton = SkillDataSingleton.Instance;
     }
 
     //jsonデータ読み込み
@@ -82,13 +93,33 @@ public class CharacterDataSingleton:MonoBehaviour{
     //オブジェクトに各種データを設定する
     public void SetBattleCharacterObject()
     {
-        mBattleCharacterObject = new BattleCharacterObject[mCharacterObject.Length];
-        mBattleCharacterObject[1] = new BattleCharacterObject();
+        learningsObject[] lerningsObjects = null;
 
-        mBattleCharacterObject[1].skillIndex = new int[3];
-        mBattleCharacterObject[1].skillIndex[0] = 0;
-        mBattleCharacterObject[1].skillIndex[1] = 9;
-        mBattleCharacterObject[1].skillIndex[2] = 10;
+        mBattleCharacterObject = new BattleCharacterObject[mCharacterObject.Length];
+
+        for (int j=0; j< mCharacterObject.Length; j++) {
+            mBattleCharacterObject[j] = new BattleCharacterObject();
+
+            //能力設定
+            mBattleCharacterObject[j].Atk = 10;
+            mBattleCharacterObject[j].Def = 11;
+            mBattleCharacterObject[j].Speed = j+3;
+            mBattleCharacterObject[j].HP = 30;
+            mBattleCharacterObject[j].MP = 30;
+
+            lerningsObjects = mClassesDataSingleton.getLearningObject(1);
+
+            mBattleCharacterObject[j].skillIndex
+                = new int[lerningsObjects.Length];
+
+            int i = 0;
+            //スキル設定
+            foreach (learningsObject learningObject in lerningsObjects) {
+                mBattleCharacterObject[j].skillIndex[i]
+                    = learningObject.skillId;
+                i++;
+            }
+        }
     }
 
     //キャラクターの所持スキルを渡す
@@ -101,6 +132,12 @@ public class CharacterDataSingleton:MonoBehaviour{
         }
 
         return result;
+    }
+
+    //使用スキルの対象を渡す
+    public eTergetScope GetSkillScope(int skillId)
+    {   
+        return (eTergetScope)mSkillDataSingleton.GetSkillScope(skillId);
     }
 
     //行動選択画面の選択状態の取得
@@ -141,4 +178,9 @@ public class CharacterDataSingleton:MonoBehaviour{
 
     //行動者のターゲット状態
 
+    //素早さ取得
+    public int CharaSpeed(int characterNum)
+    {
+        return mBattleCharacterObject[characterNum].Speed;
+    }
 }

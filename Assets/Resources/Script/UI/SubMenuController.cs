@@ -58,12 +58,13 @@ public class SubMenuController : MonoBehaviour {
                 mSkillDataSingleton = SkillDataSingleton.Instance;
             }
 
+
             for (int i = 0; i < index.Length; i++)
             {
-                mContentName[i] = mSkillDataSingleton
-                    .GetSkillName(index[i]);
-                mContentDescription[i] = mSkillDataSingleton
-                    .GetSkillDescription(index[i]);
+                mContentName[i]
+                    = mSkillDataSingleton.GetSkillName(index[i]);
+                mContentDescription[i]
+                    = mSkillDataSingleton.GetSkillDescription(index[i]);
             }
         }
         else
@@ -103,7 +104,7 @@ public class SubMenuController : MonoBehaviour {
       
         //スクロールビューを生成
         parentObject = GameObject.Find("Canvas");
-        prefab = (GameObject)Instantiate(
+        prefab = Instantiate(
             (GameObject)Resources.Load("Prefabs/Scroll View"));
         prefab.transform.SetParent(parentObject.transform);
 
@@ -111,7 +112,7 @@ public class SubMenuController : MonoBehaviour {
         parentObject = GameObject.Find("Content");
         GameObject obj = (GameObject)Resources.Load("Prefabs/Node");
 
-        for (int i = 1; i < mContentName.Length; i++)
+        for (int i = 0; i < mContentName.Length; i++)
         {
             Transform gText = obj.transform.Find("Text");
 
@@ -120,11 +121,11 @@ public class SubMenuController : MonoBehaviour {
             //暫定的なコンテンツの名前
             gText.GetComponent<Text>().text = mContentName[i];
 
-            prefab = (GameObject)Instantiate(obj);
+            prefab = Instantiate(obj);
             prefab.transform.SetParent(parentObject.transform);
 
             //最初のコンテンツにフォーカスを合わせる
-            if (i == 1)
+            if (i == 0)
             {
                 prefab.GetComponent<Button>().Select();
             }
@@ -184,6 +185,24 @@ public class SubMenuController : MonoBehaviour {
         if (st_split[0] == "contentNo")
         {
             SetDescription(mContentDescription[int.Parse(st_split[1])]);
+        }
+    }
+
+    //スクロールを動かす
+    public void ChangeContentScrollView(string ContentName)
+    {
+        string st_temp = ContentName;
+        string[] st_split = st_temp.Split('_');
+        if (st_split[0] == "contentNo")
+        {
+            //ローカル変数定義
+            GameObject parentObject = null;
+
+            parentObject = GameObject.Find("Scroll View(Clone)");
+
+            ScrollRect scrollRect = parentObject.GetComponent<ScrollRect>();
+            scrollRect.verticalNormalizedPosition = 1-(float.Parse(st_split[1])) / (mContentName.Length-1);
+
         }
     }
 

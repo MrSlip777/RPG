@@ -33,7 +33,7 @@ public class BattleSelectState : MonoBehaviour {
 
     private BattleSelectState()
     {
-
+ 
     }
 
     //UIの状態
@@ -50,23 +50,32 @@ public class BattleSelectState : MonoBehaviour {
     private static eUIStatus mUIpreviousstate;
 
     //各種インスタンス定義
-        //UI関係
+    //UI関係
     MainMenuController mMainMenuController = MainMenuController.Instance;
     SubMenuController mSubMenuController = SubMenuController.Instance;
 
-    //戦闘状態データ
-    BattleStateDataSinglton mBattleStateDataSingleton = BattleStateDataSinglton.Instance;
-
     //ターゲット表示
-    TergetController mTergetController = new TergetController();
+    TergetController mTergetController = TergetController.Instance;
+
+    //戦闘状態データ
+    static BattleStateDataSinglton mBattleStateDataSingleton;
+
 
     //キャラクターステータス表示ウインドウ
-    CharacterStatusController mCharacterStatusController
-        = CharacterStatusController.Instance;
+    static CharacterStatusController mCharacterStatusController;
 
     //キャラクターのデータ（シングルトン）
-    static CharacterDataSingleton mCharacterDataSingleton
-         = CharacterDataSingleton.Instance;
+    static CharacterDataSingleton mCharacterDataSingleton;
+
+    //敵データ（シングルトン）
+    static EnemiesDataSingleton mEnemiesDataSingleton;
+
+    //対象種類（Autoへ渡る）
+    private eTergetScope mTergetScope;
+
+    //行動者の選択スキルID
+    private static int mActorSkillID;
+
 
     //キー判定フラグ
     private bool IsPush = false;
@@ -88,6 +97,14 @@ public class BattleSelectState : MonoBehaviour {
     // Use this for initialization
     public void _Start()
     {
+        //インスタンス取得
+        mCharacterDataSingleton = CharacterDataSingleton.Instance;
+        mCharacterStatusController = CharacterStatusController.Instance;
+        mEnemiesDataSingleton = EnemiesDataSingleton.Instance;
+
+        //戦闘状態データ
+        mBattleStateDataSingleton = BattleStateDataSinglton.Instance;
+
         //データ初期化
         mCharacterDataSingleton.SetBattleCharacterObject();
 
@@ -95,6 +112,7 @@ public class BattleSelectState : MonoBehaviour {
         mCharacterStatusController.ShowCharacterStatus();
 
         TurnStart();
+        
     }
 
     //ターン開始時の初期化
@@ -107,7 +125,7 @@ public class BattleSelectState : MonoBehaviour {
         mUIpreviousstate = mUIstate;
 
         //ターゲットの初期化
-        mTergetController.ShowHide_Terget(false);
+        mTergetController.ShowHide_Terget(eTergetScope.Hide);
 
         //キャラクターステータス表示ウインドウの初期化
         mCharacterStatusController.InitialSelectCharacter();
@@ -126,20 +144,19 @@ public class BattleSelectState : MonoBehaviour {
         if (gEvent != null &&
             (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)))
         {
+
             mSubMenuController.ChangeDescription(gEvent.name);
+            mSubMenuController.ChangeContentScrollView(gEvent.name);
         }
 
         //キャンセル処理
         Implement_Cancel();
-
-        //行動決定時の処理
-        Implement_DecideAct();
     }
 
     //UIの初期設定
     private void SetUIDefault()
     {
-        UIState(true, false);
+        UIState(true,eTergetScope.Hide);
         //フォーカスを攻撃ボタンにする
         mMainMenuController.
         SetFocus_Button(MainMenuController.eMainButton.eButton_Attack);
@@ -152,12 +169,15 @@ public class BattleSelectState : MonoBehaviour {
     }
 
     //UI表示をフラグで切り替える
-    private void UIState(bool IsShowMain, bool IsShowEnemyTerget)
+    private void UIState(bool IsShowMain, eTergetScope Scope)
     {
+        //変数を更新する
+        mTergetScope = Scope;
+
         //選択肢ボタンを表示/非表示にする
         mMainMenuController.ShowHide_Button(IsShowMain);
         //ターゲット画像を表示/非表示する
-        mTergetController.ShowHide_Terget(IsShowEnemyTerget);
+        mTergetController.ShowHide_Terget(Scope);
     }
 
     //キャンセル動作
@@ -178,12 +198,12 @@ public class BattleSelectState : MonoBehaviour {
                     }
                     else if (mUIpreviousstate == eUIStatus.eUIStatus_Skill)
                     {
-                        UIState(true, false);
+                        UIState(true, eTergetScope.Hide);
                         Implement_Button_Skill();
                     }
                     else if (mUIpreviousstate == eUIStatus.eUIStatus_Item)
                     {
-                        UIState(true, false);
+                        UIState(true, eTergetScope.Hide);
                         Implement_Button_Item();
                     }
 
@@ -239,46 +259,64 @@ public class BattleSelectState : MonoBehaviour {
     }
 
     //行動決定時の処理
-    private void Implement_DecideAct()
+    //ターゲット表示の位置を渡す（単体用でエフェクト表示に使用する）
+    public void Implement_DecideAct(int tergetNum,Vector3[] tergetPos)
     {
-        if (IsPush == true && mUIstate == eUIStatus.eUIStatus_focusEnemy
-            && (Input.GetKey(KeyCode.KeypadEnter) == true
-            || Input.GetMouseButton(0) == true))
+        ActorObject actorObject = new ActorObject();
+        actorObject.actorNum = mCharacterDataSingleton.GetSelectingCharacter();
+        actorObject.speed = mCharacterDataSingleton.CharaSpeed(actorObject.actorNum);
+        actorObject.actor = eActorScope.Friend;
+
+        //保持している行動者のスキルIDを渡す（キャンセル操作に注意）
+        actorObject.skillID = mActorSkillID;
+
+        //ターゲットの渡す
+        actorObject.terget = mTergetScope;
+        actorObject.tergetNum = tergetNum;
+        actorObject.tergetPos = tergetPos;
+
+        mBattleStateDataSingleton.ActorObject = actorObject;
+
+
+        //パーティ最大人数は4であり、4以上である場合は行動選択画面を終了する
+        if (4 > mCharacterDataSingleton.GetSelectingCharacter())
         {
-            //パーティ最大人数は4であり、4以上である場合は行動選択画面を終了する
-            if (4 > mCharacterDataSingleton.GetSelectingCharacter())
-            {
 
-                //次のキャラを行動可能状態にする
-                mCharacterStatusController
-                    .SetFocus_Character(mCharacterDataSingleton.NextSelectingCharacter());
-                //行動をデフォルトに戻す
-                SetUIDefault();
-            }
-            else
-            {
-                
-                UIState(false, false);
-
-                //暫定的に行動順
-                mCharacterStatusController.SetNoFocus();
-                //前の状態を更新する
-                mUIpreviousstate = mUIstate;
-
-                //戦闘画面状態を敵ターゲット選択状態にする
-                mBattleStateDataSingleton.BattleStateMode
-                    = BattleStateDataSinglton.eBattleState.eBattleState_SelectEnd;
-
-            }
+            //次のキャラを行動可能状態にする
+            mCharacterStatusController
+                .SetFocus_Character(mCharacterDataSingleton.NextSelectingCharacter());
+            //行動をデフォルトに戻す
+            SetUIDefault();
         }
+        else
+        {
+            //敵の行動を自動選択により設定する
+            for (int i = 0; i < mEnemiesDataSingleton.EnemiesNum; i++)
+            {
+                mBattleStateDataSingleton.ActorObject = mEnemiesDataSingleton.getAutoActorData();
+            }
+
+            //ターゲットを非表示にする
+            UIState(false, eTergetScope.Hide);
+
+            //暫定的に行動順
+            mCharacterStatusController.SetNoFocus();
+            //前の状態を更新する
+            mUIpreviousstate = mUIstate;
+
+            //戦闘画面状態を敵ターゲット選択状態にする
+            mBattleStateDataSingleton.BattleStateMode
+                = BattleStateDataSinglton.eBattleState.eBattleState_SelectEnd;
+
+        }
+
     }
 
     //攻撃ボタンを押下時の処理
     public void Implement_Button_Attack()
     {
-
         //敵ターゲット表示させる
-        UIState(false, true);
+        UIState(false, eTergetScope.forOne);
 
         //前の状態を更新する
         mUIpreviousstate = mUIstate;
@@ -333,10 +371,16 @@ public class BattleSelectState : MonoBehaviour {
     }
 
     //サブメニュー内のボタンが押されたときの処理
-    public void Implement_Button_Content()
+    public void Implement_Button_Content(int number)
     {
+        int[] SkillId = mCharacterDataSingleton.GetSkillIndex(1);
+
+        //行動者のスキルIDを保持する
+        mActorSkillID = SkillId[number];
+
         //敵ターゲット表示させる
-        UIState(false, true);
+        UIState(false, 
+            mCharacterDataSingleton.GetSkillScope(SkillId[number]));
         //サブメニュー非表示
         mSubMenuController.HideSubMenu();
 

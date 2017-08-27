@@ -106,7 +106,6 @@
     <Compile Include="Assets\Resources\Script\DataBase\TroopsDataSingleton.cs" />
     <Compile Include="Assets\Resources\Script\Effect\DestoroyAtTime.cs" />
     <Compile Include="Assets\Resources\Script\Effect\EffectManager.cs" />
-    <Compile Include="Assets\Resources\Script\rpg_object\Game_Action.cs" />
     <Compile Include="Assets\Resources\Script\UI\BaseButtonController.cs" />
     <Compile Include="Assets\Resources\Script\UI\CharacterStatusController.cs" />
     <Compile Include="Assets\Resources\Script\UI\EnemyGraphicController.cs" />
@@ -114,6 +113,7 @@
     <Compile Include="Assets\Resources\Script\UI\SampleButtonController.cs" />
     <Compile Include="Assets\Resources\Script\UI\SubMenuController.cs" />
     <Compile Include="Assets\Resources\Script\UI\TapOverComponent.cs" />
+    <Compile Include="Assets\Resources\Script\UI\TergetComponent.cs" />
     <Compile Include="Assets\Resources\Script\UI\TergetController.cs" />
   </ItemGroup>
   <ItemGroup>

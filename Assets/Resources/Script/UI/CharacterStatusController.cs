@@ -95,11 +95,13 @@ public class CharacterStatusController : MonoBehaviour
         //フォーカスなし状態
         SetNoFocus();
 
-        //フォーカス色の設定
-        tergets[SelectingCharacter-1].GetComponent<Image>().color
-            = new Color(f_focusColor[0] / f_maxColor
-            , f_focusColor[1] / f_maxColor
-            , f_focusColor[2] / f_maxColor);
+        if (SelectingCharacter>=1 && SelectingCharacter <= 4) {
+            //フォーカス色の設定
+            tergets[SelectingCharacter - 1].GetComponent<Image>().color
+                = new Color(f_focusColor[0] / f_maxColor
+                , f_focusColor[1] / f_maxColor
+                , f_focusColor[2] / f_maxColor);
+        }
     }
 
     //フォーカスしない状態（自動行動状態への遷移中）

@@ -121,4 +121,17 @@ public class SkillDataSingleton : MonoBehaviour {
 
         return result;
     }
+
+    //スキルの対象範囲を取得
+    public int GetSkillScope(int Id)
+    {
+        int result = 0;
+
+        if (Id > 0 && Id <= mSkillsObject.Length)
+        {
+            result = mSkillsObject[Id].scope;
+        }
+
+        return result;
+    }
 }

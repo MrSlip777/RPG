@@ -35,7 +35,7 @@ public class SampleButtonController : BaseButtonController
 
             if (splitName[0] == "contentNo")
             {
-                mInstance.Implement_Button_Content();
+                mInstance.Implement_Button_Content(int.Parse(splitName[1]));
             }
             else {
                 throw new System.Exception("Not implemented!!");
