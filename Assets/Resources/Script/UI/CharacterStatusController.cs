@@ -48,7 +48,7 @@ public class CharacterStatusController : MonoBehaviour
     private float[] f_DefaultColor = { 255, 255, 255 };
 
 
-    public void ShowCharacterStatus()
+    public void MakeUI()
     {
         GameObject[] prefab_CharacterStatus = new GameObject[4];
 

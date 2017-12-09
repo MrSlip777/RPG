@@ -24,10 +24,8 @@ public class EnemyGraphicController : MonoBehaviour {
     //敵グラ生成
     public void ShowEnemy()
     {
-
         mEnemiesDataSingleton = EnemiesDataSingleton.Instance;
         mTroopsDataSingleton = TroopsDataSingleton.Instance;
-
 
         //バトラーの画像を読み込んで表示する
 

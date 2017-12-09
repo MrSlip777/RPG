@@ -118,6 +118,7 @@ public class TergetController : MonoBehaviour {
         }
     }
 
+    //ターゲット非表示
     private void HideUIAll(){
         GameObject[] prefabs = GameObject.FindGameObjectsWithTag("Terget");
         foreach (GameObject prefab in prefabs) {
@@ -125,7 +126,7 @@ public class TergetController : MonoBehaviour {
         }        
     }
 
-    //ターゲット非表示
+    //プレハブ削除
     private void DestroyPrefab()
     {
         GameObject[] prefabs = GameObject.FindGameObjectsWithTag("Terget");

@@ -109,30 +109,28 @@ public class BattleSelectState : MonoBehaviour {
         mCharacterDataSingleton.SetBattleCharacterObject();
 
         //UI表示
-        mCharacterStatusController.ShowCharacterStatus();
+        mCharacterStatusController.MakeUI();
+        mMainMenuController.MakeUI();
         mTergetController.MakeUI();
+        mSubMenuController.MakeUI();    
 
         TurnStart();
-        
     }
 
     //ターン開始時の初期化
     public void TurnStart()
     {
-        mMainMenuController.InitialSelectButton();
-
         //UI状態　選択肢表示がデフォルト
         mUIstate = eUIStatus.eUIStatus_Main;
         mUIpreviousstate = mUIstate;
 
-        //ターゲットの初期化
+        //UI表示状態設定
+        mMainMenuController.InitialSelectButton();
+        mSubMenuController.HideSubMenu();
         mTergetController.ShowHide_Terget(eTergetScope.Hide);
-
-        //キャラクターステータス表示ウインドウの初期化
         mCharacterStatusController.InitialSelectCharacter();
-
-        //行動選択者の初期化
         mCharacterDataSingleton.TurnStartCharacter();
+
     }
 
     // Update is called once per frame

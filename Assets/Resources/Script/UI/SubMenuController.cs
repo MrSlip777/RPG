@@ -33,6 +33,10 @@ public class SubMenuController : MonoBehaviour {
 
     }
 
+    //UIインスタンス
+    static private GameObject ScrollViewPrefab = null;
+    static private GameObject DescriptionPrefab = null;
+
     //インスタンス定義
     private static SkillDataSingleton mSkillDataSingleton;
 
@@ -46,10 +50,85 @@ public class SubMenuController : MonoBehaviour {
     string[] ItemContentName = { "アイテム１", "アイテム２" };
     string[] ItemContentDescription = { "アイテム１説明", "アイテム２説明" };
 
+    //UI作成
+    public void MakeUI(){
+        InitializeContents();
+        MakeScrollView();
+        MakeDescription();
+    }
+
+    private void MakeScrollView(){
+        //ローカル変数定義
+        GameObject parentObject = null;
+        GameObject prefab = null;
+
+        //スクロールビューを生成
+        parentObject = GameObject.Find("Canvas");
+        ScrollViewPrefab = Instantiate(
+            (GameObject)Resources.Load("Prefabs/Scroll View"));
+        ScrollViewPrefab.transform.SetParent(parentObject.transform);
+
+        //各項目を生成
+        parentObject = GameObject.Find("Content");
+        GameObject obj = (GameObject)Resources.Load("Prefabs/Node");
+
+        for (int i = 0; i < mContentName.Length; i++)
+        {
+            Transform gText = obj.transform.Find("Text");
+
+            obj.name = "contentNo_" + i + "_";
+
+            //コンテンツの名前
+            gText.GetComponent<Text>().text = mContentName[i];
+
+            prefab = Instantiate(obj);
+            prefab.transform.SetParent(parentObject.transform);
+
+            //最初のコンテンツにフォーカスを合わせる
+            if (i == 0)
+            {
+                prefab.GetComponent<Button>().Select();
+            }
+        }
+    }
+
+    private void MakeDescription()
+    {
+        //ローカル変数定義
+        GameObject parentObject = null;
+
+        //説明文UIを生成
+        parentObject = GameObject.Find("Canvas");
+        DescriptionPrefab = (GameObject)Instantiate(
+            (GameObject)Resources.Load("Prefabs/Panel_Text"));
+
+        DescriptionPrefab.transform.SetParent(parentObject.transform);
+
+    }
+
+    //UI削除
+    public void DestroyUI(){
+        Destroy(ScrollViewPrefab);
+        Destroy(DescriptionPrefab);
+    }  
+
+    //コンテンツを初期化する
+    public void InitializeContents(){
+        mContentName = new string[8];
+        mContentDescription = new string[8];
+        for (int i = 0; i < 8; i++)
+        {
+            mContentName[i] = "----";
+            mContentDescription[i] = "----";
+        }
+    }
+
     //キャラクターから所持スキルの名前、スキルの説明文を取得、設定する
     public void SetContents(MainMenuController.eMainButton pushbutton, int[] index)
     {
+        
         if (MainMenuController.eMainButton.eButton_Skill == pushbutton) {
+
             mContentName = new string[index.Length];
             mContentDescription = new string[index.Length];
 
@@ -58,13 +137,13 @@ public class SubMenuController : MonoBehaviour {
                 mSkillDataSingleton = SkillDataSingleton.Instance;
             }
 
-
             for (int i = 0; i < index.Length; i++)
             {
                 mContentName[i]
                     = mSkillDataSingleton.GetSkillName(index[i]);
                 mContentDescription[i]
                     = mSkillDataSingleton.GetSkillDescription(index[i]);
+                
             }
         }
         else
@@ -83,77 +162,26 @@ public class SubMenuController : MonoBehaviour {
     //サブメニュー（スクロール、説明文）を表示
     public void ShowSubMenu()
     {
-        ShowScrollView();
-        ShowDescription();
+        ScrollViewPrefab.SetActive(true);
+        DescriptionPrefab.SetActive(true);
         SetDescription(mContentDescription[1]);
+
+        GameObject[] Contents = GameObject.FindGameObjectsWithTag("Node");
+        Contents[i].FindChild("Text").
+        /*
+        if(Contents != null && mContentName != null){
+            for(int i=1; i<2; i++){    
+                Contents[i].GetComponent<Text>().text = mContentName[i];
+            }
+        }
+        */
     }
 
     //サブメニュー（スクロール、説明文）を表示
     public void HideSubMenu()
     {
-        HideScrollView();
-        HideDescription();
-    }
-
-    //サブメニュー（スクロール）を表示する
-    private void ShowScrollView()
-    {
-        //ローカル変数定義
-        GameObject parentObject = null;
-        GameObject prefab = null;
-      
-        //スクロールビューを生成
-        parentObject = GameObject.Find("Canvas");
-        prefab = Instantiate(
-            (GameObject)Resources.Load("Prefabs/Scroll View"));
-        prefab.transform.SetParent(parentObject.transform);
-
-        //各項目を生成
-        parentObject = GameObject.Find("Content");
-        GameObject obj = (GameObject)Resources.Load("Prefabs/Node");
-
-        for (int i = 0; i < mContentName.Length; i++)
-        {
-            Transform gText = obj.transform.Find("Text");
-
-            obj.name = "contentNo_" + i + "_";
-
-            //暫定的なコンテンツの名前
-            gText.GetComponent<Text>().text = mContentName[i];
-
-            prefab = Instantiate(obj);
-            prefab.transform.SetParent(parentObject.transform);
-
-            //最初のコンテンツにフォーカスを合わせる
-            if (i == 0)
-            {
-                prefab.GetComponent<Button>().Select();
-            }
-        }
-        
-    }
-
-    //サブメニュー（スクロール）を非表示する
-    private void HideScrollView()
-    {
-        GameObject tergetObject = GameObject.Find("Scroll View(Clone)");
-        Destroy(tergetObject);
-    }
-
-    //コンテンツ説明用のテキストを表示する
-    private void ShowDescription()
-    {
-        //ローカル変数定義
-        GameObject parentObject = null;
-        GameObject prefab = null;
-
-        //スクロールビューを生成
-        parentObject = GameObject.Find("Canvas");
-        prefab = (GameObject)Instantiate(
-            (GameObject)Resources.Load("Prefabs/Panel_Text"));
-
-        prefab.transform.SetParent(parentObject.transform);
-
+        ScrollViewPrefab.SetActive(false);
+        DescriptionPrefab.SetActive(false);
     }
 
     //コンテンツ説明用のテキストを設定する
@@ -168,13 +196,6 @@ public class SubMenuController : MonoBehaviour {
 
         //暫定的なコンテンツの名前
         gText.GetComponent<Text>().text = Descriptions;
-    }
-
-    //コンテンツ説明用のテキストを非表示する
-    private void HideDescription()
-    {
-        GameObject tergetObject = GameObject.Find("Panel_Text(Clone)");
-        Destroy(tergetObject);
     }
 
     //コンテンツ説明用のテキストを変更する

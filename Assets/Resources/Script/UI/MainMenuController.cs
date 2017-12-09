@@ -58,38 +58,9 @@ public class MainMenuController : MonoBehaviour
     //選択フォーカス初期値
     private readonly int iButton_Initialfocus = 0;
 
-    //選択肢フォーカスの初期設定
-    public void InitialSelectButton()
-    {
-        ShowPanel_Button();
- 
-        gButton[iButton_Initialfocus].GetComponent<Button>().Select();
-    }
-
-    //ボタンのフォーカス指定
-    public void SetFocus_Button(eMainButton FocusButton)
-    {
-        gButton[(int)FocusButton].GetComponent<Button>().Select();
-    }
-
-    //ボタンを非表示/表示にする
-    public void ShowHide_Button(bool IsShow)
-    {
-        if(IsShow == true)
-        {
-            ShowPanel_Button();
-        }
-        else
-        {
-            HidePanel_Button();
-        }
-
-    }
-
-    //ボタングループ生成
-    private void ShowPanel_Button()
-    {
-        if (prefab_Panel_Button == null)
+    //UIを作成する関数
+    public void MakeUI(){
+         if (prefab_Panel_Button == null)
         {
             //ローカル変数定義
             GameObject parentObject = null;
@@ -109,11 +80,11 @@ public class MainMenuController : MonoBehaviour
             {
                 gButton[i] = GameObject.Find(sButtonName[i]);
             }
-        }
-    }
+        }       
+    }    
 
-    //ボタングループ消去
-    private void HidePanel_Button()
+    //UIインスタンスを削除する
+    private void DestroyUI()
     {
         Destroy(prefab_Panel_Button);
         prefab_Panel_Button = null;
@@ -123,6 +94,29 @@ public class MainMenuController : MonoBehaviour
             Destroy(gButton[i]);
             gButton[i] = null;
         }
+    }
+
+    //選択肢フォーカスの初期設定
+    public void InitialSelectButton()
+    {
+        ShowHide_Button(true);
+ 
+        gButton[iButton_Initialfocus].GetComponent<Button>().Select();
+    }
+
+    //ボタンのフォーカス指定
+    public void SetFocus_Button(eMainButton FocusButton)
+    {
+        gButton[(int)FocusButton].GetComponent<Button>().Select();
+    }
+
+    //ボタンを非表示/表示にする
+    public void ShowHide_Button(bool IsShow)
+    {
+        if (prefab_Panel_Button != null)
+        {
+            prefab_Panel_Button.SetActive(IsShow);
+        }        
     }
 
     //ボタンを有効/無効にする
