@@ -24,6 +24,9 @@ public class TergetController : MonoBehaviour {
 
     }
 
+    //UIの最大個数
+    private readonly int UIMaxNumber = 8;
+    static GameObject[] UIPrefabs = null;
 
     private TergetController()
     {
@@ -42,6 +45,24 @@ public class TergetController : MonoBehaviour {
 		
 	}
 
+    //UIを作成する関数
+    public void MakeUI(){
+        //格納先を確保
+        UIPrefabs = new GameObject[UIMaxNumber];
+
+        //親を探す
+        GameObject parentObject = GameObject.Find("Canvas");
+
+        for(int i=0; i<UIMaxNumber; i++){
+        //プレハブ指定
+            UIPrefabs[i] = Instantiate(
+                (GameObject)Resources.Load("Prefabs/terget"));
+            
+            UIPrefabs[i].transform.SetParent(parentObject.transform, false);
+            UIPrefabs[i].SetActive(false);
+        }
+    }
+
     //ターゲットを表示/非表示にする
     public void ShowHide_Terget(eTergetScope Scope)
     {
@@ -56,47 +77,52 @@ public class TergetController : MonoBehaviour {
         switch (Scope)
         {
             case eTergetScope.forOne:
-                obj = MakePrefab(enemyPositions[0]);
-                obj.GetComponent<TergetComponent>().SetTergetPositions(Scope,enemyPositions);
-
-                break;
-            case eTergetScope.forAll:
-                foreach (Vector3 position in enemyPositions)
-                {
-                    MakePrefab(position);
+                UIPrefabs[0].SetActive(true);
+                UIPrefabs[0].transform.position = enemyPositions[0];
+                if(UIPrefabs[0].GetComponent<TergetComponent>() == null){
+                    UIPrefabs[0].AddComponent<TergetComponent>().SetTergetPositions(Scope,enemyPositions);
                 }
                 break;
-            case eTergetScope.forFriend:
-                obj = MakePrefab(friendPositions[0]);
-                obj.GetComponent<TergetComponent>().SetTergetPositions(Scope,friendPositions);
 
-                break;
-            case eTergetScope.forFriendAll:
-                foreach (Vector3 position in friendPositions)
+            case eTergetScope.forAll:
+                for(int i = 0; i<enemyPositions.Length; i++)
                 {
-                    MakePrefab(position);
+                    UIPrefabs[i].SetActive(true);
+                    UIPrefabs[i].transform.position = enemyPositions[i];
+                }
+                break;
+               
+            case eTergetScope.forFriend:
+                UIPrefabs[0].SetActive(true);
+                UIPrefabs[0].transform.position = friendPositions[0];
+                if(UIPrefabs[0].GetComponent<TergetComponent>() == null){
+                    UIPrefabs[0].AddComponent<TergetComponent>().SetTergetPositions(Scope,friendPositions);
+                }                
+                break;
+
+            case eTergetScope.forFriendAll:
+                for(int i=0; i<friendPositions.Length; i++)
+                {
+                    UIPrefabs[i].SetActive(true);
+                    UIPrefabs[i].transform.position = friendPositions[i];
                 }
                 break;
 
             default:
-                DestroyPrefab();
+                //選択UIを削除する
+                if(UIPrefabs[0].GetComponent<TergetComponent>() != null){
+                    Destroy(UIPrefabs[0].GetComponent<TergetComponent>());
+                }
+                HideUIAll();
                 break;
         }
     }
 
-    //ターゲット表示
-    private GameObject MakePrefab(Vector3 position)
-    {
-        GameObject parentObject = GameObject.Find("Canvas");
-
-        //プレハブ指定
-        GameObject prefab = Instantiate(
-            (GameObject)Resources.Load("Prefabs/terget"));
-        
-        prefab.transform.SetParent(parentObject.transform, false);
-        prefab.transform.position = position;
-
-        return prefab;
+    private void HideUIAll(){
+        GameObject[] prefabs = GameObject.FindGameObjectsWithTag("Terget");
+        foreach (GameObject prefab in prefabs) {
+            prefab.SetActive(false);
+        }        
     }
 
     //ターゲット非表示
@@ -107,6 +133,11 @@ public class TergetController : MonoBehaviour {
             Destroy(prefab);
         }
 
+    }
+
+    //位置設定
+    public void SetPosition(Vector3 position){
+        UIPrefabs[0].transform.position = position;
     }
 
     public Vector3[] GetPosition(string TagName)

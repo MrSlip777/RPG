@@ -6,8 +6,6 @@ public class TergetComponent : MonoBehaviour
 { 
     BattleSelectState mInstance = BattleSelectState.Instance;
 
-
-
     //ターゲット対象
     static Vector3[] Positions = null;
     static int positionNum = 0;
@@ -68,6 +66,7 @@ public class TergetComponent : MonoBehaviour
 
     public void SetTergetPositions(eTergetScope scope,Vector3[] positions)
     {
+        positionNum = 0;//初期化も同時に実施する
         mTergetScope = scope;
         Positions = positions;
     }

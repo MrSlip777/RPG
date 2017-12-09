@@ -110,6 +110,7 @@ public class BattleSelectState : MonoBehaviour {
 
         //UI表示
         mCharacterStatusController.ShowCharacterStatus();
+        mTergetController.MakeUI();
 
         TurnStart();
         
