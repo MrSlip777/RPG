@@ -167,7 +167,7 @@ public class SubMenuController : MonoBehaviour {
         SetDescription(mContentDescription[1]);
 
         GameObject[] Contents = GameObject.FindGameObjectsWithTag("Node");
-        Contents[i].FindChild("Text").
+        //Contents[i].FindChild("Text"). //Slip 2017/12/29 途中だけど一旦マスク
         /*
         if(Contents != null && mContentName != null){
             for(int i=1; i<2; i++){    

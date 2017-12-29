@@ -35,7 +35,6 @@ public class BattleStateManager : MonoBehaviour
 
     }
 
-
     //インスタンス定義
     BattleSelectState mState = null;
 
@@ -44,9 +43,6 @@ public class BattleStateManager : MonoBehaviour
 
     //戦闘画面の状態データ
     BattleStateDataSinglton mBattleStateDataSinglton = null; 
-
-    EnemyGraphicController mEnemyGraphicController
-        = new EnemyGraphicController();
 
     // Use this for initialization
     void Start () {
@@ -58,7 +54,7 @@ public class BattleStateManager : MonoBehaviour
 
         mBattleStateDataSinglton.BattleStateMode
             = BattleStateDataSinglton.eBattleState.eBattleState_Select;
-        mEnemyGraphicController.ShowEnemy();
+
         mState._Start();
         
     }

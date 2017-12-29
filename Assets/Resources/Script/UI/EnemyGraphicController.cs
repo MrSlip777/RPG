@@ -12,9 +12,9 @@ public class EnemyGraphicController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+		ShowEnemy();
 
-
-    }
+	}
 	
 	// Update is called once per frame
 	void Update () {
