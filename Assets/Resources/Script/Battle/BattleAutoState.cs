@@ -50,11 +50,6 @@ public class BattleAutoState : MonoBehaviour {
         mAutoStatus = eAutoStatus.eAutoStatus_Start;
     }
 
-    //各インスタンス定義
-        //キャラクターステータス表示ウインドウ
-    CharacterStatusController mCharacterStatusController
-        = CharacterStatusController.Instance;
-
     //戦闘画面状態データ
     BattleStateDataSinglton mBattleStateDataSinglton = BattleStateDataSinglton.Instance;
 
@@ -76,6 +71,7 @@ public class BattleAutoState : MonoBehaviour {
 
         //一時的なゲームオブジェクト
         GameObject temp = null;
+        GameObject parentObject = null;
 
         switch (mAutoStatus)
         {
@@ -86,12 +82,14 @@ public class BattleAutoState : MonoBehaviour {
                 //行動者オブジェクト取得
                 ActorObject actor = mBattleStateDataSinglton.ActorObject;
 
+                parentObject = GameObject.Find("Panel_CharacterStatus");
+                CharacterStatusController mCharacterStatusController 
+                = parentObject.GetComponent<CharacterStatusController>();
+
                 //行動対象キャラクターにフォーカス移動
                 mCharacterStatusController.SetFocus_Character(actor.actorNum);
 
-                
                 //ローカル変数定義
-                GameObject parentObject = null;
                 parentObject = GameObject.Find("Canvas");
 
                 //技名

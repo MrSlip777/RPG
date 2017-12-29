@@ -6,26 +6,6 @@ using UnityEngine.UI;
 
 public class CharacterStatusController : MonoBehaviour
 {
-    //シングルトン実装
-    private static CharacterStatusController mInstance;
-
-
-    // 唯一のインスタンスを取得します。
-    public static CharacterStatusController Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new CharacterStatusController();
-            }
-
-            return mInstance;
-        }
-
-    }
-
     private CharacterStatusController()
     {
 
@@ -46,7 +26,6 @@ public class CharacterStatusController : MonoBehaviour
     private float f_maxColor = 255;
     private float[] f_focusColor = {125,233,255};
     private float[] f_DefaultColor = { 255, 255, 255 };
-
 
     public void MakeUI()
     {

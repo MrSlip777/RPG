@@ -5,25 +5,6 @@ using UnityEngine.UI;   //imageで必要
 
 public class TergetController : MonoBehaviour {
 
-    //シングルトン実装
-    private static TergetController mInstance;
-
-    // 唯一のインスタンスを取得します。
-    public static TergetController Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new TergetController();
-            }
-
-            return mInstance;
-        }
-
-    }
-
     //UIの最大個数
     private readonly int UIMaxNumber = 8;
     static GameObject[] UIPrefabs = null;
@@ -32,9 +13,6 @@ public class TergetController : MonoBehaviour {
     {
 
     }
-
-    //インスタンス定義
-    CharacterStatusController mCharacterStatusController = CharacterStatusController.Instance;
 
     // Use this for initialization
     void Start () {
@@ -68,7 +46,6 @@ public class TergetController : MonoBehaviour {
     {
         Vector3[] friendPositions = GetPosition("CharacterStatus");
         Vector3[] enemyPositions = GetPosition("EnemyGraphic");
-        GameObject obj = null;
 
         //敵グラのみ座標変換
         enemyPositions = TransformPosition(enemyPositions);

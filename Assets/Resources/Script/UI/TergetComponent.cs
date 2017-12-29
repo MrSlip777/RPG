@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class TergetComponent : MonoBehaviour
 { 
-    BattleSelectState mInstance = BattleSelectState.Instance;
-
     //ターゲット対象
     static Vector3[] Positions = null;
     static int positionNum = 0;
@@ -25,6 +23,10 @@ public class TergetComponent : MonoBehaviour
             || Input.GetMouseButton(0) == true))
         {
             //ターゲット表示の位置を渡す（単体用でエフェクト表示に使用する）
+            GameObject parentObj = GameObject.Find("Canvas");
+            BattleSelectState mInstance
+            = parentObj.GetComponent<BattleSelectState>();
+            
             mInstance.Implement_DecideAct(positionNum,Positions);
         }
 

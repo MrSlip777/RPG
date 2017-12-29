@@ -12,30 +12,6 @@ using UnityEngine.EventSystems;
 
 public class BattleSelectState : MonoBehaviour {
 
-    //シングルトン実装
-    private static BattleSelectState mInstance;
-
-    // 唯一のインスタンスを取得します。
-    public static BattleSelectState Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new BattleSelectState();
-            }
-
-            return mInstance;
-        }
-
-    }
-
-    private BattleSelectState()
-    {
- 
-    }
-
     //UIの状態
     private enum eUIStatus
     {
@@ -51,11 +27,9 @@ public class BattleSelectState : MonoBehaviour {
 
     //各種インスタンス定義
     //UI関係
-    MainMenuController mMainMenuController = MainMenuController.Instance;
-    SubMenuController mSubMenuController = SubMenuController.Instance;
-
-    //ターゲット表示
-    TergetController mTergetController = TergetController.Instance;
+    MainMenuController mMainMenuController = null;
+    SubMenuController mSubMenuController = null;
+    TergetController mTergetController = null;
 
     //戦闘状態データ
     static BattleStateDataSinglton mBattleStateDataSingleton;
@@ -99,8 +73,14 @@ public class BattleSelectState : MonoBehaviour {
     {
         //インスタンス取得
         mCharacterDataSingleton = CharacterDataSingleton.Instance;
-        mCharacterStatusController = CharacterStatusController.Instance;
         mEnemiesDataSingleton = EnemiesDataSingleton.Instance;
+        mMainMenuController = gameObject.GetComponent<MainMenuController>();
+        mSubMenuController = gameObject.GetComponent<SubMenuController>();
+        mTergetController = gameObject.GetComponent<TergetController>();
+
+        GameObject parentObject = GameObject.Find("Panel_CharacterStatus");
+        mCharacterStatusController 
+        = parentObject.GetComponent<CharacterStatusController>();
 
         //戦闘状態データ
         mBattleStateDataSingleton = BattleStateDataSinglton.Instance;

@@ -3,10 +3,12 @@ using System.Collections;
 
 public class SampleButtonController : BaseButtonController
 {
-    BattleSelectState mInstance = BattleSelectState.Instance;
-
     protected override void OnClick(string objectName)
     {
+        GameObject parentObj = GameObject.Find("Canvas");
+        BattleSelectState mInstance
+         = parentObj.GetComponent<BattleSelectState>();
+
         // 渡されたオブジェクト名で処理を分岐
         if (mInstance.getButtonName
             (MainMenuController.eMainButton.eButton_Attack).Equals(objectName))

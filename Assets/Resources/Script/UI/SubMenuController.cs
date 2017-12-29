@@ -9,30 +9,6 @@ using UnityEngine.UI;
 
 public class SubMenuController : MonoBehaviour {
 
-    //シングルトン実装
-    private static SubMenuController mInstance;
-
-    // 唯一のインスタンスを取得します。
-    public static SubMenuController Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new SubMenuController();
-            }
-
-            return mInstance;
-        }
-
-    }
-
-    private SubMenuController()
-    {
-
-    }
-
     //UIインスタンス
     static private GameObject ScrollViewPrefab = null;
     static private GameObject DescriptionPrefab = null;

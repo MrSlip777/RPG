@@ -48,7 +48,11 @@ public class BattleStateManager : MonoBehaviour
     void Start () {
 
         //インスタンス取得
-        mState = BattleSelectState.Instance;
+        //mState = BattleSelectState.Instance;
+
+        //
+        mState = gameObject.GetComponent<BattleSelectState>();
+
         mState1 = BattleAutoState.Instance;
         mBattleStateDataSinglton = BattleStateDataSinglton.Instance;
 
