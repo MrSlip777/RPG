@@ -38,32 +38,13 @@ public class dropItemsObject
 
 public class EnemiesDataSingleton : MonoBehaviour {
 
-    private static EnemiesDataSingleton mInstance;
-
     //オブジェクト定義
     private EnemiesObject[] mEnemiesObject;
 
     //敵の数
     private static int mEnemiesNum = 1;
 
-    // 唯一のインスタンスを取得します。
-    public static EnemiesDataSingleton Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new EnemiesDataSingleton();
-            }
-
-            return mInstance;
-        }
-
-    }
-
-    //シングルトン実装
-    private EnemiesDataSingleton()
+    void Start()
     {
         FileRead();
 

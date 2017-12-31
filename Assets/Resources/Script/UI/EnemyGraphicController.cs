@@ -6,12 +6,19 @@ public class EnemyGraphicController : MonoBehaviour {
 
     static private GameObject[] prefab_Enemy = null;
 
-    static public EnemiesDataSingleton mEnemiesDataSingleton;
-    static public TroopsDataSingleton mTroopsDataSingleton;
-
+    public EnemiesDataSingleton mEnemiesDataSingleton;
+    public TroopsDataSingleton mTroopsDataSingleton;
 
     // Use this for initialization
     void Start () {
+        //ローカル変数定義
+        GameObject parentObject = null;
+
+        parentObject = GameObject.Find("DataSingleton");       
+
+        mEnemiesDataSingleton = parentObject.GetComponent<EnemiesDataSingleton>();
+        mTroopsDataSingleton = parentObject.GetComponent<TroopsDataSingleton>();
+
 		ShowEnemy();
 
 	}
@@ -24,11 +31,6 @@ public class EnemyGraphicController : MonoBehaviour {
     //敵グラ生成
     public void ShowEnemy()
     {
-        mEnemiesDataSingleton = EnemiesDataSingleton.Instance;
-        mTroopsDataSingleton = TroopsDataSingleton.Instance;
-
-        //バトラーの画像を読み込んで表示する
-
         //ローカル変数定義
         GameObject parentObject = null;
 

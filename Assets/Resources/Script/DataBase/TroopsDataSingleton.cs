@@ -53,32 +53,10 @@ public class listObject
 
 public class TroopsDataSingleton : MonoBehaviour
 {
-
-    //インスタンス定義
-    private static TroopsDataSingleton mInstance;
-
     //オブジェクト定義
     private TroopsObject[] mTroopsObject;
 
-    // 唯一のインスタンスを取得します。
-    public static TroopsDataSingleton Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new TroopsDataSingleton();
-            }
-
-            return mInstance;
-        }
-
-    }
-
-    //シングルトン実装
-    private TroopsDataSingleton()
-    {
+    void Start(){
         FileRead();
     }
 

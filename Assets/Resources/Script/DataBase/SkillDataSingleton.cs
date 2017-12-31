@@ -48,37 +48,12 @@ public class effectsObject
 
 public class SkillDataSingleton : MonoBehaviour {
 
-    //インスタンス定義
-    private static SkillDataSingleton mInstance;
-
     //オブジェクト定義
     private SkillsObject[] mSkillsObject;
 
-    // 唯一のインスタンスを取得します。
-    public static SkillDataSingleton Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new SkillDataSingleton();
-            }
-
-            return mInstance;
-        }
-
-    }
-
-    //シングルトン実装
-    private SkillDataSingleton()
-    {
-        FileRead_SkillData();
-    }
-
     // Use this for initialization
     void Start () {
-		
+		FileRead_SkillData();
 	}
 	
 	// Update is called once per frame

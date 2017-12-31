@@ -53,8 +53,11 @@ public class BattleStateManager : MonoBehaviour
         //
         mState = gameObject.GetComponent<BattleSelectState>();
 
-        mState1 = BattleAutoState.Instance;
-        mBattleStateDataSinglton = BattleStateDataSinglton.Instance;
+        mState1 = gameObject.GetComponent<BattleAutoState>();
+
+        GameObject parentObject = GameObject.Find("DataSingleton");
+        mBattleStateDataSinglton 
+        = parentObject.GetComponent<BattleStateDataSinglton>();
 
         mBattleStateDataSinglton.BattleStateMode
             = BattleStateDataSinglton.eBattleState.eBattleState_Select;

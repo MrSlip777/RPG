@@ -110,7 +110,9 @@ public class SubMenuController : MonoBehaviour {
 
             if (mSkillDataSingleton == null)
             {
-                mSkillDataSingleton = SkillDataSingleton.Instance;
+                GameObject parentObject = GameObject.Find("DataSingleton");
+                mSkillDataSingleton 
+                = parentObject.GetComponent<SkillDataSingleton>();
             }
 
             for (int i = 0; i < index.Length; i++)

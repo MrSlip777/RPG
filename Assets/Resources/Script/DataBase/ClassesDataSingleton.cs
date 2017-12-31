@@ -33,30 +33,10 @@ public class learningsObject
 
 public class ClassesDataSingleton : MonoBehaviour {
 
-    //インスタンス定義
-    private static ClassesDataSingleton mInstance;
-
     //オブジェクト定義
     private ClassesObject[] mClassesObject;
 
-    // 唯一のインスタンスを取得します。
-    public static ClassesDataSingleton Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new ClassesDataSingleton();
-            }
-
-            return mInstance;
-        }
-
-    }
-
-    //シングルトン実装
-    private ClassesDataSingleton()
+    void Start()
     {
         FileRead_ClassesData();
     }

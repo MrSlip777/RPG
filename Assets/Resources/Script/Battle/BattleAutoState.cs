@@ -13,26 +13,6 @@ using UnityEngine.UI;
 
 public class BattleAutoState : MonoBehaviour {
 
-    //シングルトン実装
-    private static BattleAutoState mInstance;
-
-
-    // 唯一のインスタンスを取得します。
-    public static BattleAutoState Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new BattleAutoState();
-            }
-
-            return mInstance;
-        }
-
-    }
-
     //自動行動の状態
     public enum eAutoStatus
     {
@@ -45,16 +25,19 @@ public class BattleAutoState : MonoBehaviour {
     //自動行動の状態
     private static eAutoStatus mAutoStatus;
 
-    private BattleAutoState()
-    {
-        mAutoStatus = eAutoStatus.eAutoStatus_Start;
-    }
-
     //戦闘画面状態データ
-    BattleStateDataSinglton mBattleStateDataSinglton = BattleStateDataSinglton.Instance;
-
+    BattleStateDataSinglton mBattleStateDataSinglton = null;
     //スキルデータ
-    SkillDataSingleton mSkillDataSingleton = SkillDataSingleton.Instance;
+    SkillDataSingleton mSkillDataSingleton = null;
+
+    void Start(){
+        mAutoStatus = eAutoStatus.eAutoStatus_Start;
+        GameObject parentObj = GameObject.Find("DataSingleton");
+        mBattleStateDataSinglton 
+        = parentObj.GetComponent<BattleStateDataSinglton>();
+        mSkillDataSingleton 
+        = parentObj.GetComponent<SkillDataSingleton>();
+    }
 
     //ターン開始時の初期化
     public void TurnStart()

@@ -42,34 +42,8 @@ public class ActorObject
 
 }
 
-public class BattleStateDataSinglton
+public class BattleStateDataSinglton: MonoBehaviour
 {
-
-    //シングルトン実装
-    private static BattleStateDataSinglton mInstance;
-
-
-    // 唯一のインスタンスを取得します。
-    public static BattleStateDataSinglton Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new BattleStateDataSinglton();
-            }
-
-            return mInstance;
-        }
-
-    }
-
-    private BattleStateDataSinglton()
-    {
-
-    }
-
     //戦闘画面の状態
     public enum eBattleState
     {

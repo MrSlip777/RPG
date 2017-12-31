@@ -1,13 +1,13 @@
 /*
-*•ûjFƒcƒN[ƒ‹MV‚Ìjsonƒtƒ@ƒCƒ‹Œ`®‚ÆŒİŠ·«‚ª‚ ‚é‚æ‚¤‚Éì¬‚·‚é
+*ï¿½ï¿½ï¿½jï¿½Fï¿½cï¿½Nï¿½[ï¿½ï¿½MVï¿½ï¿½jsonï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½`ï¿½ï¿½ï¿½ÆŒİŠï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ‚¤ï¿½Éì¬ï¿½ï¿½ï¿½ï¿½
 */
 
 using System.IO;
 using UnityEngine;
 
 /*
-*Actor.json‚É‡‚í‚¹‚é
-*ƒcƒN[ƒ‹MV ver1.3.4Šî€
+*Actor.jsonï¿½Éï¿½ï¿½í‚¹ï¿½ï¿½
+*ï¿½cï¿½Nï¿½[ï¿½ï¿½MV ver1.3.4ï¿½î€
 */
 
 public class CharacterObject{
@@ -42,45 +42,26 @@ public class BattleCharacterObject
 
 public class CharacterDataSingleton:MonoBehaviour{
 
-    //ƒCƒ“ƒXƒ^ƒ“ƒX’è‹`
-    private static CharacterDataSingleton mInstance;
-
     private CharacterObject[] mCharacterObject;
     private BattleCharacterObject[] mBattleCharacterObject;
 
-    //ƒCƒ“ƒXƒ^ƒ“ƒX’è‹`
+    //ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½`
     ClassesDataSingleton mClassesDataSingleton;
     SkillDataSingleton mSkillDataSingleton;
 
-    //s“®ƒLƒƒƒ‰
+    //ï¿½sï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½
     private static int mSelectingCharacterNum = 1;
 
-    // —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚µ‚Ü‚·B
-    public static CharacterDataSingleton Instance
-    {
-
-        get
-        {
-            if (mInstance == null)
-            {
-                mInstance = new CharacterDataSingleton();
-            }
-
-            return mInstance;
-        }
-
-    }
-
-    //ƒVƒ“ƒOƒ‹ƒgƒ“À‘•
-    private CharacterDataSingleton()
+    void Start()
     {
         FileRead_CharacterData();
-        //ƒCƒ“ƒXƒ^ƒ“ƒXæ“¾
-        mClassesDataSingleton = ClassesDataSingleton.Instance;
-        mSkillDataSingleton = SkillDataSingleton.Instance;
+        mClassesDataSingleton 
+        = gameObject.GetComponent<ClassesDataSingleton>();
+        mSkillDataSingleton
+        = gameObject.GetComponent<SkillDataSingleton>();
     }
 
-    //jsonƒf[ƒ^“Ç‚İ‚İ
+    //jsonï¿½fï¿½[ï¿½^ï¿½Ç‚İï¿½ï¿½ï¿½
     private void FileRead_CharacterData() {
 
         string fileName = "Actors";
@@ -90,7 +71,7 @@ public class CharacterDataSingleton:MonoBehaviour{
        mCharacterObject = LitJson.JsonMapper.ToObject<CharacterObject[]>(jsonText);
     }
 
-    //ƒIƒuƒWƒFƒNƒg‚ÉŠeíƒf[ƒ^‚ğİ’è‚·‚é
+    //ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ÉŠeï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½İ’è‚·ï¿½ï¿½
     public void SetBattleCharacterObject()
     {
         learningsObject[] lerningsObjects = null;
@@ -100,7 +81,7 @@ public class CharacterDataSingleton:MonoBehaviour{
         for (int j=0; j< mCharacterObject.Length; j++) {
             mBattleCharacterObject[j] = new BattleCharacterObject();
 
-            //”\—Íİ’è
+            //ï¿½\ï¿½Íİ’ï¿½
             mBattleCharacterObject[j].Atk = 10;
             mBattleCharacterObject[j].Def = 11;
             mBattleCharacterObject[j].Speed = j+3;
@@ -113,7 +94,7 @@ public class CharacterDataSingleton:MonoBehaviour{
                 = new int[lerningsObjects.Length];
 
             int i = 0;
-            //ƒXƒLƒ‹İ’è
+            //ï¿½Xï¿½Lï¿½ï¿½ï¿½İ’ï¿½
             foreach (learningsObject learningObject in lerningsObjects) {
                 mBattleCharacterObject[j].skillIndex[i]
                     = learningObject.skillId;
@@ -122,7 +103,7 @@ public class CharacterDataSingleton:MonoBehaviour{
         }
     }
 
-    //ƒLƒƒƒ‰ƒNƒ^[‚ÌŠƒXƒLƒ‹‚ğ“n‚·
+    //ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½[ï¿½Ìï¿½ï¿½ï¿½ï¿½Xï¿½Lï¿½ï¿½ï¿½ï¿½nï¿½ï¿½
     public int[] GetSkillIndex(int characterId)
     {
         int[] result = null;
@@ -134,51 +115,51 @@ public class CharacterDataSingleton:MonoBehaviour{
         return result;
     }
 
-    //g—pƒXƒLƒ‹‚Ì‘ÎÛ‚ğ“n‚·
+    //ï¿½gï¿½pï¿½Xï¿½Lï¿½ï¿½ï¿½Ì‘ÎÛ‚ï¿½nï¿½ï¿½
     public eTergetScope GetSkillScope(int skillId)
     {   
         return (eTergetScope)mSkillDataSingleton.GetSkillScope(skillId);
     }
 
-    //s“®‘I‘ğ‰æ–Ê‚Ì‘I‘ğó‘Ô‚Ìæ“¾
+    //ï¿½sï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½Ê‚Ì‘Iï¿½ï¿½ï¿½Ô‚Ìæ“¾
     public int GetSelectingCharacter()
     {
         return mSelectingCharacterNum;
     }
 
-    //Ÿ‚Ì‘I‘ğó‘ÔƒLƒƒƒ‰•ÏX
+    //ï¿½ï¿½ï¿½Ì‘Iï¿½ï¿½ï¿½ÔƒLï¿½ï¿½ï¿½ï¿½ï¿½ÏX
     public int NextSelectingCharacter()
     {
-        //©ƒLƒƒƒ‰‚ÌHP”»’èŒã‚ÉƒCƒ“ƒNƒŠƒƒ“ƒg‚·‚é‚©‚ğ”»’f‚·‚é
-        //À‘•’†@Slip
+        //ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½HPï¿½ï¿½ï¿½ï¿½ï¿½ÉƒCï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½é‚©ï¿½ğ”»’fï¿½ï¿½ï¿½ï¿½
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½@Slip
         mSelectingCharacterNum++;
 
         return mSelectingCharacterNum;
     }
 
-    //‘O‚Ì‘I‘ğó‘ÔƒLƒƒƒ‰•ÏX
+    //ï¿½Oï¿½Ì‘Iï¿½ï¿½ï¿½ÔƒLï¿½ï¿½ï¿½ï¿½ï¿½ÏX
     public int BeforeSelectingCharacter()
     {
-        //©ƒLƒƒƒ‰‚ÌHP”»’èŒã‚ÉƒfƒNƒŠƒƒ“ƒg‚·‚é‚©‚ğ”»’f‚·‚é
-        //À‘•’†@Slip
+        //ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½HPï¿½ï¿½ï¿½ï¿½ï¿½Éƒfï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½é‚©ï¿½ğ”»’fï¿½ï¿½ï¿½ï¿½
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½@Slip
         mSelectingCharacterNum--;
 
         return mSelectingCharacterNum;
     }
 
-    //s“®‘I‘ğÒ‚Ì‰Šú‰»
+    //ï¿½sï¿½ï¿½ï¿½Iï¿½ï¿½Ò‚Ìï¿½ï¿½ï¿½ï¿½ï¿½
     public int TurnStartCharacter()
     {
-        //©ƒLƒƒƒ‰‚ÌHP”»’èŒã‚É’l‚ğ“K‹X•ÏX‚·‚é
-        //À‘•’†@Slip
+        //ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½HPï¿½ï¿½ï¿½ï¿½ï¿½É’lï¿½ï¿½Kï¿½Xï¿½ÏXï¿½ï¿½ï¿½ï¿½
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½@Slip
         mSelectingCharacterNum = 1;
 
         return mSelectingCharacterNum;
     }
 
-    //s“®Ò‚Ìƒ^[ƒQƒbƒgó‘Ô
+    //ï¿½sï¿½ï¿½ï¿½Ò‚Ìƒ^ï¿½[ï¿½Qï¿½bï¿½gï¿½ï¿½ï¿½
 
-    //‘f‘‚³æ“¾
+    //ï¿½fï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
     public int CharaSpeed(int characterNum)
     {
         return mBattleCharacterObject[characterNum].Speed;

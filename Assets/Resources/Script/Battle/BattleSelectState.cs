@@ -71,19 +71,22 @@ public class BattleSelectState : MonoBehaviour {
     // Use this for initialization
     public void _Start()
     {
+        //ローカル変数定義
+        GameObject parentObject = null;
+
         //インスタンス取得
-        mCharacterDataSingleton = CharacterDataSingleton.Instance;
-        mEnemiesDataSingleton = EnemiesDataSingleton.Instance;
         mMainMenuController = gameObject.GetComponent<MainMenuController>();
         mSubMenuController = gameObject.GetComponent<SubMenuController>();
         mTergetController = gameObject.GetComponent<TergetController>();
 
-        GameObject parentObject = GameObject.Find("Panel_CharacterStatus");
+        parentObject = GameObject.Find("DataSingleton");
+        mCharacterDataSingleton = parentObject.GetComponent<CharacterDataSingleton>();
+        mEnemiesDataSingleton = parentObject.GetComponent<EnemiesDataSingleton>();
+        mBattleStateDataSingleton = parentObject.GetComponent<BattleStateDataSinglton>();
+
+        parentObject = GameObject.Find("Panel_CharacterStatus");
         mCharacterStatusController 
         = parentObject.GetComponent<CharacterStatusController>();
-
-        //戦闘状態データ
-        mBattleStateDataSingleton = BattleStateDataSinglton.Instance;
 
         //データ初期化
         mCharacterDataSingleton.SetBattleCharacterObject();
