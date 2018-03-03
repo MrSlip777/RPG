@@ -52,7 +52,7 @@ public class CharacterDataSingleton:MonoBehaviour{
     //�s���L����
     private static int mSelectingCharacterNum = 1;
 
-    void Start()
+    void Awake()
     {
         FileRead_CharacterData();
         mClassesDataSingleton 

@@ -1,0 +1,270 @@
+fileFormatVersion: 2
+guid: 4e3261bb99928d540a7cbef01bee7aa7
+timeCreated: 1515043879
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: pipo-btleffect001_0
+    21300002: pipo-btleffect001_1
+    21300004: pipo-btleffect001_2
+    21300006: pipo-btleffect001_3
+    21300008: pipo-btleffect001_4
+  externalObjects: {}
+  serializedVersion: 4
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: -1
+    aniso: -1
+    mipBias: -1
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: pipo-btleffect001_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: pipo-btleffect001_1
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: pipo-btleffect001_2
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: pipo-btleffect001_3
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 0
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: pipo-btleffect001_4
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    outline:
+    - - {x: 16, y: 50}
+      - {x: -42, y: -8}
+      - {x: -42, y: -57}
+      - {x: -25, y: -57}
+      - {x: 37, y: 34}
+      - {x: 37, y: 50}
+    - - {x: 145, y: 49}
+      - {x: 79, y: -13}
+      - {x: 79, y: -56}
+      - {x: 94, y: -56}
+      - {x: 156, y: 42}
+      - {x: 156, y: 49}
+    - - {x: 270, y: 47}
+      - {x: 257, y: 37}
+      - {x: 199, y: -11}
+      - {x: 199, y: -56}
+      - {x: 221, y: -56}
+      - {x: 274, y: 31}
+      - {x: 274, y: 47}
+    - - {x: 225, y: -29}
+      - {x: 226, y: -32}
+      - {x: 229, y: -32}
+      - {x: 231, y: -30}
+      - {x: 230, y: -27}
+      - {x: 227, y: -27}
+    - - {x: 225, y: -20}
+      - {x: 227, y: -22}
+      - {x: 230, y: -21}
+      - {x: 230, y: -18}
+      - {x: 228, y: -16}
+      - {x: 225, y: -17}
+    - - {x: -83, y: 49}
+      - {x: -109, y: 49}
+      - {x: -132, y: 16}
+      - {x: -144, y: -13}
+      - {x: -144, y: -20}
+      - {x: -136, y: -20}
+      - {x: -117, y: -4}
+      - {x: -89, y: 30}
+      - {x: -83, y: 44}
+    - - {x: 201, y: -11}
+      - {x: 198, y: -11}
+      - {x: 197, y: -13}
+      - {x: 197, y: -17}
+      - {x: 199, y: -18}
+      - {x: 202, y: -18}
+      - {x: 203, y: -16}
+      - {x: 203, y: -12}
+    - - {x: 235, y: -18}
+      - {x: 238, y: -17}
+      - {x: 238, y: -14}
+      - {x: 235, y: -13}
+      - {x: 233, y: -15}
+    - - {x: 99, y: 0}
+      - {x: 105, y: 0}
+      - {x: 105, y: 3}
+      - {x: 103, y: 6}
+      - {x: 101, y: 6}
+      - {x: 99, y: 5}
+    - - {x: 242, y: 4}
+      - {x: 243, y: 1}
+      - {x: 246, y: 1}
+      - {x: 248, y: 3}
+      - {x: 247, y: 6}
+      - {x: 244, y: 6}
+    - - {x: 220, y: 12}
+      - {x: 217, y: 9}
+      - {x: 217, y: 8}
+      - {x: 219, y: 6}
+      - {x: 221, y: 6}
+      - {x: 223, y: 8}
+      - {x: 223, y: 10}
+      - {x: 221, y: 12}
+    - - {x: 105, y: 13}
+      - {x: 106, y: 10}
+      - {x: 109, y: 10}
+      - {x: 111, y: 12}
+      - {x: 110, y: 15}
+      - {x: 107, y: 15}
+    - - {x: -209, y: 49}
+      - {x: -227, y: 40}
+      - {x: -237, y: 25}
+      - {x: -241, y: 16}
+      - {x: -241, y: 11}
+      - {x: -236, y: 11}
+      - {x: -214, y: 29}
+      - {x: -203, y: 45}
+      - {x: -203, y: 49}
+    - - {x: 113, y: 26}
+      - {x: 112, y: 23}
+      - {x: 112, y: 22}
+      - {x: 114, y: 17}
+      - {x: 117, y: 17}
+      - {x: 119, y: 18}
+      - {x: 119, y: 22}
+      - {x: 117, y: 26}
+    - - {x: 125, y: 34}
+      - {x: 126, y: 31}
+      - {x: 129, y: 31}
+      - {x: 131, y: 33}
+      - {x: 130, y: 36}
+      - {x: 127, y: 36}
+    - - {x: 21, y: 57}
+      - {x: 19, y: 55}
+      - {x: 19, y: 53}
+      - {x: 21, y: 51}
+      - {x: 23, y: 51}
+      - {x: 25, y: 53}
+      - {x: 25, y: 55}
+      - {x: 23, y: 57}
+    physicsShape: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

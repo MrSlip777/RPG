@@ -36,7 +36,7 @@ public class ClassesDataSingleton : MonoBehaviour {
     //オブジェクト定義
     private ClassesObject[] mClassesObject;
 
-    void Start()
+    void Awake()
     {
         FileRead_ClassesData();
     }
