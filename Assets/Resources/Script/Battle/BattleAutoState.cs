@@ -92,8 +92,7 @@ public class BattleAutoState : MonoBehaviour {
                     = mSkillDataSingleton.GetSkillName(actor.skillID);
 
                 //エフェクト表示
-                mEffectManager.MakePrefab("FT_Infinity_lite/_Prefabs/Buff/Discharge_Lightning");
-                mEffectManager.SetPosition(actor.tergetPos[actor.tergetNum]);
+                mEffectManager.SetEffect(actor.tergetPos[actor.tergetNum]);
 
                 //ダメージを表示させる
                 GameObject prefab_Damage = null;
