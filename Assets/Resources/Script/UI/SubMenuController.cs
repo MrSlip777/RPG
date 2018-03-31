@@ -145,14 +145,18 @@ public class SubMenuController : MonoBehaviour {
         SetDescription(mContentDescription[1]);
 
         GameObject[] Contents = GameObject.FindGameObjectsWithTag("Node");
-        //Contents[i].FindChild("Text"). //Slip 2017/12/29 途中だけど一旦マスク
-        /*
+      
         if(Contents != null && mContentName != null){
-            for(int i=1; i<2; i++){    
-                Contents[i].GetComponent<Text>().text = mContentName[i];
+            for(int i=0; i<Contents.Length; i++){
+                if(i<mContentName.Length){
+                    Transform gText = Contents[i].transform.Find("Text");
+                    gText.GetComponent<Text>().text = mContentName[i];
+                }
+                else{
+                    Contents[i].GetComponent<Button>().interactable = false;
+                }
             }
         }
-        */
     }
 
     //サブメニュー（スクロール、説明文）を表示
@@ -183,7 +187,12 @@ public class SubMenuController : MonoBehaviour {
         string[] st_split = st_temp.Split('_');
         if (st_split[0] == "contentNo")
         {
-            SetDescription(mContentDescription[int.Parse(st_split[1])]);
+            if(int.Parse(st_split[1]) < mContentDescription.Length){
+                SetDescription(mContentDescription[int.Parse(st_split[1])]);
+            }
+            else{
+                SetDescription("----");
+            }
         }
     }
 

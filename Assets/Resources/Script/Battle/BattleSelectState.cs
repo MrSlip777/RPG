@@ -143,6 +143,9 @@ public class BattleSelectState : MonoBehaviour {
         mMainMenuController.
         SetFocus_Button(MainMenuController.eMainButton.eButton_Attack);
 
+        //メインメニューを有効／無効にする
+        mMainMenuController.EnableDisable_Button(true);
+
         //UI状態をメインの項目選択状態にする
         mUIstate = eUIStatus.eUIStatus_Main;
 

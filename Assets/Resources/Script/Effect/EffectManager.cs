@@ -9,6 +9,7 @@ public class EffectManager : MonoBehaviour {
 
 	// Use this for initialization
 
+    //オブジェクトプールとして実装する
     public void MakePrefab(string prefabName)
     {
         //プレハブ指定

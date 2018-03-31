@@ -59,7 +59,7 @@ GameObject:
   - component: {fileID: 114629976416216446}
   - component: {fileID: 114757593471716840}
   m_Layer: 5
-  m_Name: contentNo_7_
+  m_Name: Node
   m_TagString: Node
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

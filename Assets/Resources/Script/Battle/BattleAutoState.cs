@@ -29,14 +29,21 @@ public class BattleAutoState : MonoBehaviour {
     BattleStateDataSinglton mBattleStateDataSinglton = null;
     //スキルデータ
     SkillDataSingleton mSkillDataSingleton = null;
+    //エフェクト
+    EffectManager mEffectManager = null;
 
-    void Start(){
+    void Awake(){
+        GameObject parentObj = null;
         mAutoStatus = eAutoStatus.eAutoStatus_Start;
-        GameObject parentObj = GameObject.Find("DataSingleton");
+        parentObj = GameObject.Find("DataSingleton");
         mBattleStateDataSinglton 
         = parentObj.GetComponent<BattleStateDataSinglton>();
         mSkillDataSingleton 
         = parentObj.GetComponent<SkillDataSingleton>();
+
+        //エフェクト管理
+        parentObj = GameObject.Find("Panel_Effect");
+        mEffectManager = parentObj.GetComponent<EffectManager>();
     }
 
     //ターン開始時の初期化
@@ -85,7 +92,6 @@ public class BattleAutoState : MonoBehaviour {
                     = mSkillDataSingleton.GetSkillName(actor.skillID);
 
                 //エフェクト表示
-                EffectManager mEffectManager = new EffectManager();
                 mEffectManager.MakePrefab("FT_Infinity_lite/_Prefabs/Buff/Discharge_Lightning");
                 mEffectManager.SetPosition(actor.tergetPos[actor.tergetNum]);
 
