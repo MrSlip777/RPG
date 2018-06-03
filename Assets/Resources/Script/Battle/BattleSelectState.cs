@@ -300,9 +300,12 @@ public class BattleSelectState : MonoBehaviour {
     //攻撃ボタンを押下時の処理
     public void Implement_Button_Attack()
     {
+        //攻撃のスキルIDを設定
+        mActorSkillID = 1;
+
         //敵ターゲット表示させる
         UIState(false, eTergetScope.forOne);
-
+        
         //前の状態を更新する
         mUIpreviousstate = mUIstate;
 
