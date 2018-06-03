@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyTime: 2
-  delayTime: 5
+  delayTime: 1
 --- !u!114 &114918676377817500
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -52,5 +52,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   effectName: sword
-  playOnStart: 1
-  loop: 1
+  playOnStart: 0
+  loop: 0

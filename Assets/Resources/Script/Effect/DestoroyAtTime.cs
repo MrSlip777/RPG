@@ -10,7 +10,7 @@ using UnityEngine.UI;   //imageで必要
 
 public class DestoroyAtTime : MonoBehaviour {
 
-    public float destroyTime = 10.0f;
+    public float destroyTime = 3.0f;
     public float delayTime = 0.0f;
 
     private string ObjectName = null;
