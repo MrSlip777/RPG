@@ -30,20 +30,15 @@ public class CharacterObject{
 
 }
 
-public class BattleCharacterObject
-{
-    public int[] skillIndex;
-    public int HP;
-    public int MP;
-    public int Atk;
-    public int Def;
-    public int Speed;
+//キャラクターと敵の抽象クラス
+public class BattleActor:MonoBehaviour{
+    protected BattleCharacterObject[] mBattleCharacterObject;
+
 }
 
-public class CharacterDataSingleton:MonoBehaviour{
+public class CharacterDataSingleton:BattleActor{
 
     private CharacterObject[] mCharacterObject;
-    private BattleCharacterObject[] mBattleCharacterObject;
 
     //�C���X�^���X��`
     ClassesDataSingleton mClassesDataSingleton;
@@ -77,16 +72,10 @@ public class CharacterDataSingleton:MonoBehaviour{
         learningsObject[] lerningsObjects = null;
 
         mBattleCharacterObject = new BattleCharacterObject[mCharacterObject.Length];
-
-        for (int j=0; j< mCharacterObject.Length; j++) {
-            mBattleCharacterObject[j] = new BattleCharacterObject();
-
-            //�\�͐ݒ�
-            mBattleCharacterObject[j].Atk = 10;
-            mBattleCharacterObject[j].Def = 11;
-            mBattleCharacterObject[j].Speed = j+3;
-            mBattleCharacterObject[j].HP = 30;
-            mBattleCharacterObject[j].MP = 30;
+        
+        for (int j=1; j< mCharacterObject.Length; j++) {
+            
+            mBattleCharacterObject[j] = Resources.Load<BattleCharacterObject> ("data/Character"+j.ToString());
 
             lerningsObjects = mClassesDataSingleton.getLearningObject(1);
 

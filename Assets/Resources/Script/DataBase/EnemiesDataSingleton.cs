@@ -36,10 +36,7 @@ public class dropItemsObject
     public int kind = 0;
 }
 
-public class EnemiesDataSingleton : MonoBehaviour {
-
-    //オブジェクト定義
-    private EnemiesObject[] mEnemiesObject;
+public class EnemiesDataSingleton :BattleActor{
 
     //敵の数
     private static int mEnemiesNum = 1;
@@ -50,6 +47,15 @@ public class EnemiesDataSingleton : MonoBehaviour {
 
         //暫定的に敵の数を2とする　要修正　Slip 2017/08/05
         mEnemiesNum = 2;
+        string[] EnemyNames = {"","Enemy1","Enemy2"};
+        mBattleCharacterObject = new BattleCharacterObject[EnemyNames.Length];
+        int i = 0;
+        foreach(string EnemyName in EnemyNames){
+            if(EnemyName != ""){
+                SetBattleActorObject(EnemyName,i);
+            }
+            i++;
+        }
     }
 
     private void FileRead()
@@ -59,8 +65,8 @@ public class EnemiesDataSingleton : MonoBehaviour {
         TextAsset txt = Instantiate(Resources.Load("data/" + fileName)) as TextAsset;
         string jsonText = txt.text;
 
-        string temp_jsonText = jsonText.Replace("params", "_params");
-        mEnemiesObject = LitJson.JsonMapper.ToObject<EnemiesObject[]>(temp_jsonText);
+        //string temp_jsonText = jsonText.Replace("params", "_params");
+        //mEnemiesObject = LitJson.JsonMapper.ToObject<EnemiesObject[]>(temp_jsonText);
 
     }
 
@@ -116,5 +122,29 @@ public class EnemiesDataSingleton : MonoBehaviour {
         }
 
         return result;
+    }
+
+    //バトラーを設定する
+    public void SetBattleActorObject(string BattlerName,int Number)
+    {
+        //learningsObject[] lerningsObjects = null;
+            
+        mBattleCharacterObject[Number] = Resources.Load<BattleCharacterObject> ("data/"+ BattlerName);
+
+        //ラーニングオブジェクトは敵と味方で値が異なるため修正の必要あり
+        /*
+        lerningsObjects = mClassesDataSingleton.getLearningObject(1);
+
+        mBattleCharacterObject[Number].skillIndex
+            = new int[lerningsObjects.Length];
+
+        int i = 0;
+        //�X�L���ݒ�
+        foreach (learningsObject learningObject in lerningsObjects) {
+            mBattleCharacterObject[Number].skillIndex[i]
+                = learningObject.skillId;
+            i++;
+        }
+        */
     }
 }
