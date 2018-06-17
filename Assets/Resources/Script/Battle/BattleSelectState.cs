@@ -34,12 +34,14 @@ public class BattleSelectState : MonoBehaviour {
     //戦闘状態データ
     static BattleStateDataSinglton mBattleStateDataSingleton;
 
+    //キャラクターデータシングルトン
+    static　CharacterDataSingleton mCharacterDataSingleton;
 
     //キャラクターステータス表示ウインドウ
     static CharacterStatusController mCharacterStatusController;
 
-    //キャラクターのデータ（シングルトン）
-    static CharacterDataSingleton mCharacterDataSingleton;
+    //キャラクター行動マネージャ
+    static BattleCharacterManager mBattleCharacterManager;
 
     //敵データ（シングルトン）
     static EnemiesDataSingleton mEnemiesDataSingleton;
@@ -87,6 +89,8 @@ public class BattleSelectState : MonoBehaviour {
         parentObject = GameObject.Find("Panel_CharacterStatus");
         mCharacterStatusController 
         = parentObject.GetComponent<CharacterStatusController>();
+        mBattleCharacterManager
+        = parentObject.GetComponent<BattleCharacterManager>();
 
         //データ初期化
         mCharacterDataSingleton.SetBattleCharacterObject();
@@ -112,7 +116,7 @@ public class BattleSelectState : MonoBehaviour {
         mSubMenuController.HideSubMenu();
         mTergetController.ShowHide_Terget(eTergetScope.Hide);
         mCharacterStatusController.InitialSelectCharacter();
-        mCharacterDataSingleton.TurnStartCharacter();
+        mBattleCharacterManager.TurnStartCharacter();
 
     }
 
@@ -227,11 +231,11 @@ public class BattleSelectState : MonoBehaviour {
                     break;
                 case eUIStatus.eUIStatus_Main:
                     //パーティ最小人数は1であり、1以下である場合はなにも処理を実行しない
-                    if (1 < mCharacterDataSingleton.GetSelectingCharacter())
+                    if (1 < mBattleCharacterManager.GetSelectingCharacter())
                     {
                         //次のキャラを行動可能状態にする
                         mCharacterStatusController
-                            .SetFocus_Character(mCharacterDataSingleton.BeforeSelectingCharacter());
+                            .SetFocus_Character(mBattleCharacterManager.BeforeSelectingCharacter());
                         //行動をデフォルトに戻す
                         SetUIDefault();
                     }
@@ -248,7 +252,7 @@ public class BattleSelectState : MonoBehaviour {
     public void Implement_DecideAct(int tergetNum,Vector3[] tergetPos)
     {
         ActorObject actorObject = new ActorObject();
-        actorObject.actorNum = mCharacterDataSingleton.GetSelectingCharacter();
+        actorObject.actorNum = mBattleCharacterManager.GetSelectingCharacter();
         actorObject.speed = mCharacterDataSingleton.CharaSpeed(actorObject.actorNum);
         actorObject.actor = eActorScope.Friend;
 
@@ -264,12 +268,12 @@ public class BattleSelectState : MonoBehaviour {
 
 
         //パーティ最大人数は4であり、4以上である場合は行動選択画面を終了する
-        if (4 > mCharacterDataSingleton.GetSelectingCharacter())
+        if (4 > mBattleCharacterManager.GetSelectingCharacter())
         {
 
             //次のキャラを行動可能状態にする
             mCharacterStatusController
-                .SetFocus_Character(mCharacterDataSingleton.NextSelectingCharacter());
+                .SetFocus_Character(mBattleCharacterManager.NextSelectingCharacter());
             //行動をデフォルトに戻す
             SetUIDefault();
         }

@@ -48,7 +48,7 @@ public class EnemiesDataSingleton :BattleActor{
         //暫定的に敵の数を2とする　要修正　Slip 2017/08/05
         mEnemiesNum = 2;
         string[] EnemyNames = {"","Enemy1","Enemy2"};
-        mBattleCharacterObject = new BattleCharacterObject[EnemyNames.Length];
+        mBattlerObject = new BattlerObject[EnemyNames.Length];
         int i = 0;
         foreach(string EnemyName in EnemyNames){
             if(EnemyName != ""){
@@ -129,7 +129,7 @@ public class EnemiesDataSingleton :BattleActor{
     {
         //learningsObject[] lerningsObjects = null;
             
-        mBattleCharacterObject[Number] = Resources.Load<BattleCharacterObject> ("data/"+ BattlerName);
+        mBattlerObject[Number] = Resources.Load<BattlerObject> ("data/"+ BattlerName);
 
         //ラーニングオブジェクトは敵と味方で値が異なるため修正の必要あり
         /*

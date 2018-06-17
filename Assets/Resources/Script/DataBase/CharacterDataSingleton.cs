@@ -1,14 +1,5 @@
-/*
-*���j�F�c�N�[��MV��json�t�@�C���`���ƌ݊���������悤�ɍ쐬����
-*/
-
 using System.IO;
 using UnityEngine;
-
-/*
-*Actor.json�ɍ��킹��
-*�c�N�[��MV ver1.3.4�
-*/
 
 public class CharacterObject{
 
@@ -32,7 +23,7 @@ public class CharacterObject{
 
 //キャラクターと敵の抽象クラス
 public class BattleActor:MonoBehaviour{
-    protected BattleCharacterObject[] mBattleCharacterObject;
+    protected BattlerObject[] mBattlerObject;
 
 }
 
@@ -40,12 +31,9 @@ public class CharacterDataSingleton:BattleActor{
 
     private CharacterObject[] mCharacterObject;
 
-    //�C���X�^���X��`
     ClassesDataSingleton mClassesDataSingleton;
     SkillDataSingleton mSkillDataSingleton;
 
-    //�s���L����
-    private static int mSelectingCharacterNum = 1;
 
     void Awake()
     {
@@ -56,7 +44,7 @@ public class CharacterDataSingleton:BattleActor{
         = gameObject.GetComponent<SkillDataSingleton>();
     }
 
-    //json�f�[�^�ǂݍ���
+    //jsonファイルを読み取る
     private void FileRead_CharacterData() {
 
         string fileName = "Actors";
@@ -66,91 +54,50 @@ public class CharacterDataSingleton:BattleActor{
        mCharacterObject = LitJson.JsonMapper.ToObject<CharacterObject[]>(jsonText);
     }
 
-    //�I�u�W�F�N�g�Ɋe��f�[�^��ݒ肷��
     public void SetBattleCharacterObject()
     {
         learningsObject[] lerningsObjects = null;
 
-        mBattleCharacterObject = new BattleCharacterObject[mCharacterObject.Length];
+        mBattlerObject = new BattlerObject[mCharacterObject.Length];
         
         for (int j=1; j< mCharacterObject.Length; j++) {
-            
-            mBattleCharacterObject[j] = Resources.Load<BattleCharacterObject> ("data/Character"+j.ToString());
+            mBattlerObject[j] = new BattlerObject();
+            mBattlerObject[j].battleproperty = Resources.Load<BattleProperty> ("data/Character"+j.ToString());
 
             lerningsObjects = mClassesDataSingleton.getLearningObject(1);
 
-            mBattleCharacterObject[j].skillIndex
+            mBattlerObject[j].skillIndex
                 = new int[lerningsObjects.Length];
 
+            
             int i = 0;
-            //�X�L���ݒ�
+            
             foreach (learningsObject learningObject in lerningsObjects) {
-                mBattleCharacterObject[j].skillIndex[i]
+                mBattlerObject[j].skillIndex[i]
                     = learningObject.skillId;
                 i++;
             }
         }
     }
 
-    //�L�����N�^�[�̏����X�L����n��
     public int[] GetSkillIndex(int characterId)
     {
         int[] result = null;
 
-        if (characterId>0 && characterId<=mBattleCharacterObject.Length) {
-            result = mBattleCharacterObject[characterId].skillIndex;
+        if (characterId>0 && characterId<=mBattlerObject.Length) {
+            result = mBattlerObject[characterId].skillIndex;
         }
 
         return result;
     }
 
-    //�g�p�X�L���̑Ώۂ�n��
     public eTergetScope GetSkillScope(int skillId)
     {   
         return (eTergetScope)mSkillDataSingleton.GetSkillScope(skillId);
     }
 
-    //�s���I���ʂ̑I���Ԃ̎擾
-    public int GetSelectingCharacter()
-    {
-        return mSelectingCharacterNum;
-    }
-
-    //���̑I���ԃL�����ύX
-    public int NextSelectingCharacter()
-    {
-        //���L������HP�����ɃC���N�������g���邩�𔻒f����
-        //�������@Slip
-        mSelectingCharacterNum++;
-
-        return mSelectingCharacterNum;
-    }
-
-    //�O�̑I���ԃL�����ύX
-    public int BeforeSelectingCharacter()
-    {
-        //���L������HP�����Ƀf�N�������g���邩�𔻒f����
-        //�������@Slip
-        mSelectingCharacterNum--;
-
-        return mSelectingCharacterNum;
-    }
-
-    //�s���I��҂̏�����
-    public int TurnStartCharacter()
-    {
-        //���L������HP�����ɒl��K�X�ύX����
-        //�������@Slip
-        mSelectingCharacterNum = 1;
-
-        return mSelectingCharacterNum;
-    }
-
-    //�s���҂̃^�[�Q�b�g���
-
-    //�f�����擾
     public int CharaSpeed(int characterNum)
     {
-        return mBattleCharacterObject[characterNum].Speed;
+        return mBattlerObject[characterNum].battleproperty.Sp;
     }
 }

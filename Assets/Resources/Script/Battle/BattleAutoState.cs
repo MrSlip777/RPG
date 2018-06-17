@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class BattleAutoState : MonoBehaviour {
 
@@ -31,6 +32,8 @@ public class BattleAutoState : MonoBehaviour {
     SkillDataSingleton mSkillDataSingleton = null;
     //エフェクト
     EffectManager mEffectManager = null;
+    //行動パターン
+    BattlerAction mButtlerAction = null;
 
     void Awake(){
         GameObject parentObj = null;
@@ -44,15 +47,23 @@ public class BattleAutoState : MonoBehaviour {
         //エフェクト管理
         parentObj = GameObject.Find("Panel_Effect");
         mEffectManager = parentObj.GetComponent<EffectManager>();
+
+        //行動パターン定義
+        mButtlerAction = new BattlerAction();
+
     }
 
     //ターン開始時の初期化
     public void TurnStart()
     {
+        BattlerObject temp = new BattlerObject();
+        mButtlerAction.Role[0](ref temp,ref temp);
+
         mAutoStatus = eAutoStatus.eAutoStatus_Start;
 
         //行動順を設定
         mBattleStateDataSinglton.SortActorSpeed();
+
     }
 
     // Use this for initialization
