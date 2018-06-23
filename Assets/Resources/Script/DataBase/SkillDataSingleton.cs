@@ -109,4 +109,18 @@ public class SkillDataSingleton : MonoBehaviour {
 
         return result;
     }
+
+    //仮実装　検討すること　2018/06/21
+    public int GetPassiveSkillProperty(int number){
+        return 1;
+    }
+    
+    //仮実装　検討すること　2018/06/21
+    public int GetPassiveSkillAsstisPara(int number){
+        return 1;
+    }
+
+    public string GetFomura(int Id){
+        return mSkillsObject[Id].damage.formula;
+    }
 }

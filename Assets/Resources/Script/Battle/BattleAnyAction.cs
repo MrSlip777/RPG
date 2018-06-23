@@ -44,24 +44,74 @@ public class AbstructActor{
 
 }
 
-public delegate void RoleAction(ref BattlerObject Actor,ref BattlerObject Terget);
+public delegate void RoleAction(ActorObject actor);
 
 public class BattlerAction : AbstructActor{
 
+    //キャラクターデータシングルトン
+    private static　CharacterDataSingleton mCharacterDataSingleton;
+
+    //敵データ（シングルトン）
+    private static EnemiesDataSingleton mEnemiesDataSingleton;
+
+	//スキルデータ
+	private static SkillDataSingleton mSkillDataSingleton;
+
 	public List<RoleAction> Role;
 
+	//文字列から計算する役割
+	private OperateString mOpString;
+
 	public BattlerAction(){
+        //ローカル変数定義
+        GameObject parentObject = null;
+
+        parentObject = GameObject.Find("DataSingleton");
+        mCharacterDataSingleton = parentObject.GetComponent<CharacterDataSingleton>();
+        mEnemiesDataSingleton = parentObject.GetComponent<EnemiesDataSingleton>();	
+		mSkillDataSingleton = parentObject.GetComponent<SkillDataSingleton>();
+
 		Role = new List<RoleAction>();
 		Role.Add(ActionDamage);
+
+		mOpString = new OperateString();
 	}
 
-	private void ActionDamage(ref BattlerObject Actor,ref BattlerObject Terget){
+	private BattlerObject getActor(eActorScope belong,int number){
+		BattlerObject result = null;
+
+		if(belong == eActorScope.Friend){
+			result = mCharacterDataSingleton.getBattlerObject(number);
+		}
+		else if(belong == eActorScope.Enemy){
+			result = mEnemiesDataSingleton.getBattlerObject(number);
+		}
+		return result;
+	}
+
+	private BattlerObject getTerget(eTergetScope scope,int number){
+		BattlerObject result = null;
+
+		if(scope == eTergetScope.forOne || scope == eTergetScope.forAll){
+			result = mEnemiesDataSingleton.getBattlerObject(number);
+		}
+		else if(scope == eTergetScope.forFriend || scope == eTergetScope.forFriendAll){
+			result = mCharacterDataSingleton.getBattlerObject(number);
+		}
+
+		return result;
+	}	
+
+	private void ActionDamage(ActorObject actor){
 
 		int tempJudgeHit = 0;
-		int randam = 0;
+		int random = 0;
+
+		BattlerObject Actor = getActor(actor.belong,actor.actorNum);
+		BattlerObject Terget = getTerget(actor.terget,actor.tergetNum);
 
 		//乱数の引数は時間(msec)。
-		randam = (int)(Random.value*(int)e_JudgeHit.ProbabilityMax);
+		random = (int)(Random.value*(int)e_JudgeHit.ProbabilityMax);
 
 		tempJudgeHit = (int)((double)(Actor.updatebattleproperty.Dexterity)/(double)(Terget.updatebattleproperty.Evasion)/2*PAERCENTAGEMAX);
 
@@ -72,32 +122,31 @@ public class BattlerAction : AbstructActor{
 			tempJudgeHit = (int)e_JudgeHit.ProbabilityMin;
 		}
 
-		if(randam >= 0 && randam<tempJudgeHit){
-				
-				//スキル威力の補正
-				int tempAttackParameter = (int)((double)Actor.updatebattleproperty.OffensivePower
-					* (double)Actor.tempbattleproperty.tempSkillParameter/10); 
+		if(random >= 0 && random<tempJudgeHit){
+			//スキル威力の補正 ダメージ計算式はSkills.jsonファイルから取得する
+			string formula = mSkillDataSingleton.GetFomura(1);
+			formula = mOpString.Trans_a_atk(formula,Actor.updatebattleproperty.OffensivePower);
+			formula = mOpString.Trans_b_def(formula,Terget.updatebattleproperty.DefenseForce);
+			Terget.tempbattleproperty.Parameter = (int)mOpString.Calcformula(formula);
+			
+			if(Terget.tempbattleproperty.Parameter < 0){
+				Terget.tempbattleproperty.Parameter = 0;
+			}
 
-				//ダメージ計算式　超重要
-				Terget.tempbattleproperty.Parameter = (tempAttackParameter - (int)((double)Terget.updatebattleproperty.DefenseForce/2));
+			//付加効果（毒、即死など）
+			if((int)e_AttackOption.OFF != Actor.tempbattleproperty.tempSkillParameter2){
+				StatusAttack(ref Actor,ref Terget);
+			}
 
-				if(Terget.tempbattleproperty.Parameter < 0){
-					Terget.tempbattleproperty.Parameter = 0;
-				}
-
-				//付加効果（毒、即死など）
-				if((int)e_AttackOption.OFF != Actor.tempbattleproperty.tempSkillParameter2){
-					StatusAttack(ref Actor,ref Terget);
-				}
-
-				//混乱状態であれば解除する
+			//混乱状態であれば解除する
+			if(Terget.battleproperty.Status.Length != 0){
 				if(Terget.battleproperty.Status[(int)e_BadStatus.Confusion] == true){
 					Terget.tempbattleproperty.flag_Confusion_Go_Lift = true;
 					Terget.tempbattleproperty.ActionCost = 0;
 					Terget.battleproperty.Status[(int)e_BadStatus.Confusion] = false;
 				}
-
-				Terget.tempbattleproperty.JudgeHit = (int)e_JudgeHit.Hit;
+			}
+			Terget.tempbattleproperty.JudgeHit = (int)e_JudgeHit.Hit;
 		}
 		else{
 			Terget.tempbattleproperty.JudgeHit = (int)e_JudgeHit.Miss;
@@ -118,12 +167,12 @@ void ActionAttackMagic::RoleAction(int *pflag_state,Charactor *Actor,Charactor *
 	(*pflag_state) = 2;
 	DWORD time;
 	int tempJudgeHit = 0;
-	int randam = 0;
+	int random = 0;
 
 	time = timeGetTime();
 
 	//乱数の引数は時間(msec)。
-	randam = system.getRandomNumber((int)time)%e_JudgeHit_ProbabilityMax;
+	random = system.getRandomNumber((int)time)%e_JudgeHit_ProbabilityMax;
 	
 	tempJudgeHit = (int)((double)(Actor.updatebattleproperty.Dexterity)/(double)(Terget.updatebattleproperty.Evasion)/2*PAERCENTAGEMAX);
 
@@ -134,7 +183,7 @@ void ActionAttackMagic::RoleAction(int *pflag_state,Charactor *Actor,Charactor *
 		tempJudgeHit = e_JudgeHit_ProbabilityMin;
 	}
 
-	if(randam >= 0 && randam<tempJudgeHit){
+	if(random >= 0 && random<tempJudgeHit){
 			
 			//スキル威力の補正
 			int tempAttackParameter = (int)((double)Actor.updatebattleproperty.OffensivePower_Magic 
@@ -350,12 +399,12 @@ void ActionBadStatusAttack::RoleAction(int *pflag_state,Charactor *Actor,Charact
 	(*pflag_state) = 2;
 
 	DWORD time;
-	int randam = 0;
+	int random = 0;
 	int tempJudgeHit = 0;
 	time = timeGetTime();
 
 	//乱数の引数は時間(msec)。
-	randam = system.getRandomNumber((int)time)%e_JudgeHit_ProbabilityMax;
+	random = system.getRandomNumber((int)time)%e_JudgeHit_ProbabilityMax;
 
 	tempJudgeHit = (int)((double)(Actor.updatebattleproperty.Dexterity)/(double)(Terget.updatebattleproperty.Evasion)/2*PAERCENTAGEMAX);
 
@@ -366,7 +415,7 @@ void ActionBadStatusAttack::RoleAction(int *pflag_state,Charactor *Actor,Charact
 		tempJudgeHit = e_JudgeHit_ProbabilityMin;
 	}
 
-	if(randam >= 0 && randam<tempJudgeHit){
+	if(random >= 0 && random<tempJudgeHit){
 
 		StatusAttack(Actor,Terget);
 

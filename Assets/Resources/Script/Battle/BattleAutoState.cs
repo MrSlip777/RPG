@@ -56,9 +56,6 @@ public class BattleAutoState : MonoBehaviour {
     //ターン開始時の初期化
     public void TurnStart()
     {
-        BattlerObject temp = new BattlerObject();
-        mButtlerAction.Role[0](ref temp,ref temp);
-
         mAutoStatus = eAutoStatus.eAutoStatus_Start;
 
         //行動順を設定
@@ -83,6 +80,9 @@ public class BattleAutoState : MonoBehaviour {
                 //行動者オブジェクト取得
                 ActorObject actor = mBattleStateDataSinglton.ActorObject;
 
+                //アクターで計算できるように修正したい
+                mButtlerAction.Role[0](actor);
+                
                 parentObject = GameObject.Find("Panel_CharacterStatus");
                 CharacterStatusController mCharacterStatusController 
                 = parentObject.GetComponent<CharacterStatusController>();
@@ -107,11 +107,14 @@ public class BattleAutoState : MonoBehaviour {
 
                 //ダメージを表示させる
                 GameObject prefab_Damage = null;
-                //親を指定し、技名ウインドウを作成する
+                //親を指定し、数値を作成する
                 prefab_Damage = Instantiate((GameObject)Resources.Load("Prefabs/Damage_Text"));
                 prefab_Damage.transform.SetParent(parentObject.transform);
                 Vector3 posDamage = new Vector3(actor.tergetPos[actor.tergetNum].x,400);
                 prefab_Damage.transform.position = posDamage;
+
+                PopMessageController pop = new PopMessageController();
+                pop.test();
 
                 break;
             case eAutoStatus.eAutoStatus_Act:
@@ -156,4 +159,5 @@ public class BattleAutoState : MonoBehaviour {
         }
     }
 
+    
 }

@@ -16,10 +16,10 @@ MonoBehaviour:
   HP: 0
   MP_max: 0
   MP: 0
-  At: 0
-  Df: 0
+  At: 100
+  Df: 20
   Mg: 0
-  Sp: 0
+  Sp: 5
   Lc: 0
   Exp: 0
   Status: 

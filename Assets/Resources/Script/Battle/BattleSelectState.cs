@@ -254,7 +254,7 @@ public class BattleSelectState : MonoBehaviour {
         ActorObject actorObject = new ActorObject();
         actorObject.actorNum = mBattleCharacterManager.GetSelectingCharacter();
         actorObject.speed = mCharacterDataSingleton.CharaSpeed(actorObject.actorNum);
-        actorObject.actor = eActorScope.Friend;
+        actorObject.belong = eActorScope.Friend;
 
         //保持している行動者のスキルIDを渡す（キャンセル操作に注意）
         actorObject.skillID = mActorSkillID;
@@ -282,7 +282,7 @@ public class BattleSelectState : MonoBehaviour {
             //敵の行動を自動選択により設定する
             for (int i = 0; i < mEnemiesDataSingleton.EnemiesNum; i++)
             {
-                mBattleStateDataSingleton.ActorObject = mEnemiesDataSingleton.getAutoActorData();
+                mBattleStateDataSingleton.ActorObject = mEnemiesDataSingleton.getAutoActorData(i+1);
             }
 
             //ターゲットを非表示にする

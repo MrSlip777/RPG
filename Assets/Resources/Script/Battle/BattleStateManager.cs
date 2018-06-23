@@ -63,7 +63,6 @@ public class BattleStateManager : MonoBehaviour
             = BattleStateDataSinglton.eBattleState.eBattleState_Select;
 
         mState._Start();
-        
     }
 
     // Update is called once per frame

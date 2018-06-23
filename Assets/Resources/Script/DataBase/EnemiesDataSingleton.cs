@@ -52,7 +52,7 @@ public class EnemiesDataSingleton :BattleActor{
         int i = 0;
         foreach(string EnemyName in EnemyNames){
             if(EnemyName != ""){
-                SetBattleActorObject(EnemyName,i);
+                SetBattlerEnemyObject(EnemyName,i);
             }
             i++;
         }
@@ -77,20 +77,20 @@ public class EnemiesDataSingleton :BattleActor{
     }
 
     //自動行動用のデータ
-    public ActorObject getAutoActorData()
+    public ActorObject getAutoActorData(int number)
     {
         ActorObject actorObject = new ActorObject();
         Vector3[] friendPositions = GetPosition("CharacterStatus");
 
-        actorObject.actorNum = -1;
+        actorObject.actorNum = number;
         actorObject.speed = 100;
-        actorObject.actor = eActorScope.Enemy;
+        actorObject.belong = eActorScope.Enemy;
 
         //保持している行動者のスキルIDを渡す（キャンセル操作に注意）
         actorObject.skillID = 12;
 
         //ターゲットの渡す
-        actorObject.terget = eTergetScope.forOne;
+        actorObject.terget = eTergetScope.forFriend;
         actorObject.tergetNum = 2;
         actorObject.tergetPos = friendPositions;
 
@@ -125,11 +125,22 @@ public class EnemiesDataSingleton :BattleActor{
     }
 
     //バトラーを設定する
-    public void SetBattleActorObject(string BattlerName,int Number)
+    public void SetBattlerEnemyObject(string BattlerName,int Number)
     {
         //learningsObject[] lerningsObjects = null;
-            
-        mBattlerObject[Number] = Resources.Load<BattlerObject> ("data/"+ BattlerName);
+        mBattlerObject[Number] = new BattlerObject();
+        mBattlerObject[Number].battleproperty = Resources.Load<BattleProperty> ("data/"+ BattlerName);
+
+        mBattlerObject[Number].skillIndex
+            = new int[8];
+
+        int i = 0;
+
+        foreach (int index in mBattlerObject[Number].skillIndex) {
+            mBattlerObject[Number].skillIndex[index]
+                = 10;
+
+        }        
 
         //ラーニングオブジェクトは敵と味方で値が異なるため修正の必要あり
         /*
@@ -146,5 +157,7 @@ public class EnemiesDataSingleton :BattleActor{
             i++;
         }
         */
+        Update_Parameter(ref mBattlerObject[Number]);
+        Initialize_BattleParameter(ref mBattlerObject[Number]);
     }
 }

@@ -94,17 +94,75 @@ public enum e_AttackOption{
 
 };
 
+//行動がどのような特性をもたらすか（おおまかな分類）
+public enum ActProperty{
+
+	//戦闘用
+	Damage = 0,
+	Recover = 1,
+	Assist = 2,
+	NoMove = 3,
+	ActInitial = 4,
+	Guard = 5,
+	StatusDamage = 6,
+	BadStatus = 7,
+	StatusUpDown = 8,
+
+	//蘇生魔法
+	Active_Revaival = 9,
+
+	//アイテム使用
+	Active_RecoverItem = 10,
+
+	//パッシブスキル
+	Passive_DamageCounter = 11,
+	Passive_DamageVoid = 12,
+	Passive_DamageHalf = 13,
+	
+	//攻撃魔法
+	Active_AttackMagic = 14,
+
+	//ステータス回復
+	StatusRecover = 15,
+
+	//パッシブスキル
+	Passive_DamageWeak = 16,
+
+	//パッシブスキル(装備)
+	Passive_HP_UP = 20,
+	Passive_MP_UP = 21,
+	Passive_At_UP = 22,
+	Passive_Gu_UP = 23,
+	Passive_Mg_UP = 30,
+	Passive_Sp_UP = 31,
+	Passive_Av_UP = 32,
+
+	//パッシブスキル(ステータス異常無効)
+	Passive_BadStatusVoid = 24,
+
+	//補助効果（一時即死回避）
+	Active_DeathGuard = 25,
+
+	//属性変更
+	Active_ChangeAttribute = 26,
+
+	//魔法反射
+	Active_MgReflect = 27,
+
+};
 
 public class BattlerObject: ScriptableObject{
 
+	//共通パラメータ
+	public string Name;
+
 	/*操作キャラ*/
-	string Name;
 	int graph_Num;
 	int Charactor_Number;	//キャラ人数(戦闘ポインタのみ値がある)
 
 	/*戦闘用*/
-	int Enemy_Sign;	/* 0:味方 1:敵 */
-	int Terget;
+	//int Enemy_Sign;	/* 0:味方 1:敵 */
+	//int Terget;
 	int NextAction;//次の行動番号
 
 	//スキルのインデックス

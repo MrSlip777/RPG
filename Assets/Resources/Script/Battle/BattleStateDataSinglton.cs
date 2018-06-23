@@ -34,7 +34,7 @@ public class ActorObject
     public int speed;
     public int skillID;
 
-    public eActorScope actor;
+    public eActorScope belong;
     public int actorNum;
     public eTergetScope terget;
     public int tergetNum;
