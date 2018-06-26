@@ -29,13 +29,14 @@ public class CharacterStatusController : MonoBehaviour
 
     public void MakeUI()
     {
-        GameObject[] prefab_CharacterStatus = new GameObject[4];
+        //プレハブ生成（0番目はnullとする）
+        GameObject[] prefab_CharacterStatus = new GameObject[5];
 
         //親オブジェクトの指定
         GameObject parentObject = GameObject.Find("Panel_CharacterStatus");
 
         //プレハブ指定
-        for (int i=0; i<4; i++) {
+        for (int i=1; i<=4; i++) {
             prefab_CharacterStatus[i] = Instantiate(
                 (GameObject)Resources.Load("Prefabs/CharacterStatus"));
 

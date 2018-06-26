@@ -4,6 +4,37 @@ using System.Collections.Generic;
 public class AbstructActor{
 
 	public readonly int PAERCENTAGEMAX = 100;
+    //キャラクターデータシングルトン
+    protected static　CharacterDataSingleton mCharacterDataSingleton;
+
+    //敵データ（シングルトン）
+    protected static EnemiesDataSingleton mEnemiesDataSingleton;
+
+	protected BattlerObject getActor(eActorScope belong,int number){
+		BattlerObject result = null;
+
+		if(belong == eActorScope.Friend){
+			result = mCharacterDataSingleton.getBattlerObject(number);
+		}
+		else if(belong == eActorScope.Enemy){
+			result = mEnemiesDataSingleton.getBattlerObject(number);
+		}
+		return result;
+	}
+
+	protected BattlerObject getTerget(eTergetScope scope,int number){
+		BattlerObject result = null;
+
+		if(scope == eTergetScope.forOne || scope == eTergetScope.forAll){
+			result = mEnemiesDataSingleton.getBattlerObject(number);
+		}
+		else if(scope == eTergetScope.forFriend || scope == eTergetScope.forFriendAll){
+			result = mCharacterDataSingleton.getBattlerObject(number);
+		}
+
+		return result;
+	}	
+
     public void StatusAttack(ref BattlerObject Actor,ref BattlerObject Terget){
 
         //ステータス無効がなければステータス異常になる
@@ -48,11 +79,6 @@ public delegate void RoleAction(ActorObject actor);
 
 public class BattlerAction : AbstructActor{
 
-    //キャラクターデータシングルトン
-    private static　CharacterDataSingleton mCharacterDataSingleton;
-
-    //敵データ（シングルトン）
-    private static EnemiesDataSingleton mEnemiesDataSingleton;
 
 	//スキルデータ
 	private static SkillDataSingleton mSkillDataSingleton;
@@ -76,31 +102,6 @@ public class BattlerAction : AbstructActor{
 
 		mOpString = new OperateString();
 	}
-
-	private BattlerObject getActor(eActorScope belong,int number){
-		BattlerObject result = null;
-
-		if(belong == eActorScope.Friend){
-			result = mCharacterDataSingleton.getBattlerObject(number);
-		}
-		else if(belong == eActorScope.Enemy){
-			result = mEnemiesDataSingleton.getBattlerObject(number);
-		}
-		return result;
-	}
-
-	private BattlerObject getTerget(eTergetScope scope,int number){
-		BattlerObject result = null;
-
-		if(scope == eTergetScope.forOne || scope == eTergetScope.forAll){
-			result = mEnemiesDataSingleton.getBattlerObject(number);
-		}
-		else if(scope == eTergetScope.forFriend || scope == eTergetScope.forFriendAll){
-			result = mCharacterDataSingleton.getBattlerObject(number);
-		}
-
-		return result;
-	}	
 
 	private void ActionDamage(ActorObject actor){
 

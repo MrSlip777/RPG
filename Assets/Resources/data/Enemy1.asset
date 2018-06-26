@@ -16,8 +16,8 @@ MonoBehaviour:
   HP: 0
   MP_max: 0
   MP: 0
-  At: 100
-  Df: 20
+  At: 600
+  Df: 50
   Mg: 0
   Sp: 5
   Lc: 0

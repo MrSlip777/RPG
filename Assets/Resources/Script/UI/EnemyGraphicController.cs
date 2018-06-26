@@ -37,16 +37,16 @@ public class EnemyGraphicController : MonoBehaviour {
         //親オブジェクトの指定
         parentObject = GameObject.Find("Panel_Enemy");
 
-        //プレハブ指定
-        prefab_Enemy = new GameObject[mEnemiesDataSingleton.EnemiesNum];
+        //プレハブ作成（0はnullとする）
+        prefab_Enemy = new GameObject[mEnemiesDataSingleton.EnemiesNum + 1];
 
-        for (int i=0; i< mEnemiesDataSingleton.EnemiesNum; i++) {
+        for (int i=1; i<= mEnemiesDataSingleton.EnemiesNum; i++) {
             prefab_Enemy[i] = Instantiate(
                 (GameObject)Resources.Load("Prefabs/Enemy"));
             prefab_Enemy[i].transform.SetParent(parentObject.transform, false);
             //敵画像は100倍スケールになっている　1移動で100pixel移動
             //float scale = prefab_Enemy[i].GetComponent<SpriteRenderer>().sprite.pixelsPerUnit;
-            prefab_Enemy[i].transform.position = new Vector3(-2+4*i, 0, 0);
+            prefab_Enemy[i].transform.position = new Vector3(-6+4*i, 0, 0);
         }
 
     }

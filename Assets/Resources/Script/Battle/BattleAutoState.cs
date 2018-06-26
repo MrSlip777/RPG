@@ -112,10 +112,9 @@ public class BattleAutoState : MonoBehaviour {
                 prefab_Damage.transform.SetParent(parentObject.transform);
                 Vector3 posDamage = new Vector3(actor.tergetPos[actor.tergetNum].x,400);
                 prefab_Damage.transform.position = posDamage;
-
                 PopMessageController pop = new PopMessageController();
-                pop.test();
-
+                prefab_Damage.GetComponentInChildren<Text>().text
+                    = pop.TergetDamage(actor);
                 break;
             case eAutoStatus.eAutoStatus_Act:
                 //攻撃エフェクト～ダメージ消去まで表示されたら終了ステータスへ

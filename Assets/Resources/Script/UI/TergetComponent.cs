@@ -6,7 +6,8 @@ public class TergetComponent : MonoBehaviour
 { 
     //ターゲット対象
     static Vector3[] Positions = null;
-    static int positionNum = 0;
+    //番号は1番目からはじまる
+    static int positionNum = 1;
     static eTergetScope mTergetScope = eTergetScope.forOne;
 
     // Use this for initialization
@@ -47,13 +48,13 @@ public class TergetComponent : MonoBehaviour
                     }
                     else
                     {
-                        positionNum = 0;
+                        positionNum = 1;
                     }
                 }
 
                 if (Input.GetKeyDown(KeyCode.LeftArrow))
                 {
-                    if (0 < positionNum)
+                    if (1 < positionNum)
                     {
                         positionNum--;
                     }
@@ -68,7 +69,7 @@ public class TergetComponent : MonoBehaviour
 
     public void SetTergetPositions(eTergetScope scope,Vector3[] positions)
     {
-        positionNum = 0;//初期化も同時に実施する
+        positionNum = 1;//初期化も同時に実施する
         mTergetScope = scope;
         Positions = positions;
     }

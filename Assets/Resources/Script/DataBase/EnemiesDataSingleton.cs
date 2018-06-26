@@ -80,7 +80,8 @@ public class EnemiesDataSingleton :BattleActor{
     public ActorObject getAutoActorData(int number)
     {
         ActorObject actorObject = new ActorObject();
-        Vector3[] friendPositions = GetPosition("CharacterStatus");
+        SearchUI searchUI = new SearchUI();
+        Vector3[] friendPositions = searchUI.GetPosition("CharacterStatus");
 
         actorObject.actorNum = number;
         actorObject.speed = 100;
@@ -95,33 +96,6 @@ public class EnemiesDataSingleton :BattleActor{
         actorObject.tergetPos = friendPositions;
 
         return actorObject;
-    }
-
-    /// <summary>
-    /// 対象の位置を取得する
-    /// </summary>
-    /// <param name="TagName"></param>
-    /// <returns></returns>
-    public Vector3[] GetPosition(string TagName)
-    {
-        int i = 0;
-        Vector3[] result = null;
-
-        GameObject[] tergets = GameObject.FindGameObjectsWithTag(TagName);
-
-        if (tergets != null)
-        {
-
-            result = new Vector3[tergets.Length];
-
-            foreach (GameObject terget in tergets)
-            {
-                result[i] = terget.transform.position;
-                i++;
-            }
-        }
-
-        return result;
     }
 
     //バトラーを設定する

@@ -81,6 +81,10 @@ public class MainMenuController : MonoBehaviour
     public void SetFocus_Button(eMainButton FocusButton)
     {
         gButton[(int)FocusButton].GetComponent<Button>().Select();
+        /*
+        gButton[(int)FocusButton].GetComponent<Image> ().color
+         = new Color(125.0f, 233.0f, 255.0f);
+         */
     }
 
     //ボタンを非表示/表示にする

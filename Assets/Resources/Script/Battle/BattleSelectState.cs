@@ -261,7 +261,7 @@ public class BattleSelectState : MonoBehaviour {
 
         //ターゲットの渡す
         actorObject.terget = mTergetScope;
-        actorObject.tergetNum = tergetNum;
+        actorObject.tergetNum = tergetNum;//敵の数は1からはじまる
         actorObject.tergetPos = tergetPos;
 
         mBattleStateDataSingleton.ActorObject = actorObject;

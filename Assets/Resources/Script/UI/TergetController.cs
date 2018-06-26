@@ -3,7 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;   //imageで必要
 
-public class TergetController : MonoBehaviour {
+public class SearchUI: MonoBehaviour {
+    public Vector3[] GetPosition(string TagName)
+    {
+        int i = 0;
+        Vector3[] result = null;
+
+        GameObject[] tergets = GameObject.FindGameObjectsWithTag(TagName);
+
+        if (tergets != null)
+        {
+
+            result = new Vector3[tergets.Length + 1];
+
+            result[0] = new Vector3();
+            i=1;
+            foreach (GameObject terget in tergets)
+            {
+                result[i] = terget.transform.position;
+                i++;
+            }
+        }
+
+        return result;
+    }
+}
+
+public class TergetController : SearchUI {
 
     //UIの最大個数
     private readonly int UIMaxNumber = 8;
@@ -13,15 +39,6 @@ public class TergetController : MonoBehaviour {
     {
 
     }
-
-    // Use this for initialization
-    void Start () {
-    }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     //UIを作成する関数
     public void MakeUI(){
@@ -55,14 +72,14 @@ public class TergetController : MonoBehaviour {
         {
             case eTergetScope.forOne:
                 UIPrefabs[0].SetActive(true);
-                UIPrefabs[0].transform.position = enemyPositions[0];
+                UIPrefabs[0].transform.position = enemyPositions[1];
                 if(UIPrefabs[0].GetComponent<TergetComponent>() == null){
                     UIPrefabs[0].AddComponent<TergetComponent>().SetTergetPositions(Scope,enemyPositions);
                 }
                 break;
 
             case eTergetScope.forAll:
-                for(int i = 0; i<enemyPositions.Length; i++)
+                for(int i = 1; i<enemyPositions.Length; i++)
                 {
                     UIPrefabs[i].SetActive(true);
                     UIPrefabs[i].transform.position = enemyPositions[i];
@@ -71,14 +88,14 @@ public class TergetController : MonoBehaviour {
                
             case eTergetScope.forFriend:
                 UIPrefabs[0].SetActive(true);
-                UIPrefabs[0].transform.position = friendPositions[0];
+                UIPrefabs[0].transform.position = friendPositions[1];
                 if(UIPrefabs[0].GetComponent<TergetComponent>() == null){
                     UIPrefabs[0].AddComponent<TergetComponent>().SetTergetPositions(Scope,friendPositions);
                 }                
                 break;
 
             case eTergetScope.forFriendAll:
-                for(int i=0; i<friendPositions.Length; i++)
+                for(int i=1; i<friendPositions.Length; i++)
                 {
                     UIPrefabs[i].SetActive(true);
                     UIPrefabs[i].transform.position = friendPositions[i];
@@ -116,28 +133,6 @@ public class TergetController : MonoBehaviour {
     //位置設定
     public void SetPosition(Vector3 position){
         UIPrefabs[0].transform.position = position;
-    }
-
-    public Vector3[] GetPosition(string TagName)
-    {
-        int i = 0;
-        Vector3[] result = null;
-
-        GameObject[] tergets = GameObject.FindGameObjectsWithTag(TagName);
-
-        if (tergets != null)
-        {
-
-            result = new Vector3[tergets.Length];
-
-            foreach (GameObject terget in tergets)
-            {
-                result[i] = terget.transform.position;
-                i++;
-            }
-        }
-
-        return result;
     }
 
     //座標変換
