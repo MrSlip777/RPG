@@ -35,6 +35,8 @@ public class BattleAutoState : MonoBehaviour {
     //行動パターン
     BattlerAction mButtlerAction = null;
 
+    ActorObject actor = null;
+
     void Awake(){
         GameObject parentObj = null;
         mAutoStatus = eAutoStatus.eAutoStatus_Start;
@@ -78,9 +80,9 @@ public class BattleAutoState : MonoBehaviour {
                 mAutoStatus = eAutoStatus.eAutoStatus_Act;
 
                 //行動者オブジェクト取得
-                ActorObject actor = mBattleStateDataSinglton.ActorObject;
+                actor = mBattleStateDataSinglton.ActorObject;
 
-                //アクターで計算できるように修正したい
+                //アクターの行動
                 mButtlerAction.Role[0](actor);
                 
                 parentObject = GameObject.Find("Panel_CharacterStatus");
@@ -88,7 +90,9 @@ public class BattleAutoState : MonoBehaviour {
                 = parentObject.GetComponent<CharacterStatusController>();
 
                 //行動対象キャラクターにフォーカス移動
-                mCharacterStatusController.SetFocus_Character(actor.actorNum);
+                if(actor.belong == eActorScope.Friend){
+                    mCharacterStatusController.SetFocus_Character(actor.actorNum);
+                }
 
                 //ローカル変数定義
                 parentObject = GameObject.Find("Canvas");
@@ -112,33 +116,42 @@ public class BattleAutoState : MonoBehaviour {
                 prefab_Damage.transform.SetParent(parentObject.transform);
                 Vector3 posDamage = new Vector3(actor.tergetPos[actor.tergetNum].x,400);
                 prefab_Damage.transform.position = posDamage;
-                PopMessageController pop = new PopMessageController();
+
+                int param = mButtlerAction.getTergetParam(actor);
                 prefab_Damage.GetComponentInChildren<Text>().text
-                    = pop.TergetDamage(actor);
+                    = param.ToString();
+                
+                //mButtlerAction.gainTergetHP(actor,-param);
+                StartCoroutine(DelayMethod(1.0f, () =>
+                {
+                    mButtlerAction.gainTergetHP(actor,-param);
+                }));
                 break;
             case eAutoStatus.eAutoStatus_Act:
                 //攻撃エフェクト～ダメージ消去まで表示されたら終了ステータスへ
                 temp = GameObject.FindGameObjectWithTag("AutoState_Act");
 
                 if (temp == null){
+                    
+                     
                     GameObject dummy = new GameObject();
                     dummy.tag = "AutoState_End";
                     //適当な時間待っている。調整は必要？そこまで必要ではない　Slip 2017/08/05
                     Destroy(dummy, 0.1f);
-
-                    //行動後のオブジェクトを消去する
-                    mBattleStateDataSinglton.RemoveTopActor();
-
+                    
                     mAutoStatus = eAutoStatus.eAutoStatus_End;
-                }
+               }
 
                 break;
             case eAutoStatus.eAutoStatus_End:
                 //ウェイト時間経過後に次の行動へ移行する
+                 
                 temp = GameObject.FindGameObjectWithTag("AutoState_End");
 
                 if (temp == null)
                 {
+                    //行動後のオブジェクトを消去する
+                    mBattleStateDataSinglton.RemoveTopActor();
 
                     if (mBattleStateDataSinglton.ActorObject != null) {
                         mAutoStatus = eAutoStatus.eAutoStatus_Start;
@@ -158,5 +171,10 @@ public class BattleAutoState : MonoBehaviour {
         }
     }
 
-    
+    //遅らせる
+    private IEnumerator DelayMethod(float waitTime, Action action)
+    {
+        yield return new WaitForSeconds(waitTime);
+        action();
+    }
 }

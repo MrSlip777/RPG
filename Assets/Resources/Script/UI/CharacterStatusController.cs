@@ -6,6 +6,11 @@ using UnityEngine.UI;
 
 public class CharacterStatusController : MonoBehaviour
 {
+    private CharacterDataSingleton mCharacterDataSingleton;
+
+    //各キャラHP
+    private GameObject[] HP;
+
     private CharacterStatusController()
     {
 
@@ -27,10 +32,23 @@ public class CharacterStatusController : MonoBehaviour
     private float[] f_focusColor = {125,233,255};
     private float[] f_DefaultColor = { 255, 255, 255 };
 
+    void Awake(){
+        GameObject parentObject = GameObject.Find("DataSingleton");
+        mCharacterDataSingleton = parentObject.GetComponent<CharacterDataSingleton>();
+    }
+
+    void Update(){
+        for (int i=1; i<=4; i++) {
+            HP[i].GetComponent<Slider>().value
+             = mCharacterDataSingleton.HPRate(i);
+        }
+    }
+
     public void MakeUI()
     {
         //プレハブ生成（0番目はnullとする）
         GameObject[] prefab_CharacterStatus = new GameObject[5];
+        HP = new GameObject[5];
 
         //親オブジェクトの指定
         GameObject parentObject = GameObject.Find("Panel_CharacterStatus");
@@ -53,10 +71,10 @@ public class CharacterStatusController : MonoBehaviour
 
 
             //HP、MP表示
-            GameObject HP = prefab_CharacterStatus[i].transform.Find("HPGauge").gameObject;
-            HP.GetComponent<Slider>().maxValue = 100;
-            HP.GetComponent<Slider>().minValue = 0;
-            HP.GetComponent<Slider>().value = 25*i+25;
+            HP[i] = prefab_CharacterStatus[i].transform.Find("HPGauge").gameObject;
+            HP[i].GetComponent<Slider>().maxValue = 100;
+            HP[i].GetComponent<Slider>().minValue = 0;
+            HP[i].GetComponent<Slider>().value = mCharacterDataSingleton.HPRate(i);
 
         }
     }

@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad449206e8de4534fb6d8b13b07689eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destroyTime: 2
+  destroyTime: 1
   delayTime: 1
 --- !u!114 &114918676377817500
 MonoBehaviour:

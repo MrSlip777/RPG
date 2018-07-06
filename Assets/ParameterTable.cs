@@ -29,6 +29,17 @@ enum e_HitRateConst{
 
 };
 
+//ステータス用パラメータラベル
+public enum e_StatusLabel{
+	HP = 0,
+	MP = 1,
+	At = 2,
+	Df = 3,
+	Mg = 4,
+	Sp = 6,
+	Lc = 7,
+};
+
 //保留　レベルに応じて変化するように・・・
 public enum e_AttackConst{
 
@@ -209,6 +220,8 @@ public class BattleProperty: ScriptableObject
 	public bool[] Status;
 	public int[] GuardAttribute;
 	public int[] VoidBadStatus;
+
+
 } // class ParameterTable
 
 public struct UpdateBattleProperty{
@@ -284,6 +297,3 @@ public struct MoveState{
 	public int Chara_Num;
 	
 }
-
-
-

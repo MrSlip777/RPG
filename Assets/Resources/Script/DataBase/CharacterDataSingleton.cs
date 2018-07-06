@@ -145,7 +145,7 @@ public class BattleActor:MonoBehaviour{
                 GetPassiveSkillAsstisPara(number)]= (int)e_AttributeResponsePattern.Counter;
             }
 
-            if(battler.battleproperty.GuardAttribute.Length != 0){
+            if(battler.battleproperty.GuardAttribute != null){
 
                 if(battler.battleproperty.GuardAttribute[mSkillDataSingleton.
                 GetPassiveSkillAsstisPara(number)] != (int)e_AttributeResponsePattern.Counter){
@@ -257,7 +257,16 @@ public class BattleActor:MonoBehaviour{
         }
 
         return;
-    }            
+    }
+
+    public void setHP(int number,int HP){
+        mBattlerObject[number].battleproperty.HP = HP;
+    }
+
+    public void gainHP(int number,int Param){
+        int HP = mBattlerObject[number].battleproperty.HP + Param;
+        setHP(number,HP);
+    }
 }
 
 public class CharacterDataSingleton:BattleActor{
@@ -294,10 +303,28 @@ public class CharacterDataSingleton:BattleActor{
         
         for (int j=1; j< mCharacterObject.Length; j++) {
             mBattlerObject[j] = new BattlerObject();
-            mBattlerObject[j].battleproperty = Resources.Load<BattleProperty> ("data/Character"+j.ToString());
+            //mBattlerObject[j].battleproperty = Resources.Load<BattleProperty> ("data/Character"+j.ToString());
+            mBattlerObject[j].battleproperty = new BattleProperty();
+
+            mBattlerObject[j].battleproperty.HP_max
+             = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.HP);
+            mBattlerObject[j].battleproperty.MP_max
+             = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.MP);
+            mBattlerObject[j].battleproperty.At
+             = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.At);
+            mBattlerObject[j].battleproperty.Df
+             = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.Df);
+            mBattlerObject[j].battleproperty.Mg
+             = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.Mg);
+            mBattlerObject[j].battleproperty.Sp
+             = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.Sp);
+            mBattlerObject[j].battleproperty.Lc
+             = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.Lc);
+            
+            mBattlerObject[j].battleproperty.HP = mBattlerObject[j].battleproperty.HP_max;
+            mBattlerObject[j].battleproperty.MP = mBattlerObject[j].battleproperty.MP_max;
 
             lerningsObjects = mClassesDataSingleton.getLearningObject(1);
-
             mBattlerObject[j].skillIndex
                 = new int[lerningsObjects.Length];
 
@@ -334,6 +361,13 @@ public class CharacterDataSingleton:BattleActor{
     public int CharaSpeed(int characterNum)
     {
         return mBattlerObject[characterNum].battleproperty.Sp;
+    }
+
+    public float HPRate(int characterNum){
+        float result = 0.0f;
+        result = (float)mBattlerObject[characterNum].battleproperty.HP
+        /(float)mBattlerObject[characterNum].battleproperty.HP_max *100.0f;
+        return result;
     }
 
 

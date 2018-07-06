@@ -59,4 +59,9 @@ public class ClassesDataSingleton : MonoBehaviour {
         return mClassesObject[id].learnings;
     }
 
+    //職業毎のスキル一覧取得
+    public int getStatus(int id,int level,e_StatusLabel status)
+    {
+        return mClassesObject[id]._params[(int)status][level];
+    }
 }

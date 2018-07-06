@@ -35,6 +35,23 @@ public class AbstructActor{
 		return result;
 	}	
 
+	public void gainTergetHP(ActorObject actor,int Param){
+		eTergetScope scope = actor.terget;
+		int number = actor.tergetNum;
+
+		if(scope == eTergetScope.forOne || scope == eTergetScope.forAll){
+			mEnemiesDataSingleton.gainHP(number,Param);
+		}
+		else if(scope == eTergetScope.forFriend || scope == eTergetScope.forFriendAll){
+			mCharacterDataSingleton.gainHP(number,Param);
+		}
+	}
+
+	public int getTergetParam(ActorObject actor){
+		BattlerObject Terget = getTerget(actor.terget,actor.tergetNum);
+		return Terget.tempbattleproperty.Parameter;
+	}
+
     public void StatusAttack(ref BattlerObject Actor,ref BattlerObject Terget){
 
         //ステータス無効がなければステータス異常になる
@@ -140,7 +157,7 @@ public class BattlerAction : AbstructActor{
 			}
 
 			//混乱状態であれば解除する
-			if(Terget.battleproperty.Status.Length != 0){
+			if(Terget.battleproperty.Status != null){
 				if(Terget.battleproperty.Status[(int)e_BadStatus.Confusion] == true){
 					Terget.tempbattleproperty.flag_Confusion_Go_Lift = true;
 					Terget.tempbattleproperty.ActionCost = 0;

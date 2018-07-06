@@ -33,6 +33,8 @@ public class MainMenuController : MonoBehaviour
     //選択フォーカス初期値
     private readonly int iButton_Initialfocus = 0;
 
+    private static Vector3 UIpos = new Vector3(0.0f,0.0f,0.0f);
+
     //UIを作成する関数
     public void MakeUI(){
          if (prefab_Panel_Button == null)
@@ -45,6 +47,8 @@ public class MainMenuController : MonoBehaviour
             prefab_Panel_Button = Instantiate(
                 (GameObject)Resources.Load("Prefabs/Panel_Button"));
             prefab_Panel_Button.transform.SetParent(parentObject.transform,false);
+
+            UIpos = prefab_Panel_Button.transform.position;
 
             //ボタン定義
             gButton = new GameObject[iButton_MaxNumber];
@@ -81,18 +85,20 @@ public class MainMenuController : MonoBehaviour
     public void SetFocus_Button(eMainButton FocusButton)
     {
         gButton[(int)FocusButton].GetComponent<Button>().Select();
-        /*
-        gButton[(int)FocusButton].GetComponent<Image> ().color
-         = new Color(125.0f, 233.0f, 255.0f);
-         */
     }
 
-    //ボタンを非表示/表示にする
+    //ボタンを非表示/表示にする(表示非表示ではフォーカスが外れてしまうので、位置をずらす)
     public void ShowHide_Button(bool IsShow)
     {
         if (prefab_Panel_Button != null)
         {
-            prefab_Panel_Button.SetActive(IsShow);
+            if(IsShow == true){
+                prefab_Panel_Button.transform.position = new Vector3(UIpos.x,UIpos.y,UIpos.z);
+            }
+            else{
+                prefab_Panel_Button.transform.position = new Vector3(UIpos.x-500,UIpos.y,UIpos.z);
+            }
+            EnableDisable_Button(IsShow);
         }        
     }
 

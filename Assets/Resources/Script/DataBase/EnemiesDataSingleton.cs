@@ -38,6 +38,7 @@ public class dropItemsObject
 
 public class EnemiesDataSingleton :BattleActor{
 
+    private EnemiesObject[] mEnemiesObject;
     //敵の数
     private static int mEnemiesNum = 1;
 
@@ -65,8 +66,8 @@ public class EnemiesDataSingleton :BattleActor{
         TextAsset txt = Instantiate(Resources.Load("data/" + fileName)) as TextAsset;
         string jsonText = txt.text;
 
-        //string temp_jsonText = jsonText.Replace("params", "_params");
-        //mEnemiesObject = LitJson.JsonMapper.ToObject<EnemiesObject[]>(temp_jsonText);
+        string temp_jsonText = jsonText.Replace("params", "_params");
+        mEnemiesObject = LitJson.JsonMapper.ToObject<EnemiesObject[]>(temp_jsonText);
 
     }
 
@@ -103,7 +104,27 @@ public class EnemiesDataSingleton :BattleActor{
     {
         //learningsObject[] lerningsObjects = null;
         mBattlerObject[Number] = new BattlerObject();
-        mBattlerObject[Number].battleproperty = Resources.Load<BattleProperty> ("data/"+ BattlerName);
+        //mBattlerObject[Number].battleproperty = Resources.Load<BattleProperty> ("data/"+ BattlerName);
+        mBattlerObject[Number].battleproperty = new BattleProperty();
+
+        mBattlerObject[Number].battleproperty.HP_max
+            = mEnemiesObject[1]._params[(int)e_StatusLabel.HP];
+        mBattlerObject[Number].battleproperty.MP_max
+            = mEnemiesObject[1]._params[(int)e_StatusLabel.MP];
+        mBattlerObject[Number].battleproperty.At
+            = mEnemiesObject[1]._params[(int)e_StatusLabel.At];
+        mBattlerObject[Number].battleproperty.Df
+            = mEnemiesObject[1]._params[(int)e_StatusLabel.Df];
+        mBattlerObject[Number].battleproperty.Mg
+            = mEnemiesObject[1]._params[(int)e_StatusLabel.Mg];
+        mBattlerObject[Number].battleproperty.Sp
+            = mEnemiesObject[1]._params[(int)e_StatusLabel.Sp];
+        mBattlerObject[Number].battleproperty.Lc
+            = mEnemiesObject[1]._params[(int)e_StatusLabel.Lc];
+        
+        mBattlerObject[Number].battleproperty.HP = mBattlerObject[Number].battleproperty.HP_max;
+        mBattlerObject[Number].battleproperty.MP = mBattlerObject[Number].battleproperty.MP_max;
+
 
         mBattlerObject[Number].skillIndex
             = new int[8];
