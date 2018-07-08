@@ -89,6 +89,10 @@ public class BattleAutoState : MonoBehaviour {
                 CharacterStatusController mCharacterStatusController 
                 = parentObject.GetComponent<CharacterStatusController>();
 
+                parentObject = GameObject.Find("Panel_Enemy");
+                EnemyGraphicController mEnemyGraphicController 
+                = parentObject.GetComponent<EnemyGraphicController>();
+
                 //行動対象キャラクターにフォーカス移動
                 if(actor.belong == eActorScope.Friend){
                     mCharacterStatusController.SetFocus_Character(actor.actorNum);
@@ -114,17 +118,24 @@ public class BattleAutoState : MonoBehaviour {
                 //親を指定し、数値を作成する
                 prefab_Damage = Instantiate((GameObject)Resources.Load("Prefabs/Damage_Text"));
                 prefab_Damage.transform.SetParent(parentObject.transform);
-                Vector3 posDamage = new Vector3(actor.tergetPos[actor.tergetNum].x,400);
+                Vector3 posDamage = new Vector3(actor.tergetPos[actor.tergetNum].x,actor.tergetPos[actor.tergetNum].y);
                 prefab_Damage.transform.position = posDamage;
 
                 int param = mButtlerAction.getTergetParam(actor);
+                prefab_Damage.GetComponentInChildren<Text>().color
+                    = new Color(1.0f,0.125f,0.125f,1.0f);
                 prefab_Damage.GetComponentInChildren<Text>().text
                     = param.ToString();
                 
-                //mButtlerAction.gainTergetHP(actor,-param);
                 StartCoroutine(DelayMethod(1.0f, () =>
                 {
                     mButtlerAction.gainTergetHP(actor,-param);
+                    if(actor.terget == eTergetScope.forOne || actor.terget == eTergetScope.forAll){
+                        mEnemyGraphicController.Shake(actor.tergetNum);
+                    }
+                    else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
+                        mCharacterStatusController.Shake(actor.tergetNum);
+                    }
                 }));
                 break;
             case eAutoStatus.eAutoStatus_Act:

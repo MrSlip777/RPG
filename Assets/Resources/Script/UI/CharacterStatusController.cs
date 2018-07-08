@@ -32,6 +32,9 @@ public class CharacterStatusController : MonoBehaviour
     private float[] f_focusColor = {125,233,255};
     private float[] f_DefaultColor = { 255, 255, 255 };
 
+    GameObject[] prefab_CharacterStatus;
+
+
     void Awake(){
         GameObject parentObject = GameObject.Find("DataSingleton");
         mCharacterDataSingleton = parentObject.GetComponent<CharacterDataSingleton>();
@@ -44,10 +47,15 @@ public class CharacterStatusController : MonoBehaviour
         }
     }
 
+    public void Shake(int TergetNum){
+        iTween.ShakePosition(prefab_CharacterStatus[TergetNum]
+        ,iTween.Hash("x",30.0f,"y",30.0f,"time",0.5f));
+    }
+
     public void MakeUI()
     {
         //プレハブ生成（0番目はnullとする）
-        GameObject[] prefab_CharacterStatus = new GameObject[5];
+        prefab_CharacterStatus = new GameObject[5];
         HP = new GameObject[5];
 
         //親オブジェクトの指定

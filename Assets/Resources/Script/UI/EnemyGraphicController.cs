@@ -28,6 +28,11 @@ public class EnemyGraphicController : MonoBehaviour {
 		
 	}
 
+    public void Shake(int TergetNum){
+        iTween.ShakePosition(prefab_Enemy[TergetNum]
+        ,iTween.Hash("x",0.3f,"y",0.3f,"time",0.5f));
+    }
+
     //敵グラ生成
     public void ShowEnemy()
     {
