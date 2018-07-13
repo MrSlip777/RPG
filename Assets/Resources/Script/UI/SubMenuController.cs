@@ -42,7 +42,7 @@ public class SubMenuController : MonoBehaviour {
         parentObject = GameObject.Find("Canvas");
         ScrollViewPrefab = Instantiate(
             (GameObject)Resources.Load("Prefabs/Scroll View"));
-        ScrollViewPrefab.transform.SetParent(parentObject.transform);
+        ScrollViewPrefab.transform.SetParent(parentObject.transform,false);
 
         //各項目を生成
         parentObject = GameObject.Find("Content");
@@ -58,7 +58,7 @@ public class SubMenuController : MonoBehaviour {
             gText.GetComponent<Text>().text = mContentName[i];
 
             prefab = Instantiate(obj);
-            prefab.transform.SetParent(parentObject.transform);
+            prefab.transform.SetParent(parentObject.transform,false);
 
             //最初のコンテンツにフォーカスを合わせる
             if (i == 0)
@@ -78,7 +78,7 @@ public class SubMenuController : MonoBehaviour {
         DescriptionPrefab = (GameObject)Instantiate(
             (GameObject)Resources.Load("Prefabs/Panel_Text"));
 
-        DescriptionPrefab.transform.SetParent(parentObject.transform);
+        DescriptionPrefab.transform.SetParent(parentObject.transform,false);
 
     }
 

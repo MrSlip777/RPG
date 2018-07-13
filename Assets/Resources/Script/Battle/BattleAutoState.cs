@@ -4,7 +4,7 @@
  *http://qiita.com/toRisouP/items/e402b15b36a8f9097ee9
  */
 
-
+//http://megumisoft.hatenablog.com/entry/2016/01/27/235940
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,21 +37,34 @@ public class BattleAutoState : MonoBehaviour {
 
     ActorObject actor = null;
 
+    //UI
+    CharacterStatusController mCharacterStatusController = null;
+    EnemyGraphicController mEnemyGraphicController = null;
+
     void Awake(){
-        GameObject parentObj = null;
+        GameObject parentObject = null;
         mAutoStatus = eAutoStatus.eAutoStatus_Start;
-        parentObj = GameObject.Find("DataSingleton");
+        parentObject = GameObject.Find("DataSingleton");
         mBattleStateDataSinglton 
-        = parentObj.GetComponent<BattleStateDataSinglton>();
+        = parentObject.GetComponent<BattleStateDataSinglton>();
         mSkillDataSingleton 
-        = parentObj.GetComponent<SkillDataSingleton>();
+        = parentObject.GetComponent<SkillDataSingleton>();
 
         //エフェクト管理
-        parentObj = GameObject.Find("Panel_Effect");
-        mEffectManager = parentObj.GetComponent<EffectManager>();
+        parentObject = GameObject.Find("Panel_Effect");
+        mEffectManager = parentObject.GetComponent<EffectManager>();
 
         //行動パターン定義
         mButtlerAction = new BattlerAction();
+
+        //UI
+        parentObject = GameObject.Find("Panel_CharacterStatus");
+        mCharacterStatusController 
+        = parentObject.GetComponent<CharacterStatusController>();
+
+        parentObject = GameObject.Find("Panel_Enemy");
+        mEnemyGraphicController 
+        = parentObject.GetComponent<EnemyGraphicController>();
 
     }
 
@@ -71,7 +84,6 @@ public class BattleAutoState : MonoBehaviour {
 
         //一時的なゲームオブジェクト
         GameObject temp = null;
-        GameObject parentObject = null;
 
         switch (mAutoStatus)
         {
@@ -85,57 +97,36 @@ public class BattleAutoState : MonoBehaviour {
                 //アクターの行動
                 mButtlerAction.Role[0](actor);
                 
-                parentObject = GameObject.Find("Panel_CharacterStatus");
-                CharacterStatusController mCharacterStatusController 
-                = parentObject.GetComponent<CharacterStatusController>();
-
-                parentObject = GameObject.Find("Panel_Enemy");
-                EnemyGraphicController mEnemyGraphicController 
-                = parentObject.GetComponent<EnemyGraphicController>();
-
                 //行動対象キャラクターにフォーカス移動
                 if(actor.belong == eActorScope.Friend){
                     mCharacterStatusController.SetFocus_Character(actor.actorNum);
+                    mEffectManager.SetActionEffect_Start(
+                        mCharacterStatusController.getPosition(actor.actorNum));
+                }
+                else{
+                    mEffectManager.SetActionEffect_Start(
+                        mEnemyGraphicController.getPosition(actor.actorNum));
                 }
 
-                //ローカル変数定義
-                parentObject = GameObject.Find("Canvas");
-
-                //技名
-                GameObject prefab_ActionText = null;
-                //親を指定し、技名ウインドウを作成する
-                prefab_ActionText = Instantiate((GameObject)Resources.Load("Prefabs/Action_Text"));
-                prefab_ActionText.transform.SetParent(parentObject.transform);
-                prefab_ActionText.GetComponent<DestoroyAtTime>().delayTime = 0.0f;
-                prefab_ActionText.GetComponentInChildren<Text>().text
-                    = mSkillDataSingleton.GetSkillName(actor.skillID);
-
-                //エフェクト表示
-                mEffectManager.SetEffect(actor.tergetPos[actor.tergetNum]);
-
-                //ダメージを表示させる
-                GameObject prefab_Damage = null;
-                //親を指定し、数値を作成する
-                prefab_Damage = Instantiate((GameObject)Resources.Load("Prefabs/Damage_Text"));
-                prefab_Damage.transform.SetParent(parentObject.transform);
-                Vector3 posDamage = new Vector3(actor.tergetPos[actor.tergetNum].x,actor.tergetPos[actor.tergetNum].y);
-                prefab_Damage.transform.position = posDamage;
-
                 int param = mButtlerAction.getTergetParam(actor);
-                prefab_Damage.GetComponentInChildren<Text>().color
-                    = new Color(1.0f,0.125f,0.125f,1.0f);
-                prefab_Damage.GetComponentInChildren<Text>().text
-                    = param.ToString();
-                
+
+                //StartCoroutine(DelayMethod(0.1f,() =>
+                //{
+                    //技名
+                    UI_ActionName(actor);
+                    //エフェクト表示
+                    mEffectManager.SetEffect(actor.tergetPos[actor.tergetNum]);
+
+                    //ダメージを表示させる
+                    UI_ActionParam(actor,param);
+                //}));
+
                 StartCoroutine(DelayMethod(1.0f, () =>
                 {
                     mButtlerAction.gainTergetHP(actor,-param);
-                    if(actor.terget == eTergetScope.forOne || actor.terget == eTergetScope.forAll){
-                        mEnemyGraphicController.Shake(actor.tergetNum);
-                    }
-                    else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
-                        mCharacterStatusController.Shake(actor.tergetNum);
-                    }
+                    UI_TergetAction(actor);
+                    UI_ChangeHPgauge(actor);
+
                 }));
                 break;
             case eAutoStatus.eAutoStatus_Act:
@@ -179,6 +170,61 @@ public class BattleAutoState : MonoBehaviour {
                 break;
             default:
                 break;
+        }
+    }
+
+    //パラメータ表示（ダメージなど）
+    private void UI_ActionParam(ActorObject actor,int param){
+        //ローカル変数定義
+        GameObject parentObject = GameObject.Find("Canvas");
+
+        //ダメージを表示させる
+        GameObject prefab_Damage = null;
+        //親を指定し、数値を作成する
+        prefab_Damage = Instantiate((GameObject)Resources.Load("Prefabs/Damage_Text"));
+        prefab_Damage.transform.SetParent(parentObject.transform,false);
+        Vector3 posDamage
+         = new Vector3(actor.tergetPos[actor.tergetNum].x,actor.tergetPos[actor.tergetNum].y,prefab_Damage.transform.position.z);
+        prefab_Damage.transform.position = posDamage;
+
+        prefab_Damage.GetComponentInChildren<Text>().color
+            = new Color(1.0f,0.125f,0.125f,1.0f);
+        prefab_Damage.GetComponentInChildren<Text>().text
+            = param.ToString();
+        
+    }
+
+    private void UI_ChangeHPgauge(ActorObject actor){
+        if(actor.terget == eTergetScope.forOne || actor.terget == eTergetScope.forAll){
+            
+        }
+        else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
+            mCharacterStatusController.ChangeHPValue(actor.tergetNum);
+        }        
+    }
+
+    //UI 行動名
+    private void UI_ActionName(ActorObject actor){
+        //ローカル変数定義
+        GameObject parentObject = GameObject.Find("Canvas");
+
+        //技名
+        GameObject prefab_ActionText = null;
+        //親を指定し、技名ウインドウを作成する
+        prefab_ActionText = Instantiate((GameObject)Resources.Load("Prefabs/Action_Text"));
+        prefab_ActionText.transform.SetParent(parentObject.transform,false);
+        prefab_ActionText.GetComponent<DestoroyAtTime>().delayTime = 0.0f;
+        prefab_ActionText.GetComponentInChildren<Text>().text
+            = mSkillDataSingleton.GetSkillName(actor.skillID);
+    }
+
+    //UIへのターゲットの動作反映
+    private void UI_TergetAction(ActorObject actor){
+        if(actor.terget == eTergetScope.forOne || actor.terget == eTergetScope.forAll){
+            mEnemyGraphicController.Shake(actor.tergetNum);
+        }
+        else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
+            mCharacterStatusController.Shake(actor.tergetNum);
         }
     }
 

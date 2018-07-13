@@ -92,12 +92,14 @@ public class MainMenuController : MonoBehaviour
     {
         if (prefab_Panel_Button != null)
         {
+            
             if(IsShow == true){
                 prefab_Panel_Button.transform.position = new Vector3(UIpos.x,UIpos.y,UIpos.z);
             }
             else{
-                prefab_Panel_Button.transform.position = new Vector3(UIpos.x-500,UIpos.y,UIpos.z);
+                prefab_Panel_Button.transform.position = new Vector3(UIpos.x-0.5f,UIpos.y,UIpos.z);
             }
+            
             EnableDisable_Button(IsShow);
         }        
     }

@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 222747476630317068}
   - component: {fileID: 114934919039134444}
   - component: {fileID: 114525820511074428}
+  - component: {fileID: 114364458708237616}
   m_Layer: 5
   m_Name: Scrollbar Vertical
   m_TagString: Untagged
@@ -156,6 +157,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &114364458708237616
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1301175691940544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0587a3bf6fa6cc438be57300f7efd9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114446707785802216
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -228,9 +240,9 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 114850900405014266}
   m_HandleRect: {fileID: 224298187922149220}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
-  m_NumberOfSteps: 0
+  m_NumberOfSteps: 10
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -503,7 +515,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 600, y: 600}
+  m_AnchoredPosition: {x: 600, y: -400}
   m_SizeDelta: {x: 400, y: 450}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224933191959937838

@@ -17,6 +17,7 @@ public class EffectManager : MonoBehaviour {
     private EffectPool _effectPool;
 */
     private GameObject prefab_Effect;
+    private GameObject ActionEffect_Start;
 
     void Awake(){
         //親オブジェクトの指定
@@ -28,6 +29,10 @@ public class EffectManager : MonoBehaviour {
             (GameObject)Resources.Load("Prefabs/SkillEffect"));
         prefab_Effect.transform.SetParent(parentObject.transform,false);
 
+        //プレハブ指定
+        ActionEffect_Start = Instantiate(
+            (GameObject)Resources.Load("Prefabs/SkillEffect"));
+        ActionEffect_Start.transform.SetParent(parentObject.transform,false);
 
         /*
         //オブジェクトプールを生成
@@ -38,15 +43,20 @@ public class EffectManager : MonoBehaviour {
         */
     }
 
+    public void SetActionEffect_Start(Vector3 position)
+    {
+        //位置設定
+        ActionEffect_Start.transform.position = position;
+        //エフェクト再生
+        ActionEffect_Start.transform.GetComponent<EffekseerEmitter>().effectName = "actionEffect";
+        ActionEffect_Start.transform.GetComponent<EffekseerEmitter>().Play();
+    }
+
     //
     public void SetEffect(Vector3 position)
     {
-        //スケールは1/100
-        //オフセット　-200、-100
-
-        Vector3 _position = new Vector3((position.x-640-200)/100,(position.y-480+100)/100);
         //位置設定
-        prefab_Effect.transform.position = _position;
+        prefab_Effect.transform.position = position;
         //エフェクト再生
         prefab_Effect.transform.GetComponent<EffekseerEmitter>().Play();
 

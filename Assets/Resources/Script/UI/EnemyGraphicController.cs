@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyGraphicController : MonoBehaviour {
 
-    static private GameObject[] prefab_Enemy = null;
+    private GameObject[] prefab_Enemy = null;
 
     public EnemiesDataSingleton mEnemiesDataSingleton;
     public TroopsDataSingleton mTroopsDataSingleton;
@@ -28,9 +28,13 @@ public class EnemyGraphicController : MonoBehaviour {
 		
 	}
 
+    public Vector3 getPosition(int ActorNum){
+        return prefab_Enemy[ActorNum].transform.position;
+    }   
+
     public void Shake(int TergetNum){
         iTween.ShakePosition(prefab_Enemy[TergetNum]
-        ,iTween.Hash("x",0.3f,"y",0.3f,"time",0.5f));
+        ,iTween.Hash("x",0.05f,"y",0.05f,"time",0.5f));
     }
 
     //敵グラ生成
@@ -49,9 +53,9 @@ public class EnemyGraphicController : MonoBehaviour {
             prefab_Enemy[i] = Instantiate(
                 (GameObject)Resources.Load("Prefabs/Enemy"));
             prefab_Enemy[i].transform.SetParent(parentObject.transform, false);
-            //敵画像は100倍スケールになっている　1移動で100pixel移動
+
             //float scale = prefab_Enemy[i].GetComponent<SpriteRenderer>().sprite.pixelsPerUnit;
-            prefab_Enemy[i].transform.position = new Vector3(-6+4*i, 0, 0);
+            prefab_Enemy[i].transform.position = new Vector3(-0.9f+0.6f*i, 0.0f, prefab_Enemy[i].transform.position.z);
         }
 
     }

@@ -44,12 +44,22 @@ public class CharacterStatusController : MonoBehaviour
         for (int i=1; i<=4; i++) {
             HP[i].GetComponent<Slider>().value
              = mCharacterDataSingleton.HPRate(i);
+            
         }
+    }
+
+    public Vector3 getPosition(int ActorNum){
+        return prefab_CharacterStatus[ActorNum].transform.position;
+    }
+
+    public void ChangeHPValue(int TergetNum){
+        HP[TergetNum].GetComponent<SliderController>()
+        .ValueTransition (mCharacterDataSingleton.HPRate(TergetNum));
     }
 
     public void Shake(int TergetNum){
         iTween.ShakePosition(prefab_CharacterStatus[TergetNum]
-        ,iTween.Hash("x",30.0f,"y",30.0f,"time",0.5f));
+        ,iTween.Hash("x",0.05f,"y",0.05f,"time",0.5f));
     }
 
     public void MakeUI()
@@ -69,7 +79,7 @@ public class CharacterStatusController : MonoBehaviour
             prefab_CharacterStatus[i].transform.SetParent(parentObject.transform, false);
 
             Vector3 temp = prefab_CharacterStatus[i].transform.position;
-            prefab_CharacterStatus[i].transform.position = new Vector3(temp.x+300*i,temp.y,temp.z);
+            prefab_CharacterStatus[i].transform.position = new Vector3(temp.x+0.36f*i,temp.y,temp.z);
 
             //キャラ名
             GameObject Name = prefab_CharacterStatus[i].transform.Find("Name").gameObject;

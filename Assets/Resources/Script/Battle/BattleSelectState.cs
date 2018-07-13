@@ -40,6 +40,7 @@ public class BattleSelectState : MonoBehaviour {
     //キャラクターステータス表示ウインドウ
     static CharacterStatusController mCharacterStatusController;
 
+
     //キャラクター行動マネージャ
     static BattleCharacterManager mBattleCharacterManager;
 
@@ -100,7 +101,7 @@ public class BattleSelectState : MonoBehaviour {
         mMainMenuController.MakeUI();
         mTergetController.MakeUI();
         mSubMenuController.MakeUI();    
-
+       
         TurnStart();
     }
 
