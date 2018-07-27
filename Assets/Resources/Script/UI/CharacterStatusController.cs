@@ -34,6 +34,8 @@ public class CharacterStatusController : MonoBehaviour
 
     GameObject[] prefab_CharacterStatus;
 
+    string[] s_Name = {"","ビーバー","キンシコウ","サーバル","アミメキリン"};
+    string[] s_fileName = {"","beaber","kinshikou","serval","amimekirin"};
 
     void Awake(){
         GameObject parentObject = GameObject.Find("DataSingleton");
@@ -62,6 +64,29 @@ public class CharacterStatusController : MonoBehaviour
         ,iTween.Hash("x",0.05f,"y",0.05f,"time",0.5f));
     }
 
+    public void ActionParam(int TergetNum,int param){
+        //ローカル変数定義
+        GameObject parentObject = GameObject.Find("Canvas");
+        
+        GameObject[] prefab_Damage = new GameObject[5];
+
+        prefab_Damage[0]
+        = Instantiate((GameObject)Resources.Load("Prefabs/Damage_Text"));
+        prefab_Damage[0].transform.SetParent(parentObject.transform,false);
+        
+        Vector3 posDamage
+        = new Vector3(prefab_CharacterStatus[TergetNum].transform.position.x
+        ,prefab_CharacterStatus[TergetNum].transform.position.y
+        ,prefab_Damage[0].transform.position.z);
+        
+        prefab_Damage[0].transform.position = posDamage;
+
+        prefab_Damage[0].GetComponentInChildren<Text>().color
+            = new Color(1.0f,0.125f,0.125f,1.0f);
+        prefab_Damage[0].GetComponentInChildren<Text>().text
+            = param.ToString();
+    }  
+
     public void MakeUI()
     {
         //プレハブ生成（0番目はnullとする）
@@ -78,15 +103,21 @@ public class CharacterStatusController : MonoBehaviour
 
             prefab_CharacterStatus[i].transform.SetParent(parentObject.transform, false);
 
-            Vector3 temp = prefab_CharacterStatus[i].transform.position;
-            prefab_CharacterStatus[i].transform.position = new Vector3(temp.x+0.36f*i,temp.y,temp.z);
+            float distance = Screen.width/4;
+            float screenw = Screen.width;
 
+            Vector3 temp = prefab_CharacterStatus[i].transform.localPosition;
+            
+            prefab_CharacterStatus[i].transform.localPosition
+             = new Vector3((distance*(i-1)+distance/2-Screen.width/2.0f),temp.y,temp.z);
+            //PositionChange(temp);
             //キャラ名
             GameObject Name = prefab_CharacterStatus[i].transform.Find("Name").gameObject;
-            Name.GetComponent<Text>().text = "キャラ";
+            Name.GetComponent<Text>().text = s_Name[i];
 
             //画像表示
-
+            GameObject CharactorImage = prefab_CharacterStatus[i].transform.Find("Image").gameObject;
+            CharactorImage.GetComponent<Image>().sprite = Resources.Load<Sprite> ("Image/Character/"+s_fileName[i]);
 
             //HP、MP表示
             HP[i] = prefab_CharacterStatus[i].transform.Find("HPGauge").gameObject;
@@ -95,6 +126,19 @@ public class CharacterStatusController : MonoBehaviour
             HP[i].GetComponent<Slider>().value = mCharacterDataSingleton.HPRate(i);
 
         }
+    }
+
+    private Vector3 PositionChange(Vector3 targetPos){
+ 		var pos = Vector2.zero;
+		var uiCamera = Camera.main;
+		var worldCamera = Camera.main;
+
+        GameObject canvas = GameObject.Find("Canvas");
+		var canvasRect = canvas.GetComponent<RectTransform> ();
+
+		var screenPos = RectTransformUtility.WorldToScreenPoint (worldCamera, targetPos);
+		RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPos, uiCamera, out pos);
+		return pos;       
     }
 
     //キャラクター状態の初期設定

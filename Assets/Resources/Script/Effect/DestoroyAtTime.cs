@@ -13,24 +13,16 @@ public class DestoroyAtTime : MonoBehaviour {
     public float destroyTime = 3.0f;
     public float delayTime = 0.0f;
 
-    private string ObjectName = null;
-
     void Start()
     {
-        ObjectName = gameObject.name;
         //デフォルトは非表示にする
         gameObject.GetComponent<Image>().enabled = false;
-        gameObject.transform.Find("Text").GetComponent<Text>().enabled = false;
+        gameObject.GetComponentInChildren<Text>().enabled = false;
 
         StartCoroutine(DelayMethod(delayTime, () =>
         {
-            GameObject parentObject = GameObject.Find("Canvas");
-            parentObject.transform.
-            Find(ObjectName).GetComponent<Image>().enabled = true;
-
-            parentObject = GameObject.Find(ObjectName);
-            parentObject.transform.
-            Find("Text").GetComponent<Text>().enabled = true;
+            gameObject.GetComponent<Image>().enabled = true;
+            gameObject.GetComponentInChildren<Text>().enabled = true;
 
             Destroy(gameObject, destroyTime);
         }));

@@ -183,15 +183,17 @@ public class SubMenuController : MonoBehaviour {
     //コンテンツ説明用のテキストを変更する
     public void ChangeDescription(string ContentName)
     {
-        string st_temp = ContentName;
-        string[] st_split = st_temp.Split('_');
-        if (st_split[0] == "contentNo")
-        {
-            if(int.Parse(st_split[1]) < mContentDescription.Length){
-                SetDescription(mContentDescription[int.Parse(st_split[1])]);
-            }
-            else{
-                SetDescription("----");
+        if(ScrollViewPrefab.activeSelf == true){
+            string st_temp = ContentName;
+            string[] st_split = st_temp.Split('_');
+            if (st_split[0] == "contentNo")
+            {
+                if(int.Parse(st_split[1]) < mContentDescription.Length){
+                    SetDescription(mContentDescription[int.Parse(st_split[1])]);
+                }
+                else{
+                    SetDescription("----");
+                }
             }
         }
     }
@@ -199,18 +201,20 @@ public class SubMenuController : MonoBehaviour {
     //スクロールを動かす
     public void ChangeContentScrollView(string ContentName)
     {
-        string st_temp = ContentName;
-        string[] st_split = st_temp.Split('_');
-        if (st_split[0] == "contentNo")
-        {
-            //ローカル変数定義
-            GameObject parentObject = null;
+        if(ScrollViewPrefab.activeSelf == true){        
+            string st_temp = ContentName;
+            string[] st_split = st_temp.Split('_');
+            if (st_split[0] == "contentNo")
+            {
+                //ローカル変数定義
+                GameObject parentObject = null;
 
-            parentObject = GameObject.Find("Scroll View(Clone)");
+                parentObject = GameObject.Find("Scroll View(Clone)");
 
-            ScrollRect scrollRect = parentObject.GetComponent<ScrollRect>();
-            scrollRect.verticalNormalizedPosition = 1-(float.Parse(st_split[1])) / (mContentName.Length-1);
+                ScrollRect scrollRect = parentObject.GetComponent<ScrollRect>();
+                scrollRect.verticalNormalizedPosition = 1-(float.Parse(st_split[1])) / (mContentName.Length-1);
 
+            }
         }
     }
 

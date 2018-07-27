@@ -56,6 +56,10 @@ public class TergetController : SearchUI {
             UIPrefabs[i].transform.SetParent(parentObject.transform, false);
             UIPrefabs[i].SetActive(true);
         }
+        //単体用
+        UIPrefabs[0].AddComponent<TergetComponent>();
+        //全体用
+        UIPrefabs[1].AddComponent<TergetComponent>();
     }
 
     //ターゲットを表示/非表示にする
@@ -70,9 +74,8 @@ public class TergetController : SearchUI {
             case eTergetScope.forOne:
                 UIPrefabs[0].SetActive(true);
                 UIPrefabs[0].transform.position = enemyPositions[1];
-                if(UIPrefabs[0].GetComponent<TergetComponent>() == null){
-                    UIPrefabs[0].AddComponent<TergetComponent>().SetTergetPositions(Scope,enemyPositions);
-                }
+                UIPrefabs[0].GetComponent<TergetComponent>().SetTergetPositions(Scope,enemyPositions);
+
                 break;
 
             case eTergetScope.forAll:
@@ -81,14 +84,14 @@ public class TergetController : SearchUI {
                     UIPrefabs[i].SetActive(true);
                     UIPrefabs[i].transform.position = enemyPositions[i];
                 }
+                UIPrefabs[1].GetComponent<TergetComponent>().SetTergetPositions(Scope,enemyPositions);
                 break;
                
             case eTergetScope.forFriend:
                 UIPrefabs[0].SetActive(true);
                 UIPrefabs[0].transform.position = friendPositions[1];
-                if(UIPrefabs[0].GetComponent<TergetComponent>() == null){
-                    UIPrefabs[0].AddComponent<TergetComponent>().SetTergetPositions(Scope,friendPositions);
-                }                
+                UIPrefabs[0].GetComponent<TergetComponent>().SetTergetPositions(Scope,friendPositions);
+                
                 break;
 
             case eTergetScope.forFriendAll:
@@ -97,13 +100,11 @@ public class TergetController : SearchUI {
                     UIPrefabs[i].SetActive(true);
                     UIPrefabs[i].transform.position = friendPositions[i];
                 }
+                UIPrefabs[1].GetComponent<TergetComponent>().SetTergetPositions(Scope,friendPositions);
                 break;
 
             default:
-                //選択UIを削除する
-                if(UIPrefabs[0].GetComponent<TergetComponent>() != null){
-                    Destroy(UIPrefabs[0].GetComponent<TergetComponent>());
-                }
+
                 HideUIAll();
                 break;
         }

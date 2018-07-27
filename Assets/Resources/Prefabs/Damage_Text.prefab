@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 224555775567469062}
   - component: {fileID: 222426755337450428}
   - component: {fileID: 114918676377817500}
-  - component: {fileID: 114633501659340852}
+  - component: {fileID: 114773985350470642}
   m_Layer: 5
   m_Name: Damage_Text
   m_TagString: AutoState_Act
@@ -78,8 +78,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 9999
---- !u!114 &114633501659340852
+  m_Text: 1
+--- !u!114 &114773985350470642
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

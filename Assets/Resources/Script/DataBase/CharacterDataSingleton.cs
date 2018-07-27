@@ -46,7 +46,23 @@ public class BattleActor:MonoBehaviour{
                 result = mBattlerObject[number];
             }
         }
-        return mBattlerObject[number];
+        return result;
+    }
+
+    //ターゲット変更
+    public int getLivingBattlerNumber(){
+        int result = 0;
+
+        foreach(BattlerObject battler in mBattlerObject){
+            if(battler != null){
+                if(battler.battleproperty.HP != 0){
+                    break;
+                }
+            }
+            result++;
+        }
+
+        return result;
     }
 
     public void Initialize_BattleParameter(ref BattlerObject battler){
@@ -260,6 +276,9 @@ public class BattleActor:MonoBehaviour{
     }
 
     public void setHP(int number,int HP){
+        if(HP < 0){
+            HP = 0;
+        }
         mBattlerObject[number].battleproperty.HP = HP;
     }
 
@@ -267,6 +286,10 @@ public class BattleActor:MonoBehaviour{
         int HP = mBattlerObject[number].battleproperty.HP + Param;
         setHP(number,HP);
     }
+
+    public int getHP(int number){
+        return mBattlerObject[number].battleproperty.HP;
+    }    
 }
 
 public class CharacterDataSingleton:BattleActor{

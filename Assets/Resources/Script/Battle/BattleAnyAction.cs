@@ -89,7 +89,46 @@ public class AbstructActor{
         return;
     }
 	
+    //行動不能である場合の行動スキップ
+    public bool IsExecutable(ActorObject actor){
 
+		BattlerObject Actor = getActor(actor.belong,actor.actorNum);
+
+		if(0 == Actor.battleproperty.HP){
+			return false;
+		}
+		else{
+			return true;
+		}
+    }
+
+	//標的可能非対象（HP=0など）であれば別ターゲットを設定する
+    public bool IsTargetable(ActorObject actor){
+
+		BattlerObject Terget = getTerget(actor.terget,actor.tergetNum);
+
+		if(0 == Terget.battleproperty.HP){
+			return false;
+		}
+		else{
+			return true;
+		}
+    }
+
+	public int ChangeTargetNumber(ActorObject actor){
+		int result = 0;
+		eTergetScope scope = actor.terget;
+		//攻撃スキル、回復スキルによっても対象が異なるためactorを参照できるようにしておく（SkillID）
+
+		if(scope == eTergetScope.forOne || scope == eTergetScope.forAll){
+			result = mEnemiesDataSingleton.getLivingBattlerNumber();
+		}
+		else if(scope == eTergetScope.forFriend || scope == eTergetScope.forFriendAll){
+			result = mCharacterDataSingleton.getLivingBattlerNumber();
+		}
+
+		return result;
+	}	
 }
 
 public delegate void RoleAction(ActorObject actor);
@@ -120,13 +159,9 @@ public class BattlerAction : AbstructActor{
 		mOpString = new OperateString();
 	}
 
-	private void ActionDamage(ActorObject actor){
-
+	private void CalcDamage(BattlerObject Actor,BattlerObject Terget){
 		int tempJudgeHit = 0;
 		int random = 0;
-
-		BattlerObject Actor = getActor(actor.belong,actor.actorNum);
-		BattlerObject Terget = getTerget(actor.terget,actor.tergetNum);
 
 		//乱数の引数は時間(msec)。
 		random = (int)(Random.value*(int)e_JudgeHit.ProbabilityMax);
@@ -177,6 +212,23 @@ public class BattlerAction : AbstructActor{
 
 		return;
 	}
+
+	private void ActionDamage(ActorObject actor){
+		BattlerObject Actor = getActor(actor.belong,actor.actorNum);
+
+		if(actor.terget == eTergetScope.forAll){
+			for(int TergetNum=1; TergetNum<mEnemiesDataSingleton.EnemiesNum; TergetNum++){
+				BattlerObject Terget = getTerget(actor.terget,TergetNum);
+				CalcDamage(Actor,Terget);
+			}
+		}
+		else{
+			BattlerObject Terget = getTerget(actor.terget,actor.tergetNum);
+			CalcDamage(Actor,Terget);
+		}
+	}
+
+
 }
 
 /*
