@@ -1,6 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+//ダメージ、回復量などのパラメータ
+public class TergetParam{
+	public eTergetScope terget;
+	public int tergetNum;
+	public int Parameter;
+}
+
 public class AbstructActor{
 
 	public readonly int PAERCENTAGEMAX = 100;
@@ -9,6 +16,9 @@ public class AbstructActor{
 
     //敵データ（シングルトン）
     protected static EnemiesDataSingleton mEnemiesDataSingleton;
+
+	//パラメータ　単体、全体、ランダムに対応
+	public List<TergetParam> ParamList;
 
 	protected BattlerObject getActor(eActorScope belong,int number){
 		BattlerObject result = null;
@@ -25,7 +35,8 @@ public class AbstructActor{
 	protected BattlerObject getTerget(eTergetScope scope,int number){
 		BattlerObject result = null;
 
-		if(scope == eTergetScope.forOne || scope == eTergetScope.forAll){
+		if(scope == eTergetScope.forOne || scope == eTergetScope.forAll
+		|| scope == eTergetScope.forRandom){
 			result = mEnemiesDataSingleton.getBattlerObject(number);
 		}
 		else if(scope == eTergetScope.forFriend || scope == eTergetScope.forFriendAll){
@@ -35,21 +46,35 @@ public class AbstructActor{
 		return result;
 	}	
 
-	public void gainTergetHP(ActorObject actor,int Param){
-		eTergetScope scope = actor.terget;
-		int number = actor.tergetNum;
+	public void gainTergetHP(int tergetNum){
+		TergetParam tergetParam;
 
-		if(scope == eTergetScope.forOne || scope == eTergetScope.forAll){
-			mEnemiesDataSingleton.gainHP(number,Param);
+		tergetParam = this.getTergetParam(tergetNum);
+		if(tergetParam.terget == eTergetScope.forFriend 
+		|| tergetParam.terget == eTergetScope.forFriendAll){
+			mCharacterDataSingleton.gainHP(tergetParam.tergetNum,-tergetParam.Parameter);
 		}
-		else if(scope == eTergetScope.forFriend || scope == eTergetScope.forFriendAll){
-			mCharacterDataSingleton.gainHP(number,Param);
+		else{
+			mEnemiesDataSingleton.gainHP(tergetParam.tergetNum,-tergetParam.Parameter);
 		}
 	}
 
-	public int getTergetParam(ActorObject actor){
-		BattlerObject Terget = getTerget(actor.terget,actor.tergetNum);
-		return Terget.tempbattleproperty.Parameter;
+	public TergetParam getTergetParam(int index){
+		return ParamList[index];
+	}
+
+	public void EraseTergetParam(){
+		ParamList.Clear();
+	}
+
+	//敵データを消去
+	public void DestroyUnactableEnemy(){
+		mEnemiesDataSingleton.DestroyUnactableObject();
+	}
+
+	//敵が行動可能かを判定する
+	public bool IsActableEnemies(){
+		return mEnemiesDataSingleton.IsActable();
 	}
 
     public void StatusAttack(ref BattlerObject Actor,ref BattlerObject Terget){
@@ -115,6 +140,23 @@ public class AbstructActor{
 		}
     }
 
+	public int EnemiesNumber(){
+		return mEnemiesDataSingleton.EnemiesNum;
+	}
+
+	//標的可能非対象（HP=0など）であれば別ターゲットを設定する
+    public bool IsTargetable_Num(ActorObject actor,int number){
+
+		BattlerObject Terget = getTerget(actor.terget,number);
+
+		if(0 == Terget.battleproperty.HP){
+			return false;
+		}
+		else{
+			return true;
+		}
+    }
+
 	public int ChangeTargetNumber(ActorObject actor){
 		int result = 0;
 		eTergetScope scope = actor.terget;
@@ -128,6 +170,10 @@ public class AbstructActor{
 		}
 
 		return result;
+	}
+
+	public int TergetParamCount(){
+		return ParamList.Count;
 	}	
 }
 
@@ -139,7 +185,9 @@ public class BattlerAction : AbstructActor{
 	//スキルデータ
 	private static SkillDataSingleton mSkillDataSingleton;
 
+	//スキルの実動作
 	public List<RoleAction> Role;
+
 
 	//文字列から計算する役割
 	private OperateString mOpString;
@@ -155,6 +203,8 @@ public class BattlerAction : AbstructActor{
 
 		Role = new List<RoleAction>();
 		Role.Add(ActionDamage);
+
+		ParamList = new List<TergetParam>();
 
 		mOpString = new OperateString();
 	}
@@ -203,7 +253,6 @@ public class BattlerAction : AbstructActor{
 		}
 		else{
 			Terget.tempbattleproperty.JudgeHit = (int)e_JudgeHit.Miss;
-			Terget.tempbattleproperty.Parameter = 0;
 		}
 
 		//HPパラメータのみ表示
@@ -215,20 +264,50 @@ public class BattlerAction : AbstructActor{
 
 	private void ActionDamage(ActorObject actor){
 		BattlerObject Actor = getActor(actor.belong,actor.actorNum);
+		
+		ParamList.Clear();
 
 		if(actor.terget == eTergetScope.forAll){
-			for(int TergetNum=1; TergetNum<mEnemiesDataSingleton.EnemiesNum; TergetNum++){
+			for(int TergetNum=1; TergetNum<=mEnemiesDataSingleton.EnemiesNum; TergetNum++){
+				TergetParam tergetParam = new TergetParam();
 				BattlerObject Terget = getTerget(actor.terget,TergetNum);
-				CalcDamage(Actor,Terget);
+				if(IsTargetable_Num(actor,TergetNum)){
+					CalcDamage(Actor,Terget);
+					tergetParam.Parameter = Terget.tempbattleproperty.Parameter;
+					tergetParam.tergetNum = TergetNum;
+					tergetParam.terget = actor.terget;
+					ParamList.Add(tergetParam);
+				}
 			}
 		}
+		else if(actor.terget == eTergetScope.forRandom){
+			int RandomNum = Random.Range (3, 6);
+			for(int i=1; i<=RandomNum; i++){
+				TergetParam tergetParam = new TergetParam();
+				int TergetNum = Random.Range (1, mEnemiesDataSingleton.EnemiesNum+1);
+				BattlerObject Terget = getTerget(actor.terget,TergetNum);
+				if(IsTargetable_Num(actor,TergetNum)){
+					CalcDamage(Actor,Terget);
+					tergetParam.Parameter = Terget.tempbattleproperty.Parameter;
+					tergetParam.tergetNum = TergetNum;
+					tergetParam.terget = actor.terget;
+					ParamList.Add(tergetParam);
+				}
+				else{
+					i--;
+				}
+			}			
+		}
 		else{
+			TergetParam tergetParam = new TergetParam();
 			BattlerObject Terget = getTerget(actor.terget,actor.tergetNum);
 			CalcDamage(Actor,Terget);
+			tergetParam.Parameter = Terget.tempbattleproperty.Parameter;
+			tergetParam.tergetNum = actor.tergetNum;
+			tergetParam.terget = actor.terget;
+			ParamList.Add(tergetParam);
 		}
 	}
-
-
 }
 
 /*

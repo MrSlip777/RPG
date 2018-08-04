@@ -39,17 +39,15 @@ public class dropItemsObject
 public class EnemiesDataSingleton :BattleActor{
 
     private EnemiesObject[] mEnemiesObject;
-    //敵の数
-    private static int mEnemiesNum = 1;
 
     void Start()
     {
         FileRead();
 
-        //暫定的に敵の数を2とする　要修正　Slip 2017/08/05
-        mEnemiesNum = 2;
         string[] EnemyNames = {"","Enemy1","Enemy2"};
-        mBattlerObject = new BattlerObject[EnemyNames.Length];
+        mBattlerObject = new List<BattlerObject>();
+        BattlerObject battlerObj = null;
+        mBattlerObject.Add(battlerObj);
         int i = 0;
         foreach(string EnemyName in EnemyNames){
             if(EnemyName != ""){
@@ -74,7 +72,7 @@ public class EnemiesDataSingleton :BattleActor{
     //敵の数を取得する
     public int EnemiesNum
     {
-        get { return mEnemiesNum; }
+        get { return (mBattlerObject.Count-1); }
     }
 
     //自動行動用のデータ
@@ -102,39 +100,31 @@ public class EnemiesDataSingleton :BattleActor{
     //バトラーを設定する
     public void SetBattlerEnemyObject(string BattlerName,int Number)
     {
-        //learningsObject[] lerningsObjects = null;
-        mBattlerObject[Number] = new BattlerObject();
+        BattlerObject battlerObj = new BattlerObject();
         //mBattlerObject[Number].battleproperty = Resources.Load<BattleProperty> ("data/"+ BattlerName);
-        mBattlerObject[Number].battleproperty = new BattleProperty();
+        battlerObj.battleproperty = new BattleProperty();
 
-        mBattlerObject[Number].battleproperty.HP_max
+        battlerObj.battleproperty.HP_max
             = mEnemiesObject[1]._params[(int)e_StatusLabel.HP];
-        mBattlerObject[Number].battleproperty.MP_max
+        battlerObj.battleproperty.MP_max
             = mEnemiesObject[1]._params[(int)e_StatusLabel.MP];
-        mBattlerObject[Number].battleproperty.At
+        battlerObj.battleproperty.At
             = mEnemiesObject[1]._params[(int)e_StatusLabel.At];
-        mBattlerObject[Number].battleproperty.Df
+        battlerObj.battleproperty.Df
             = mEnemiesObject[1]._params[(int)e_StatusLabel.Df];
-        mBattlerObject[Number].battleproperty.Mg
+        battlerObj.battleproperty.Mg
             = mEnemiesObject[1]._params[(int)e_StatusLabel.Mg];
-        mBattlerObject[Number].battleproperty.Sp
+        battlerObj.battleproperty.Sp
             = mEnemiesObject[1]._params[(int)e_StatusLabel.Sp];
-        mBattlerObject[Number].battleproperty.Lc
+        battlerObj.battleproperty.Lc
             = mEnemiesObject[1]._params[(int)e_StatusLabel.Lc];
         
-        mBattlerObject[Number].battleproperty.HP = mBattlerObject[Number].battleproperty.HP_max;
-        mBattlerObject[Number].battleproperty.MP = mBattlerObject[Number].battleproperty.MP_max;
+        battlerObj.battleproperty.HP = battlerObj.battleproperty.HP_max;
+        battlerObj.battleproperty.MP = battlerObj.battleproperty.MP_max;
+        battlerObj.skillIndex = new int[8];
 
-
-        mBattlerObject[Number].skillIndex
-            = new int[8];
-
-        int i = 0;
-
-        foreach (int index in mBattlerObject[Number].skillIndex) {
-            mBattlerObject[Number].skillIndex[index]
-                = 10;
-
+        foreach (int index in battlerObj.skillIndex) {
+            battlerObj.skillIndex[index] = 10;
         }        
 
         //ラーニングオブジェクトは敵と味方で値が異なるため修正の必要あり
@@ -152,7 +142,9 @@ public class EnemiesDataSingleton :BattleActor{
             i++;
         }
         */
-        Update_Parameter(ref mBattlerObject[Number]);
-        Initialize_BattleParameter(ref mBattlerObject[Number]);
+        Update_Parameter(ref battlerObj);
+        Initialize_BattleParameter(ref battlerObj);
+
+        mBattlerObject.Add(battlerObj);
     }
 }

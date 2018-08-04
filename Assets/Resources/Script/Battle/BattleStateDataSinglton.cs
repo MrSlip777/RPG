@@ -16,6 +16,7 @@ public enum eTergetScope
     Hide = -1,
     forOne = 1,
     forAll = 2,
+    forRandom = 3,
     forFriend = 7,
     forFriendAll = 8,
 };

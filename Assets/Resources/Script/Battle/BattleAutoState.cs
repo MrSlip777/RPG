@@ -5,12 +5,12 @@
  */
 
 //http://megumisoft.hatenablog.com/entry/2016/01/27/235940
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using UnityEngine.UI;
-using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class BattleAutoState : MonoBehaviour {
 
@@ -114,11 +114,9 @@ public class BattleAutoState : MonoBehaviour {
                             mEnemyGraphicController.getPosition(actor.actorNum));
                     }
 
-                    int param = mButtlerAction.getTergetParam(actor);
-
                     //技名
-                    UI_ActionName(actor);                
-                    StartCoroutine(SequenceEffect(actor,param));
+                    UI_ActionName(actor);            
+                    StartCoroutine(SequenceEffect(actor));
                 }
                 else{
                     mAutoStatus = eAutoStatus.eAutoStatus_Act;
@@ -133,17 +131,25 @@ public class BattleAutoState : MonoBehaviour {
                     {
                         //行動後のオブジェクトを消去する
                         mBattleStateDataSinglton.RemoveTopActor();
+                        if(mButtlerAction.IsActableEnemies()){
+                            if (mBattleStateDataSinglton.ActorObject != null) {
+                                mAutoStatus = eAutoStatus.eAutoStatus_Start;
 
-                        if (mBattleStateDataSinglton.ActorObject != null) {
-                            mAutoStatus = eAutoStatus.eAutoStatus_Start;
+                            }
+                            else
+                            {
+                                //HP=0の敵を完全消去する
+                                mEnemyGraphicController.DestroyUnactablePrefab();
+                                mButtlerAction.DestroyUnactableEnemy();
 
+                                mBattleStateDataSinglton.BattleStateMode
+                                    = BattleStateDataSinglton.eBattleState.eBattleState_AutoEnd;
+                                    
+                            }
                         }
-                        else
-                        {
-                            mBattleStateDataSinglton.BattleStateMode
-                                = BattleStateDataSinglton.eBattleState.eBattleState_AutoEnd;
-                                
-                        }                        
+                        else{
+                            SceneManager.LoadScene ("BattleResult");
+                        }
                     }));
                 }
                 break;
@@ -156,18 +162,17 @@ public class BattleAutoState : MonoBehaviour {
     }
 
     //パラメータ表示（ダメージなど）
-    private void UI_ActionParam(ActorObject actor,int param){
+    private void UI_ActionParam(int tergetNum){
 
-        //親を指定し、数値を作成する
-        int TargetNum = 1;
-        if(actor.terget == eTergetScope.forOne ){
-            mEnemyGraphicController.ActionParam(actor.tergetNum,param);
+        TergetParam tergetParam;
+
+        tergetParam = mButtlerAction.getTergetParam(tergetNum);
+        if(tergetParam.terget == eTergetScope.forFriend 
+        || tergetParam.terget == eTergetScope.forFriendAll){
+            mCharacterStatusController.ActionParam(tergetParam.tergetNum,tergetParam.Parameter);
         }
-        else if(actor.terget == eTergetScope.forAll){
-            mEnemyGraphicController.ActionParam_all(param);
-        }
-        else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
-            mCharacterStatusController.ActionParam(actor.tergetNum,param);
+        else{
+            mEnemyGraphicController.ActionParam(tergetParam.tergetNum,tergetParam.Parameter);
         }
     }
 
@@ -187,15 +192,15 @@ public class BattleAutoState : MonoBehaviour {
     }
 
     //UIへのターゲットの動作反映
-    private void UI_TergetAction(ActorObject actor){
-        if(actor.terget == eTergetScope.forOne ){
-            mEnemyGraphicController.Shake(actor.tergetNum);
+    private void UI_TergetAction(int tergetNum){
+        TergetParam tergetParam;
+        tergetParam = mButtlerAction.getTergetParam(tergetNum);
+        if(tergetParam.terget == eTergetScope.forFriend 
+        || tergetParam.terget == eTergetScope.forFriendAll){
+            mCharacterStatusController.Shake(tergetParam.tergetNum);
         }
-        else if(actor.terget == eTergetScope.forAll){
-            mEnemyGraphicController.Shake_all();
-        }
-        else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
-            mCharacterStatusController.Shake(actor.tergetNum);
+        else{
+            mEnemyGraphicController.Shake(tergetParam.tergetNum);
         }
     }
 
@@ -209,8 +214,20 @@ public class BattleAutoState : MonoBehaviour {
     }
 
     private void UI_EnemyErase(ActorObject actor){
-        if(actor.terget == eTergetScope.forOne || actor.terget == eTergetScope.forAll){
-            //敵グラを消去する
+        if(actor.terget == eTergetScope.forOne){
+            if(false == mButtlerAction.IsTargetable(actor)){
+                //敵グラを消去する
+                mEnemyGraphicController.Erase(actor.tergetNum);
+            }
+        }
+        else if(actor.terget == eTergetScope.forAll ||actor.terget == eTergetScope.forRandom){
+            for(int tergetNum=1; tergetNum<=mButtlerAction.EnemiesNumber(); tergetNum++){
+            
+                if(false == mButtlerAction.IsTargetable_Num(actor,tergetNum)){
+                    //敵グラを消去する
+                    mEnemyGraphicController.Erase(tergetNum);
+                }
+            }
         }
         else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
 
@@ -218,17 +235,45 @@ public class BattleAutoState : MonoBehaviour {
     }
 
     //遅らせる
-    private IEnumerator SequenceEffect(ActorObject actor,int param)
+    private IEnumerator SequenceEffect(ActorObject actor)
     {
-        yield return new WaitForSeconds(0.2f);
-        //エフェクト表示
-        mEffectManager.SetEffect(actor.tergetPos[actor.tergetNum]);
-        //ダメージを表示させる
-        UI_ActionParam(actor,param);
-        yield return new WaitForSeconds(1.0f);
-        mButtlerAction.gainTergetHP(actor,-param);
-        UI_TergetAction(actor);
-        UI_ChangeHPgauge(actor);        
+        int tergetMAXNUM = 1;
+        tergetMAXNUM = mButtlerAction.TergetParamCount();
+
+        if(actor.terget == eTergetScope.forRandom){
+            for(int number = 0; number<tergetMAXNUM; number++){
+                yield return new WaitForSeconds(0.2f);
+                //エフェクト表示
+                TergetParam tergetParam;
+                tergetParam = mButtlerAction.getTergetParam(number);
+                mEffectManager.SetEffect(actor.tergetPos[tergetParam.tergetNum]);
+                //ダメージを表示させる
+                UI_ActionParam(number);
+            
+                yield return new WaitForSeconds(0.5f);
+                mButtlerAction.gainTergetHP(number);
+                UI_TergetAction(number);
+            }
+        }
+        else{
+            yield return new WaitForSeconds(0.2f);
+            //エフェクト表示
+            mEffectManager.SetEffect(actor.tergetPos[actor.tergetNum]);
+            //ダメージを表示させる
+            for(int number = 0; number<tergetMAXNUM; number++){
+                UI_ActionParam(number);
+            }
+            yield return new WaitForSeconds(1.0f);
+            for(int number = 0; number<tergetMAXNUM; number++){
+                mButtlerAction.gainTergetHP(number);
+                UI_TergetAction(number);
+            }
+        }
+
+        UI_ChangeHPgauge(actor);
+        
+        UI_EnemyErase(actor);        
+        mButtlerAction.EraseTergetParam();
     }
 
     //遅らせる

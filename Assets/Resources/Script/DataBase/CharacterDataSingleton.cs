@@ -1,5 +1,6 @@
 using System.IO;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class CharacterObject{
 
@@ -29,7 +30,7 @@ public class BattleActor:MonoBehaviour{
     public readonly string NAME_AUTORECOVER_ON ="シュブ＝ニグラス";
     public readonly string NAME_CHANGEATTRIBUTE_ON="ニャルラトホテプ";
 
-    protected BattlerObject[] mBattlerObject;
+    protected List<BattlerObject> mBattlerObject;
     protected SkillDataSingleton mSkillDataSingleton;
 
     void Awake()
@@ -42,7 +43,7 @@ public class BattleActor:MonoBehaviour{
         BattlerObject result = null;
 
         if(mBattlerObject != null){
-            if(number <= mBattlerObject.Length){
+            if(number <= mBattlerObject.Count){
                 result = mBattlerObject[number];
             }
         }
@@ -289,7 +290,30 @@ public class BattleActor:MonoBehaviour{
 
     public int getHP(int number){
         return mBattlerObject[number].battleproperty.HP;
-    }    
+    }
+
+    public void DestroyUnactableObject(){
+        for (int i = mBattlerObject.Count - 1; i >= 0; i--) {
+            if (mBattlerObject[i]){
+                if (mBattlerObject[i].battleproperty.HP == 0) {
+                    mBattlerObject.Remove(mBattlerObject[i]);
+                }
+            }
+        }
+    }
+
+    public bool IsActable(){
+        bool result = false;
+        for (int i = mBattlerObject.Count - 1; i >= 0; i--) {
+            if (mBattlerObject[i]){
+                if (mBattlerObject[i].battleproperty.HP != 0) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        return result;
+    }     
 }
 
 public class CharacterDataSingleton:BattleActor{
@@ -322,46 +346,50 @@ public class CharacterDataSingleton:BattleActor{
     {
         learningsObject[] lerningsObjects = null;
 
-        mBattlerObject = new BattlerObject[mCharacterObject.Length];
-        
-        for (int j=1; j< mCharacterObject.Length; j++) {
-            mBattlerObject[j] = new BattlerObject();
-            //mBattlerObject[j].battleproperty = Resources.Load<BattleProperty> ("data/Character"+j.ToString());
-            mBattlerObject[j].battleproperty = new BattleProperty();
+        mBattlerObject = new List<BattlerObject>();
+        BattlerObject battlerObj = null;
+        mBattlerObject.Add(battlerObj);
 
-            mBattlerObject[j].battleproperty.HP_max
+        for (int j=1; j< mCharacterObject.Length; j++) {
+            battlerObj = new BattlerObject();
+            //mBattlerObject[j].battleproperty = Resources.Load<BattleProperty> ("data/Character"+j.ToString());
+            battlerObj.battleproperty = new BattleProperty();
+
+            battlerObj.battleproperty.HP_max
              = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.HP);
-            mBattlerObject[j].battleproperty.MP_max
+            battlerObj.battleproperty.MP_max
              = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.MP);
-            mBattlerObject[j].battleproperty.At
+            battlerObj.battleproperty.At
              = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.At);
-            mBattlerObject[j].battleproperty.Df
+            battlerObj.battleproperty.Df
              = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.Df);
-            mBattlerObject[j].battleproperty.Mg
+            battlerObj.battleproperty.Mg
              = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.Mg);
-            mBattlerObject[j].battleproperty.Sp
+            battlerObj.battleproperty.Sp
              = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.Sp);
-            mBattlerObject[j].battleproperty.Lc
+            battlerObj.battleproperty.Lc
              = mClassesDataSingleton.getStatus(j,1,e_StatusLabel.Lc);
             
-            mBattlerObject[j].battleproperty.HP = mBattlerObject[j].battleproperty.HP_max;
-            mBattlerObject[j].battleproperty.MP = mBattlerObject[j].battleproperty.MP_max;
+            battlerObj.battleproperty.HP = battlerObj.battleproperty.HP_max;
+            battlerObj.battleproperty.MP = battlerObj.battleproperty.MP_max;
 
             lerningsObjects = mClassesDataSingleton.getLearningObject(1);
-            mBattlerObject[j].skillIndex
+            battlerObj.skillIndex
                 = new int[lerningsObjects.Length];
 
             
             int i = 0;
             
             foreach (learningsObject learningObject in lerningsObjects) {
-                mBattlerObject[j].skillIndex[i]
+                battlerObj.skillIndex[i]
                     = learningObject.skillId;
                 i++;
             }
 
-            Update_Parameter(ref mBattlerObject[j]);
-            Initialize_BattleParameter(ref mBattlerObject[j]);
+            Update_Parameter(ref battlerObj);
+            Initialize_BattleParameter(ref battlerObj);
+
+            mBattlerObject.Add(battlerObj);
         }
     }
 
@@ -369,7 +397,7 @@ public class CharacterDataSingleton:BattleActor{
     {
         int[] result = null;
 
-        if (characterId>0 && characterId<=mBattlerObject.Length) {
+        if (characterId>0 && characterId<=mBattlerObject.Count) {
             result = mBattlerObject[characterId].skillIndex;
         }
 

@@ -79,6 +79,7 @@ public class TergetController : SearchUI {
                 break;
 
             case eTergetScope.forAll:
+            case eTergetScope.forRandom:
                 for(int i = 1; i<enemyPositions.Length; i++)
                 {
                     UIPrefabs[i].SetActive(true);

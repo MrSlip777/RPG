@@ -5,12 +5,10 @@ using UnityEngine.UI;//Textに必要
 
 public class EnemyGraphicController : MonoBehaviour {
 
-    private GameObject[] prefab_Enemy = null;
+    private List<GameObject> prefab_Enemy;
     public GameObject[] prefab_Damage = null;
     public EnemiesDataSingleton mEnemiesDataSingleton;
     public TroopsDataSingleton mTroopsDataSingleton;
-
-    static float CountTime = 0.0f;
 
     // Use this for initialization
     void Start () {
@@ -38,19 +36,20 @@ public class EnemyGraphicController : MonoBehaviour {
 
     public void Scale(int TergetNum){
 
-        if(Mathf.Sin(Time.frameCount*8.0f)>0){
-            iTween.ScaleAdd(prefab_Enemy[TergetNum]
-            ,iTween.Hash("x",10.0f,"y",50.0f,"time",8.0f));
+        if(prefab_Enemy[TergetNum]){
+            if(Mathf.Sin(Time.frameCount*8.0f)>0){
+                iTween.ScaleAdd(prefab_Enemy[TergetNum]
+                ,iTween.Hash("x",10.0f,"y",50.0f,"time",8.0f));
+            }
+            else{
+                iTween.ScaleAdd(prefab_Enemy[TergetNum]
+                ,iTween.Hash("x",-10.0f,"y",-50.0f,"time",8.0f));
+            }
         }
-        else{
-            iTween.ScaleAdd(prefab_Enemy[TergetNum]
-            ,iTween.Hash("x",-10.0f,"y",-50.0f,"time",8.0f));
-        }
-        
     }   
 
     public void Scale_all(){
-        for(int TergetNum = 1; TergetNum<prefab_Enemy.Length; TergetNum++){
+        for(int TergetNum = 1; TergetNum<prefab_Enemy.Count; TergetNum++){
             Scale(TergetNum);
         }
     }
@@ -60,10 +59,8 @@ public class EnemyGraphicController : MonoBehaviour {
         ,iTween.Hash("x",0.05f,"y",0.05f,"time",0.5f));
     }
 
-    public void Shake_all(){
-        for(int TergetNum = 1; TergetNum<prefab_Enemy.Length; TergetNum++){
-            Shake(TergetNum);
-        }
+    public void Erase(int TergetNum){
+        prefab_Enemy[TergetNum].GetComponent<SpriteEraser>().Erase();
     }
 
     public void ActionParam(int TergetNum,int param){
@@ -87,30 +84,6 @@ public class EnemyGraphicController : MonoBehaviour {
             = param.ToString();
     }
 
-    public void ActionParam_all(int param){
-        //ローカル変数定義
-        GameObject parentObject = GameObject.Find("Panel_Enemy");
-        
-        for(int i = 1; i<prefab_Enemy.Length; i++){
-
-            prefab_Damage[i]
-            = Instantiate((GameObject)Resources.Load("Prefabs/Damage_Text"));
-            prefab_Damage[i].transform.SetParent(parentObject.transform,false);
-            
-            Vector3 posDamage
-            = new Vector3(prefab_Enemy[i].transform.position.x
-            ,prefab_Enemy[i].transform.position.y
-            ,prefab_Damage[i].transform.position.z);
-            
-            prefab_Damage[i].transform.position = posDamage;
-
-            prefab_Damage[i].GetComponentInChildren<Text>().color
-                = new Color(1.0f,0.125f,0.125f,1.0f);
-            prefab_Damage[i].GetComponentInChildren<Text>().text
-                = param.ToString();
-        }
-    }     
-
     //敵グラ生成
     public void ShowEnemy()
     {
@@ -121,17 +94,33 @@ public class EnemyGraphicController : MonoBehaviour {
         parentObject = GameObject.Find("Panel_Enemy");
 
         //プレハブ作成（0はnullとする）
-        prefab_Enemy = new GameObject[mEnemiesDataSingleton.EnemiesNum + 1];
+        prefab_Enemy = new List<GameObject>();
+
+        GameObject prefab = null;
+
+        prefab_Enemy.Add(prefab);
 
         for (int i=1; i<= mEnemiesDataSingleton.EnemiesNum; i++) {
-            prefab_Enemy[i] = Instantiate(
+            prefab = Instantiate(
                 (GameObject)Resources.Load("Prefabs/Enemy"));
-            prefab_Enemy[i].transform.SetParent(parentObject.transform, false);
-
-            //float scale = prefab_Enemy[i].GetComponent<SpriteRenderer>().sprite.pixelsPerUnit;
-            prefab_Enemy[i].transform.position = new Vector3(-0.9f+0.6f*i, 0.0f, prefab_Enemy[i].transform.position.z);
+            prefab.transform.SetParent(parentObject.transform, false);
+            prefab.transform.position = new Vector3(-0.9f+0.6f*i, 0.0f, prefab.transform.position.z);
+            prefab_Enemy.Add(prefab);
         }
 
+    }
+
+    public void DestroyUnactablePrefab(){
+        for (int i = prefab_Enemy.Count - 1; i >= 0; i--) {
+            if(prefab_Enemy[i]){
+                if (prefab_Enemy[i].GetComponent<SpriteEraser>().IsDead == true) {
+                    //Unityのオブジェクトを削除してから
+                    Destroy(prefab_Enemy[i]);
+                    //List内のデータを削除する
+                    prefab_Enemy.Remove(prefab_Enemy[i]);
+                }
+            }
+        }
     }
 
     //敵グラ消去
