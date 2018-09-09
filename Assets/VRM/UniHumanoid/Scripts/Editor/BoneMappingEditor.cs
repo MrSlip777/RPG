@@ -95,7 +95,7 @@ animator.GetBoneTransform(x.Head), animator.GetBoneTransform(x.Tail)))
                     if (avatar != null)
                     {
                         avatar.name = "avatar";
-                        var prefabRoot = PrefabUtility.GetPrefabParent(m_target.gameObject);
+                        var prefabRoot = PrefabUtility.GetCorrespondingObjectFromSource(m_target.gameObject);
                         var prefabPath = AssetDatabase.GetAssetPath(prefabRoot);
 
                         var path = (string.IsNullOrEmpty(prefabPath))

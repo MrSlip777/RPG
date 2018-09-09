@@ -44,7 +44,7 @@ namespace VRM
 
             // save mesh to Assets
             var assetPath = string.Format("{0}{1}", go.name, ASSET_SUFFIX);
-            var prefab = PrefabUtility.GetPrefabParent(go);
+            var prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
             if (prefab != null)
             {
                 var prefabPath = AssetDatabase.GetAssetPath(prefab);
