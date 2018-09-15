@@ -22,6 +22,9 @@ public class SubMenuController : MonoBehaviour {
     //スクロービューのコンテンツ説明文
     private static string[] mContentDescription;
 
+    //コンテンツのボタンオブジェクト（有効化、無効化に必要）
+    private GameObject[] mContents;
+
     //アイテムコンテンツ（仮）
     string[] ItemContentName = { "アイテム１", "アイテム２" };
     string[] ItemContentDescription = { "アイテム１説明", "アイテム２説明" };
@@ -60,12 +63,9 @@ public class SubMenuController : MonoBehaviour {
             prefab = Instantiate(obj);
             prefab.transform.SetParent(parentObject.transform,false);
 
-            //最初のコンテンツにフォーカスを合わせる
-            if (i == 0)
-            {
-                prefab.GetComponent<Button>().Select();
-            }
         }
+
+        mContents = GameObject.FindGameObjectsWithTag("Node");
     }
 
     private void MakeDescription()
@@ -124,8 +124,7 @@ public class SubMenuController : MonoBehaviour {
                 
             }
         }
-        else
-        {
+        else{
             mContentName = new string[ItemContentName.Length];
             mContentDescription = new string[ItemContentName.Length];
 
@@ -141,20 +140,30 @@ public class SubMenuController : MonoBehaviour {
     public void ShowSubMenu()
     {
         ScrollViewPrefab.SetActive(true);
+
+        ScrollRect scrollRect = ScrollViewPrefab.GetComponent<ScrollRect>();
+        scrollRect.verticalNormalizedPosition = 1;
+
         DescriptionPrefab.SetActive(true);
         SetDescription(mContentDescription[1]);
 
-        GameObject[] Contents = GameObject.FindGameObjectsWithTag("Node");
-      
-        if(Contents != null && mContentName != null){
-            for(int i=0; i<Contents.Length; i++){
+        if(mContents != null && mContentName != null){
+            for(int i=0; i<mContents.Length; i++){
+                mContents[i].GetComponent<Button>().interactable = true;
+                Transform gText = mContents[i].transform.Find("Text");
                 if(i<mContentName.Length){
-                    Transform gText = Contents[i].transform.Find("Text");
                     gText.GetComponent<Text>().text = mContentName[i];
                 }
                 else{
-                    Contents[i].GetComponent<Button>().interactable = false;
+                    gText.GetComponent<Text>().text = "----";
+                    mContents[i].GetComponent<Button>().interactable = false;
                 }
+
+                //最初のコンテンツにフォーカスを合わせる（使用不可の場合は次のコンテンツへ（未実装））
+                if (i == 0)
+                {
+                    mContents[i].GetComponent<Button>().Select();
+                }            
             }
         }
     }
@@ -206,12 +215,7 @@ public class SubMenuController : MonoBehaviour {
             string[] st_split = st_temp.Split('_');
             if (st_split[0] == "contentNo")
             {
-                //ローカル変数定義
-                GameObject parentObject = null;
-
-                parentObject = GameObject.Find("Scroll View(Clone)");
-
-                ScrollRect scrollRect = parentObject.GetComponent<ScrollRect>();
+                ScrollRect scrollRect = ScrollViewPrefab.GetComponent<ScrollRect>();
                 scrollRect.verticalNormalizedPosition = 1-(float.Parse(st_split[1])) / (mContentName.Length-1);
 
             }

@@ -1,5 +1,4 @@
-﻿/* 
-using System;
+﻿using System;
 using System.Collections;
 using System.Linq;
 using UniRx;
@@ -16,7 +15,9 @@ public class TransitionManager : SingletonMonoBehaviour<TransitionManager>
 	/// 蓋絵（トランジションアニメーションの管理コンポーネント）
 	/// Easy Masking Transitionを利用しない場合は自作して下さい
 	/// </summary>
-	private EMTransition _transitionComponent;
+	
+	//Slip 2018/09/15
+	//private EMTransition _transitionComponent;
 
 	/// <summary>
 	/// 蓋絵のImage
@@ -109,7 +110,7 @@ public class TransitionManager : SingletonMonoBehaviour<TransitionManager>
 		catch
 		{
 			Debug.Log("現在のシーンの取得に失敗");
-			_currentGameScene = GameScenes.TitleScene; //Debugシーンとかの場合は適当なシーンで埋めておく
+			_currentGameScene = GameScenes.Map; //Debugシーンとかの場合は適当なシーンで埋めておく
 		}
 	}
 
@@ -127,6 +128,8 @@ public class TransitionManager : SingletonMonoBehaviour<TransitionManager>
 	/// </summary>
 	private void Initialize()
 	{
+		//Slip 2018/09/15
+		/*
 		if (_transitionComponent == null)
 		{
 			_transitionComponent = GetComponent<EMTransition>();
@@ -140,6 +143,7 @@ public class TransitionManager : SingletonMonoBehaviour<TransitionManager>
 			_transitionComponent.onTransitionComplete.AddListener(
 				() => _onTransactionFinishedInternal.OnNext(Unit.Default));
 		}
+		*/
 	}
 
 	/// <summary>
@@ -176,20 +180,26 @@ public class TransitionManager : SingletonMonoBehaviour<TransitionManager>
 		//トランジションの自動遷移設定
 		CanEndTransition.Value = autoMove;
 
+		//Slip 2018/09/15
+		/*
 		if (_transitionComponent == null)
 		{
 			//初期化できてなかったらここで初期化する
 			Initialize();
 			yield return null;
 		}
+		*/
 
 		//蓋絵でuGUIのタッチイベントをブロックする
 		_image.raycastTarget = true;
 
+		//Slip 2018/09/15
+		/* 
 		//トランジション開始（蓋絵で画面を隠す）
 		_transitionComponent.flip = false;
 		_transitionComponent.ignoreTimeScale = true;
 		_transitionComponent.Play();
+		*/
 
 		//トランジションアニメーションが終了するのを待つ
 		yield return _onTransactionFinishedInternal.FirstOrDefault().ToYieldInstruction();
@@ -229,8 +239,9 @@ public class TransitionManager : SingletonMonoBehaviour<TransitionManager>
 		CanEndTransition.Value = false;
 
 
+		//Slip 2018/09/15
 		//蓋絵を開く方のアニメーション開始
-		_transitionComponent.Play();
+		//_transitionComponent.Play();
 
 		//蓋絵が開ききるのを待つ
 		yield return _onTransactionFinishedInternal.FirstOrDefault().ToYieldInstruction();
@@ -245,4 +256,3 @@ public class TransitionManager : SingletonMonoBehaviour<TransitionManager>
 		_isRunning = false;
 	}
 }
-*/

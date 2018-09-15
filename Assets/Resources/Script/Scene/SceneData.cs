@@ -8,7 +8,8 @@ public enum GameScenes
     Title,
     Menu,
     Battle,
-    BattleResult
+    BattleResult,
+	Map
 }
 
 /// <summary>
