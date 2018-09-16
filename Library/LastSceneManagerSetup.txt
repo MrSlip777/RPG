@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Resources/Scenes/Battle.unity
+- path: Assets/Resources/Scenes/Map.unity
   isLoaded: 1
   isActive: 1

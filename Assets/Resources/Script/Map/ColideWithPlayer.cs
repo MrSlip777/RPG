@@ -18,8 +18,8 @@ public class ColideWithPlayer : MonoBehaviour {
 	void OnCollisionEnter(Collision collision){
 
 		if (collision.gameObject.tag == "Player") {
-			
-			SceneManager.LoadScene ("Battle");
+			TransitionManager transition = new TransitionManager();
+			transition.Fadeout();
 		}
 	}
 }
