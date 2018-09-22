@@ -4,7 +4,7 @@
 
 using System.IO;
 using UnityEngine;
-
+using RPGEngine.database;
 public class ClassesObject
 {
 

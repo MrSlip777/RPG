@@ -141,12 +141,6 @@ public class CharacterStatusController : MonoBehaviour
 		return pos;       
     }
 
-    //キャラクター状態の初期設定
-    public void InitialSelectCharacter()
-    {
-        SetFocus_Character(mSelectingCharacter);
-    }
-
     //キャラクターのフォーカス指定
     public void SetFocus_Character(int SelectingCharacter)
     {

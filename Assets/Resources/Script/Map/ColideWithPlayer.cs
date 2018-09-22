@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using RPGEngine.system;
 
 public class ColideWithPlayer : MonoBehaviour {
 
@@ -19,6 +19,7 @@ public class ColideWithPlayer : MonoBehaviour {
 
 		if (collision.gameObject.tag == "Player") {
 			TransitionManager transition = new TransitionManager();
+			transition.nextGameScene = GameScenes.Battle;
 			transition.Fadeout();
 		}
 	}

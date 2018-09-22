@@ -22,9 +22,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 using UnityEngine;
 using System.Collections;
+using RPGEngine;
 
-public interface IFade  
-{
-	float Range{get; set;}
+namespace RPGEngine.system{
+	public interface IFade  
+	{
+		float Range{get; set;}
+	}
 }
-

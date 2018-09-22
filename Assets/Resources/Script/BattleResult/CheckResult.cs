@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using RPGEngine.system;
 
 public class CheckResult : MonoBehaviour {
 
@@ -13,7 +13,9 @@ public class CheckResult : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)){ 
-			SceneManager.LoadScene ("Map");
+			TransitionManager transition = new TransitionManager();
+			transition.nextGameScene = GameScenes.Map;
+			transition.Fadeout();
 		}
 	}
 }

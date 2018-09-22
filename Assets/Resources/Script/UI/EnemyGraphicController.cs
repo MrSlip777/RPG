@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;//Textに必要
+using System;
 
 public class EnemyGraphicController : MonoBehaviour {
 

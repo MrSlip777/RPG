@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using RPGEngine.system;
+using RPGEngine.database;
 
 //ダメージ、回復量などのパラメータ
 public class TergetParam{
@@ -32,30 +34,45 @@ public class AbstructActor{
 		return result;
 	}
 
-	protected BattlerObject getTerget(eTergetScope scope,int number){
+	protected BattlerObject getTerget(eActorScope belong,eTergetScope scope,int number){
 		BattlerObject result = null;
 
 		if(scope == eTergetScope.forOne || scope == eTergetScope.forAll
 		|| scope == eTergetScope.forRandom){
-			result = mEnemiesDataSingleton.getBattlerObject(number);
+			if(belong == eActorScope.Friend){
+				result = mEnemiesDataSingleton.getBattlerObject(number);
+			}
+			else{
+				result = mCharacterDataSingleton.getBattlerObject(number);
+			}
 		}
 		else if(scope == eTergetScope.forFriend || scope == eTergetScope.forFriendAll){
-			result = mCharacterDataSingleton.getBattlerObject(number);
+			if(belong == eActorScope.Friend){
+				result = mCharacterDataSingleton.getBattlerObject(number);
+			}
+			else{
+				result = mEnemiesDataSingleton.getBattlerObject(number);
+			}
 		}
 
 		return result;
 	}	
 
-	public void gainTergetHP(int tergetNum){
+	public void gainTergetHP(eActorScope belong,int tergetNum){
 		TergetParam tergetParam;
 
 		tergetParam = this.getTergetParam(tergetNum);
-		if(tergetParam.terget == eTergetScope.forFriend 
-		|| tergetParam.terget == eTergetScope.forFriendAll){
-			mCharacterDataSingleton.gainHP(tergetParam.tergetNum,-tergetParam.Parameter);
+		//ダメージの場合
+		if(tergetParam.terget == eTergetScope.forOne || tergetParam.terget == eTergetScope.forAll
+		|| tergetParam.terget == eTergetScope.forRandom){
+			if(belong == eActorScope.Friend){
+				mEnemiesDataSingleton.gainHP(tergetParam.tergetNum,-tergetParam.Parameter);
+			}
+			else{
+				mCharacterDataSingleton.gainHP(tergetParam.tergetNum,-tergetParam.Parameter);
+			}
 		}
 		else{
-			mEnemiesDataSingleton.gainHP(tergetParam.tergetNum,-tergetParam.Parameter);
 		}
 	}
 
@@ -75,6 +92,10 @@ public class AbstructActor{
 	//敵が行動可能かを判定する
 	public bool IsActableEnemies(){
 		return mEnemiesDataSingleton.IsActable();
+	}
+	//味方が行動可能かを判定する
+	public bool IsActableCharacters(){
+		return mCharacterDataSingleton.IsActable();
 	}
 
     public void StatusAttack(ref BattlerObject Actor,ref BattlerObject Terget){
@@ -130,7 +151,7 @@ public class AbstructActor{
 	//標的可能非対象（HP=0など）であれば別ターゲットを設定する
     public bool IsTargetable(ActorObject actor){
 
-		BattlerObject Terget = getTerget(actor.terget,actor.tergetNum);
+		BattlerObject Terget = getTerget(actor.belong,actor.terget,actor.tergetNum);
 
 		if(0 == Terget.battleproperty.HP){
 			return false;
@@ -147,7 +168,7 @@ public class AbstructActor{
 	//標的可能非対象（HP=0など）であれば別ターゲットを設定する
     public bool IsTargetable_Num(ActorObject actor,int number){
 
-		BattlerObject Terget = getTerget(actor.terget,number);
+		BattlerObject Terget = getTerget(actor.belong,actor.terget,number);
 
 		if(0 == Terget.battleproperty.HP){
 			return false;
@@ -268,9 +289,17 @@ public class BattlerAction : AbstructActor{
 		ParamList.Clear();
 
 		if(actor.terget == eTergetScope.forAll){
-			for(int TergetNum=1; TergetNum<=mEnemiesDataSingleton.EnemiesNum; TergetNum++){
+			int TergetAllNum = 0;
+			if(actor.belong == eActorScope.Friend){
+				TergetAllNum = mEnemiesDataSingleton.EnemiesNum;
+			}
+			else{
+				TergetAllNum = mCharacterDataSingleton.CharactersNum;
+			}
+
+			for(int TergetNum=1; TergetNum<=TergetAllNum; TergetNum++){
 				TergetParam tergetParam = new TergetParam();
-				BattlerObject Terget = getTerget(actor.terget,TergetNum);
+				BattlerObject Terget = getTerget(actor.belong,actor.terget,TergetNum);
 				if(IsTargetable_Num(actor,TergetNum)){
 					CalcDamage(Actor,Terget);
 					tergetParam.Parameter = Terget.tempbattleproperty.Parameter;
@@ -282,10 +311,18 @@ public class BattlerAction : AbstructActor{
 		}
 		else if(actor.terget == eTergetScope.forRandom){
 			int RandomNum = Random.Range (3, 6);
+			int TergetAllNum = 0;
+			if(actor.belong == eActorScope.Friend){
+				TergetAllNum = mEnemiesDataSingleton.EnemiesNum;
+			}
+			else{
+				TergetAllNum = mCharacterDataSingleton.CharactersNum;
+			}			
+
 			for(int i=1; i<=RandomNum; i++){
 				TergetParam tergetParam = new TergetParam();
-				int TergetNum = Random.Range (1, mEnemiesDataSingleton.EnemiesNum+1);
-				BattlerObject Terget = getTerget(actor.terget,TergetNum);
+				int TergetNum = Random.Range (1, TergetAllNum+1);
+				BattlerObject Terget = getTerget(actor.belong,actor.terget,TergetNum);
 				if(IsTargetable_Num(actor,TergetNum)){
 					CalcDamage(Actor,Terget);
 					tergetParam.Parameter = Terget.tempbattleproperty.Parameter;
@@ -300,7 +337,7 @@ public class BattlerAction : AbstructActor{
 		}
 		else{
 			TergetParam tergetParam = new TergetParam();
-			BattlerObject Terget = getTerget(actor.terget,actor.tergetNum);
+			BattlerObject Terget = getTerget(actor.belong,actor.terget,actor.tergetNum);
 			CalcDamage(Actor,Terget);
 			tergetParam.Parameter = Terget.tempbattleproperty.Parameter;
 			tergetParam.tergetNum = actor.tergetNum;

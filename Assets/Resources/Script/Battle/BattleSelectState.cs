@@ -116,8 +116,7 @@ public class BattleSelectState : MonoBehaviour {
         mMainMenuController.InitialSelectButton();
         mSubMenuController.HideSubMenu();
         mTergetController.ShowHide_Terget(eTergetScope.Hide);
-        mCharacterStatusController.InitialSelectCharacter();
-        mBattleCharacterManager.TurnStartCharacter();
+        mCharacterStatusController.SetFocus_Character(mBattleCharacterManager.TurnStartCharacter());
 
     }
 
@@ -268,8 +267,8 @@ public class BattleSelectState : MonoBehaviour {
         mBattleStateDataSingleton.ActorObject = actorObject;
 
 
-        //パーティ最大人数は4であり、4以上である場合は行動選択画面を終了する
-        if (4 > mBattleCharacterManager.GetSelectingCharacter())
+        //パーティ最大人数である場合は行動選択画面を終了する
+        if (mBattleCharacterManager.IsCharacterTurnEnd())
         {
 
             //次のキャラを行動可能状態にする

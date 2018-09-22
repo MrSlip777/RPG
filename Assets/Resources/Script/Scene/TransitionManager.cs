@@ -1,39 +1,49 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using RPGEngine;
+using RPGEngine.system;
 
-public enum GameScenes
-{
-    Battle,
-    BattleResult,
-	Map
-}
-
-public class TransitionManager : MonoBehaviour 
-{
-	[SerializeField]
-	Fade fade = null;
-
-	private static GameScenes _currentGameScene = GameScenes.Map;
-	private static GameScenes _nextGameScene = GameScenes.Battle;
-
-	public void Fadeout()
+namespace RPGEngine.system{
+	public enum GameScenes
 	{
-		GameObject fadeCanvas = GameObject.Find("FadeCanvas");
-		fade = fadeCanvas.GetComponent<Fade>();
+		Battle,
+		BattleResult,
+		Map,
+		GameOver,
+		Title
+	}
 
-		fade.FadeIn (1, () =>
+	public class TransitionManager : MonoBehaviour 
+	{
+		[SerializeField]
+		Fade fade = null;
+
+		private static GameScenes e_nextGameScene = GameScenes.Battle;
+
+		public void Fadeout()
 		{
-			SceneManager.LoadSceneAsync(_nextGameScene.ToString(),LoadSceneMode.Additive);
-			SceneManager.UnloadSceneAsync(_currentGameScene.ToString());
+			GameObject fadeCanvas = GameObject.Find("FadeCanvas");
+			fade = fadeCanvas.GetComponent<Fade>();
 
-			GameScenes tempScene = _currentGameScene;
-			_currentGameScene = _nextGameScene;
-			_nextGameScene = tempScene;
+			fade.FadeIn (1, () =>
+			{
+				SceneManager.LoadSceneAsync(e_nextGameScene.ToString(),LoadSceneMode.Additive);
+				SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
 
-			fade.FadeOut(1, ()=>{
+				fade.FadeOut(1, ()=>{
+					
+					Scene nextScene = SceneManager.GetSceneByName(e_nextGameScene.ToString());
+					SceneManager.SetActiveScene(nextScene);
+				});
+				
 			});
-			
-		});
+		}
+
+		public GameScenes nextGameScene{
+			set{
+				e_nextGameScene = value;
+			}
+		}
 	}
 }

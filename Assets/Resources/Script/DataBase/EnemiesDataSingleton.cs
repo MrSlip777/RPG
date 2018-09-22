@@ -5,7 +5,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using RPGEngine.database;
 public class EnemiesObject
 {
     public int id = 0;
@@ -87,11 +87,15 @@ public class EnemiesDataSingleton :BattleActor{
         actorObject.belong = eActorScope.Enemy;
 
         //保持している行動者のスキルIDを渡す（キャンセル操作に注意）
-        actorObject.skillID = 12;
-
+        actorObject.skillID = 13;
+            //10:敵単体
+            //11：敵全体
+            //12:味方単体
+            //13:味方全体
+            //14:ランダム
         //ターゲットの渡す
-        actorObject.terget = eTergetScope.forFriend;
-        actorObject.tergetNum = 2;
+        actorObject.terget = eTergetScope.forAll;
+        actorObject.tergetNum = 4;
         actorObject.tergetPos = friendPositions;
 
         return actorObject;
@@ -125,6 +129,7 @@ public class EnemiesDataSingleton :BattleActor{
 
         foreach (int index in battlerObj.skillIndex) {
             battlerObj.skillIndex[index] = 10;
+
         }        
 
         //ラーニングオブジェクトは敵と味方で値が異なるため修正の必要あり

@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
-
+using RPGEngine.database;
 public class CharacterObject{
 
     public int id = 0;
@@ -321,7 +321,19 @@ public class CharacterDataSingleton:BattleActor{
     private CharacterObject[] mCharacterObject;
 
     ClassesDataSingleton mClassesDataSingleton;
- 
+
+    //パーティ内のキャラクターの数
+    private int mCharactersNum = 0;
+
+    public int CharactersNum{
+        get{
+            return mCharactersNum;
+        }
+        set{
+            mCharactersNum = value;
+        }
+    }
+
     void Awake()
     {
         FileRead_CharacterData();
@@ -349,6 +361,8 @@ public class CharacterDataSingleton:BattleActor{
         mBattlerObject = new List<BattlerObject>();
         BattlerObject battlerObj = null;
         mBattlerObject.Add(battlerObj);
+
+        this.CharactersNum = mCharacterObject.Length-1; 
 
         for (int j=1; j< mCharacterObject.Length; j++) {
             battlerObj = new BattlerObject();

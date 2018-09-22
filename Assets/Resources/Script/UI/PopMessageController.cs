@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using RPGEngine.database;
 public class PopMessageController : AbstructActor {
 
 	public PopMessageController(){
@@ -15,7 +15,7 @@ public class PopMessageController : AbstructActor {
 	}
 
 	public string TergetDamage(ActorObject actor){
-                BattlerObject Terget = getTerget(actor.terget,actor.tergetNum);
+                BattlerObject Terget = getTerget(actor.belong,actor.terget,actor.tergetNum);
                 return Terget.tempbattleproperty.Parameter.ToString();
 	}
 

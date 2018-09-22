@@ -10,7 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using RPGEngine.system;
 
 public class BattleAutoState : MonoBehaviour {
 
@@ -131,7 +131,21 @@ public class BattleAutoState : MonoBehaviour {
                     {
                         //行動後のオブジェクトを消去する
                         mBattleStateDataSinglton.RemoveTopActor();
-                        if(mButtlerAction.IsActableEnemies()){
+                        if(false == mButtlerAction.IsActableCharacters()){
+                            //ゲームオーバー画面へ遷移
+                            TransitionManager transition = new TransitionManager();
+                            transition.nextGameScene = GameScenes.GameOver;
+                            transition.Fadeout();
+                        }
+                        else if(false == mButtlerAction.IsActableEnemies()){
+                            //戦闘終了画面へ遷移
+                            TransitionManager transition = new TransitionManager();
+                            transition.nextGameScene = GameScenes.BattleResult;
+                            transition.Fadeout();
+
+                        }
+                        else{
+
                             if (mBattleStateDataSinglton.ActorObject != null) {
                                 mAutoStatus = eAutoStatus.eAutoStatus_Start;
 
@@ -147,9 +161,8 @@ public class BattleAutoState : MonoBehaviour {
                                     
                             }
                         }
-                        else{
-                            SceneManager.LoadScene ("BattleResult");
-                        }
+
+
                     }));
                 }
                 break;
@@ -162,17 +175,20 @@ public class BattleAutoState : MonoBehaviour {
     }
 
     //パラメータ表示（ダメージなど）
-    private void UI_ActionParam(int tergetNum){
+    private void UI_ActionParam(eActorScope belong,int tergetNum){
 
         TergetParam tergetParam;
 
         tergetParam = mButtlerAction.getTergetParam(tergetNum);
-        if(tergetParam.terget == eTergetScope.forFriend 
-        || tergetParam.terget == eTergetScope.forFriendAll){
-            mCharacterStatusController.ActionParam(tergetParam.tergetNum,tergetParam.Parameter);
-        }
-        else{
-            mEnemyGraphicController.ActionParam(tergetParam.tergetNum,tergetParam.Parameter);
+        //攻撃の場合
+        if(tergetParam.terget == eTergetScope.forOne || tergetParam.terget == eTergetScope.forAll
+        ||tergetParam.terget == eTergetScope.forRandom){
+            if(belong == eActorScope.Friend){
+                mEnemyGraphicController.ActionParam(tergetParam.tergetNum,tergetParam.Parameter);
+            }
+            else{
+                mCharacterStatusController.ActionParam(tergetParam.tergetNum,tergetParam.Parameter);
+            }
         }
     }
 
@@ -192,46 +208,58 @@ public class BattleAutoState : MonoBehaviour {
     }
 
     //UIへのターゲットの動作反映
-    private void UI_TergetAction(int tergetNum){
+    private void UI_TergetAction(eActorScope belong,int tergetNum){
         TergetParam tergetParam;
         tergetParam = mButtlerAction.getTergetParam(tergetNum);
-        if(tergetParam.terget == eTergetScope.forFriend 
-        || tergetParam.terget == eTergetScope.forFriendAll){
-            mCharacterStatusController.Shake(tergetParam.tergetNum);
+        if(tergetParam.terget == eTergetScope.forOne || tergetParam.terget == eTergetScope.forAll
+        || tergetParam.terget == eTergetScope.forRandom){
+            if(belong == eActorScope.Friend){
+                mEnemyGraphicController.Shake(tergetParam.tergetNum);
+            }
+            else{
+                mCharacterStatusController.Shake(tergetParam.tergetNum);
+            }
         }
         else{
-            mEnemyGraphicController.Shake(tergetParam.tergetNum);
+            
         }
     }
 
     private void UI_ChangeHPgauge(ActorObject actor){
-        if(actor.terget == eTergetScope.forOne || actor.terget == eTergetScope.forAll){
-            
-        }
-        else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
-            mCharacterStatusController.ChangeHPValue(actor.tergetNum);
+
+        if(actor.terget == eTergetScope.forOne || actor.terget == eTergetScope.forAll
+        || actor.terget == eTergetScope.forRandom){
+            if(actor.belong == eActorScope.Enemy){
+                mCharacterStatusController.ChangeHPValue(actor.tergetNum);
+            }
+            else{
+
+            }
         }        
     }
 
     private void UI_EnemyErase(ActorObject actor){
-        if(actor.terget == eTergetScope.forOne){
-            if(false == mButtlerAction.IsTargetable(actor)){
-                //敵グラを消去する
-                mEnemyGraphicController.Erase(actor.tergetNum);
-            }
-        }
-        else if(actor.terget == eTergetScope.forAll ||actor.terget == eTergetScope.forRandom){
-            for(int tergetNum=1; tergetNum<=mButtlerAction.EnemiesNumber(); tergetNum++){
-            
-                if(false == mButtlerAction.IsTargetable_Num(actor,tergetNum)){
+        //味方が敵を攻撃した場合
+        if(actor.belong == eActorScope.Friend){
+            if(actor.terget == eTergetScope.forOne){
+                if(false == mButtlerAction.IsTargetable(actor)){
                     //敵グラを消去する
-                    mEnemyGraphicController.Erase(tergetNum);
+                    mEnemyGraphicController.Erase(actor.tergetNum);
                 }
             }
-        }
-        else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
+            else if(actor.terget == eTergetScope.forAll ||actor.terget == eTergetScope.forRandom){
+                for(int tergetNum=1; tergetNum<=mButtlerAction.EnemiesNumber(); tergetNum++){
+                
+                    if(false == mButtlerAction.IsTargetable_Num(actor,tergetNum)){
+                        //敵グラを消去する
+                        mEnemyGraphicController.Erase(tergetNum);
+                    }
+                }
+            }
+            else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
 
-        }        
+            }
+        }
     }
 
     //遅らせる
@@ -248,11 +276,11 @@ public class BattleAutoState : MonoBehaviour {
                 tergetParam = mButtlerAction.getTergetParam(number);
                 mEffectManager.SetEffect(actor.tergetPos[tergetParam.tergetNum]);
                 //ダメージを表示させる
-                UI_ActionParam(number);
+                UI_ActionParam(actor.belong,number);
             
                 yield return new WaitForSeconds(0.5f);
-                mButtlerAction.gainTergetHP(number);
-                UI_TergetAction(number);
+                mButtlerAction.gainTergetHP(actor.belong,number);
+                UI_TergetAction(actor.belong,number);
             }
         }
         else{
@@ -261,12 +289,12 @@ public class BattleAutoState : MonoBehaviour {
             mEffectManager.SetEffect(actor.tergetPos[actor.tergetNum]);
             //ダメージを表示させる
             for(int number = 0; number<tergetMAXNUM; number++){
-                UI_ActionParam(number);
+                UI_ActionParam(actor.belong,number);
             }
             yield return new WaitForSeconds(1.0f);
             for(int number = 0; number<tergetMAXNUM; number++){
-                mButtlerAction.gainTergetHP(number);
-                UI_TergetAction(number);
+                mButtlerAction.gainTergetHP(actor.belong,number);
+                UI_TergetAction(actor.belong,number);
             }
         }
 

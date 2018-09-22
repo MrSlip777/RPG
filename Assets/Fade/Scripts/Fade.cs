@@ -23,87 +23,90 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using UnityEngine;
 using System.Collections;
 using UnityEngine.Assertions;
+using RPGEngine;
 
-public class Fade : MonoBehaviour
-{
-	IFade fade;
-
-	void Start ()
+namespace RPGEngine.system{
+	public class Fade : MonoBehaviour
 	{
-		Init ();
-		fade.Range = cutoutRange;
-	}
+		IFade fade;
 
-	float cutoutRange;
-
-	void Init ()
-	{
-		fade = GetComponent<IFade> ();
-	}
-
-	void OnValidate ()
-	{
-		Init ();
-		fade.Range = cutoutRange;
-	}
-
-	IEnumerator FadeoutCoroutine (float time, System.Action action)
-	{
-		float endTime = Time.timeSinceLevelLoad + time * (cutoutRange);
-
-		var endFrame = new WaitForEndOfFrame ();
-
-		while (Time.timeSinceLevelLoad <= endTime) {
-			cutoutRange = (endTime - Time.timeSinceLevelLoad) / time;
+		void Start ()
+		{
+			Init ();
 			fade.Range = cutoutRange;
-			yield return endFrame;
 		}
-		cutoutRange = 0;
-		fade.Range = cutoutRange;
 
-		if (action != null) {
-			action ();
+		float cutoutRange;
+
+		void Init ()
+		{
+			fade = GetComponent<IFade> ();
 		}
-	}
 
-	IEnumerator FadeinCoroutine (float time, System.Action action)
-	{
-		float endTime = Time.timeSinceLevelLoad + time * (1 - cutoutRange);
-		
-		var endFrame = new WaitForEndOfFrame ();
-
-		while (Time.timeSinceLevelLoad <= endTime) {
-			cutoutRange = 1 - ((endTime - Time.timeSinceLevelLoad) / time);
+		void OnValidate ()
+		{
+			Init ();
 			fade.Range = cutoutRange;
-			yield return endFrame;
 		}
-		cutoutRange = 1;
-		fade.Range = cutoutRange;
 
-		if (action != null) {
-			action ();
+		IEnumerator FadeoutCoroutine (float time, System.Action action)
+		{
+			float endTime = Time.timeSinceLevelLoad + time * (cutoutRange);
+
+			var endFrame = new WaitForEndOfFrame ();
+
+			while (Time.timeSinceLevelLoad <= endTime) {
+				cutoutRange = (endTime - Time.timeSinceLevelLoad) / time;
+				fade.Range = cutoutRange;
+				yield return endFrame;
+			}
+			cutoutRange = 0;
+			fade.Range = cutoutRange;
+
+			if (action != null) {
+				action ();
+			}
 		}
-	}
 
-	public Coroutine FadeOut (float time, System.Action action)
-	{
-		StopAllCoroutines ();
-		return StartCoroutine (FadeoutCoroutine (time, action));
-	}
+		IEnumerator FadeinCoroutine (float time, System.Action action)
+		{
+			float endTime = Time.timeSinceLevelLoad + time * (1 - cutoutRange);
+			
+			var endFrame = new WaitForEndOfFrame ();
 
-	public Coroutine FadeOut (float time)
-	{
-		return FadeOut (time, null);
-	}
+			while (Time.timeSinceLevelLoad <= endTime) {
+				cutoutRange = 1 - ((endTime - Time.timeSinceLevelLoad) / time);
+				fade.Range = cutoutRange;
+				yield return endFrame;
+			}
+			cutoutRange = 1;
+			fade.Range = cutoutRange;
 
-	public Coroutine FadeIn (float time, System.Action action)
-	{
-		StopAllCoroutines ();
-		return StartCoroutine (FadeinCoroutine (time, action));
-	}
+			if (action != null) {
+				action ();
+			}
+		}
 
-	public Coroutine FadeIn (float time)
-	{
-		return FadeIn (time, null);
+		public Coroutine FadeOut (float time, System.Action action)
+		{
+			StopAllCoroutines ();
+			return StartCoroutine (FadeoutCoroutine (time, action));
+		}
+
+		public Coroutine FadeOut (float time)
+		{
+			return FadeOut (time, null);
+		}
+
+		public Coroutine FadeIn (float time, System.Action action)
+		{
+			StopAllCoroutines ();
+			return StartCoroutine (FadeinCoroutine (time, action));
+		}
+
+		public Coroutine FadeIn (float time)
+		{
+			return FadeIn (time, null);
+		}
 	}
 }
