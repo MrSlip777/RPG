@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Physical1
+  m_EditorClassIdentifier: Assembly-CSharp:RPGEngine.database:SkillEffectData
+  frontEffect_base: 0
+  frontEffect_op1: 0
+  frontEffect_op2: 0
+  frontEffect_op3: 0
+  frontEffect_op4: 0
+  backEffect_base: 2
+  backEffect_op1: 0
+  backEffect_op2: 0
+  backEffect_op3: 0
+  backEffect_op4: 0

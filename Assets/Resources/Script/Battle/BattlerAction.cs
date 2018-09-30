@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using RPGEngine.system;
 using RPGEngine.database;
 
+
 //ダメージ、回復量などのパラメータ
 public class TergetParam{
 	public eTergetScope terget;
@@ -10,7 +11,7 @@ public class TergetParam{
 	public int Parameter;
 }
 
-public class AbstructActor{
+public class AbstructActor : MonoBehaviour{
 
 	public readonly int PAERCENTAGEMAX = 100;
     //キャラクターデータシングルトン
@@ -21,6 +22,10 @@ public class AbstructActor{
 
 	//パラメータ　単体、全体、ランダムに対応
 	public List<TergetParam> ParamList;
+
+	void Awake(){
+
+	}
 
 	protected BattlerObject getActor(eActorScope belong,int number){
 		BattlerObject result = null;
@@ -213,7 +218,7 @@ public class BattlerAction : AbstructActor{
 	//文字列から計算する役割
 	private OperateString mOpString;
 
-	public BattlerAction(){
+	void Awake(){
         //ローカル変数定義
         GameObject parentObject = null;
 

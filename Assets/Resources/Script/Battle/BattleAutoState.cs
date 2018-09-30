@@ -9,7 +9,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using RPGEngine.system;
 
 public class BattleAutoState : MonoBehaviour {
@@ -28,12 +27,14 @@ public class BattleAutoState : MonoBehaviour {
 
     //戦闘画面状態データ
     BattleStateDataSinglton mBattleStateDataSinglton = null;
-    //スキルデータ
-    SkillDataSingleton mSkillDataSingleton = null;
+
     //エフェクト
     EffectManager mEffectManager = null;
-    //行動パターン
-    BattlerAction mButtlerAction = null;
+
+    //UI、エフェクトの演出制御
+    BattleSequenceDirection mBattleSequenceDirection = null;
+
+    BattlerAction mBattlerAction = null;
 
     ActorObject actor = null;
 
@@ -47,15 +48,15 @@ public class BattleAutoState : MonoBehaviour {
         parentObject = GameObject.Find("DataSingleton");
         mBattleStateDataSinglton 
         = parentObject.GetComponent<BattleStateDataSinglton>();
-        mSkillDataSingleton 
-        = parentObject.GetComponent<SkillDataSingleton>();
 
         //エフェクト管理
         parentObject = GameObject.Find("Panel_Effect");
         mEffectManager = parentObject.GetComponent<EffectManager>();
 
-        //行動パターン定義
-        mButtlerAction = new BattlerAction();
+        //UI、エフェクトの演出制御
+        parentObject = GameObject.Find("Canvas");
+        mBattleSequenceDirection = parentObject.GetComponent<BattleSequenceDirection>();
+        mBattlerAction = parentObject.GetComponent<BattlerAction>();
 
         //UI
         parentObject = GameObject.Find("Panel_CharacterStatus");
@@ -94,14 +95,14 @@ public class BattleAutoState : MonoBehaviour {
                 //行動者オブジェクト取得
                 actor = mBattleStateDataSinglton.ActorObject;
 
-                if(false == mButtlerAction.IsTargetable(actor)){
+                if(false == mBattlerAction.IsTargetable(actor)){
                     //対象でない場合対象を変更する
-                    actor.tergetNum = mButtlerAction.ChangeTargetNumber(actor);
+                    actor.tergetNum = mBattlerAction.ChangeTargetNumber(actor);
                 }
 
-                if(true == mButtlerAction.IsExecutable(actor)){
+                if(true == mBattlerAction.IsExecutable(actor)){
                     //アクターの行動
-                    mButtlerAction.Role[0](actor);
+                    mBattlerAction.Role[0](actor);
                     
                     //行動対象キャラクターにフォーカス移動
                     if(actor.belong == eActorScope.Friend){
@@ -115,8 +116,8 @@ public class BattleAutoState : MonoBehaviour {
                     }
 
                     //技名
-                    UI_ActionName(actor);            
-                    StartCoroutine(SequenceEffect(actor));
+                    mBattleSequenceDirection.UI_ActionName(actor);            
+                    StartCoroutine(mBattleSequenceDirection.SequenceEffect(actor));
                 }
                 else{
                     mAutoStatus = eAutoStatus.eAutoStatus_Act;
@@ -131,13 +132,13 @@ public class BattleAutoState : MonoBehaviour {
                     {
                         //行動後のオブジェクトを消去する
                         mBattleStateDataSinglton.RemoveTopActor();
-                        if(false == mButtlerAction.IsActableCharacters()){
+                        if(false == mBattlerAction.IsActableCharacters()){
                             //ゲームオーバー画面へ遷移
                             TransitionManager transition = new TransitionManager();
                             transition.nextGameScene = GameScenes.GameOver;
                             transition.Fadeout();
                         }
-                        else if(false == mButtlerAction.IsActableEnemies()){
+                        else if(false == mBattlerAction.IsActableEnemies()){
                             //戦闘終了画面へ遷移
                             TransitionManager transition = new TransitionManager();
                             transition.nextGameScene = GameScenes.BattleResult;
@@ -154,7 +155,7 @@ public class BattleAutoState : MonoBehaviour {
                             {
                                 //HP=0の敵を完全消去する
                                 mEnemyGraphicController.DestroyUnactablePrefab();
-                                mButtlerAction.DestroyUnactableEnemy();
+                                mBattlerAction.DestroyUnactableEnemy();
 
                                 mBattleStateDataSinglton.BattleStateMode
                                     = BattleStateDataSinglton.eBattleState.eBattleState_AutoEnd;
@@ -172,136 +173,6 @@ public class BattleAutoState : MonoBehaviour {
             default:
                 break;
         }
-    }
-
-    //パラメータ表示（ダメージなど）
-    private void UI_ActionParam(eActorScope belong,int tergetNum){
-
-        TergetParam tergetParam;
-
-        tergetParam = mButtlerAction.getTergetParam(tergetNum);
-        //攻撃の場合
-        if(tergetParam.terget == eTergetScope.forOne || tergetParam.terget == eTergetScope.forAll
-        ||tergetParam.terget == eTergetScope.forRandom){
-            if(belong == eActorScope.Friend){
-                mEnemyGraphicController.ActionParam(tergetParam.tergetNum,tergetParam.Parameter);
-            }
-            else{
-                mCharacterStatusController.ActionParam(tergetParam.tergetNum,tergetParam.Parameter);
-            }
-        }
-    }
-
-    //UI 行動名
-    private void UI_ActionName(ActorObject actor){
-        //ローカル変数定義
-        GameObject parentObject = GameObject.Find("Canvas");
-
-        //技名
-        GameObject prefab_ActionText = null;
-        //親を指定し、技名ウインドウを作成する
-        prefab_ActionText = Instantiate((GameObject)Resources.Load("Prefabs/Action_Text"));
-        prefab_ActionText.transform.SetParent(parentObject.transform,false);
-        prefab_ActionText.GetComponent<DestoroyAtTime>().delayTime = 0.0f;
-        prefab_ActionText.GetComponentInChildren<Text>().text
-            = mSkillDataSingleton.GetSkillName(actor.skillID);
-    }
-
-    //UIへのターゲットの動作反映
-    private void UI_TergetAction(eActorScope belong,int tergetNum){
-        TergetParam tergetParam;
-        tergetParam = mButtlerAction.getTergetParam(tergetNum);
-        if(tergetParam.terget == eTergetScope.forOne || tergetParam.terget == eTergetScope.forAll
-        || tergetParam.terget == eTergetScope.forRandom){
-            if(belong == eActorScope.Friend){
-                mEnemyGraphicController.Shake(tergetParam.tergetNum);
-            }
-            else{
-                mCharacterStatusController.Shake(tergetParam.tergetNum);
-            }
-        }
-        else{
-            
-        }
-    }
-
-    private void UI_ChangeHPgauge(ActorObject actor){
-
-        if(actor.terget == eTergetScope.forOne || actor.terget == eTergetScope.forAll
-        || actor.terget == eTergetScope.forRandom){
-            if(actor.belong == eActorScope.Enemy){
-                mCharacterStatusController.ChangeHPValue(actor.tergetNum);
-            }
-            else{
-
-            }
-        }        
-    }
-
-    private void UI_EnemyErase(ActorObject actor){
-        //味方が敵を攻撃した場合
-        if(actor.belong == eActorScope.Friend){
-            if(actor.terget == eTergetScope.forOne){
-                if(false == mButtlerAction.IsTargetable(actor)){
-                    //敵グラを消去する
-                    mEnemyGraphicController.Erase(actor.tergetNum);
-                }
-            }
-            else if(actor.terget == eTergetScope.forAll ||actor.terget == eTergetScope.forRandom){
-                for(int tergetNum=1; tergetNum<=mButtlerAction.EnemiesNumber(); tergetNum++){
-                
-                    if(false == mButtlerAction.IsTargetable_Num(actor,tergetNum)){
-                        //敵グラを消去する
-                        mEnemyGraphicController.Erase(tergetNum);
-                    }
-                }
-            }
-            else if(actor.terget == eTergetScope.forFriend || actor.terget == eTergetScope.forFriendAll){
-
-            }
-        }
-    }
-
-    //遅らせる
-    private IEnumerator SequenceEffect(ActorObject actor)
-    {
-        int tergetMAXNUM = 1;
-        tergetMAXNUM = mButtlerAction.TergetParamCount();
-
-        if(actor.terget == eTergetScope.forRandom){
-            for(int number = 0; number<tergetMAXNUM; number++){
-                yield return new WaitForSeconds(0.2f);
-                //エフェクト表示
-                TergetParam tergetParam;
-                tergetParam = mButtlerAction.getTergetParam(number);
-                mEffectManager.SetEffect(actor.tergetPos[tergetParam.tergetNum]);
-                //ダメージを表示させる
-                UI_ActionParam(actor.belong,number);
-            
-                yield return new WaitForSeconds(0.5f);
-                mButtlerAction.gainTergetHP(actor.belong,number);
-                UI_TergetAction(actor.belong,number);
-            }
-        }
-        else{
-            yield return new WaitForSeconds(0.2f);
-            //エフェクト表示
-            mEffectManager.SetEffect(actor.tergetPos[actor.tergetNum]);
-            //ダメージを表示させる
-            for(int number = 0; number<tergetMAXNUM; number++){
-                UI_ActionParam(actor.belong,number);
-            }
-            yield return new WaitForSeconds(1.0f);
-            for(int number = 0; number<tergetMAXNUM; number++){
-                mButtlerAction.gainTergetHP(actor.belong,number);
-                UI_TergetAction(actor.belong,number);
-            }
-        }
-
-        UI_ChangeHPgauge(actor);
-        
-        UI_EnemyErase(actor);        
-        mButtlerAction.EraseTergetParam();
     }
 
     //遅らせる

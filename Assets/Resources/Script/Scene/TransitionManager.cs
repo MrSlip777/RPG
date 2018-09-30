@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using RPGEngine;
 using RPGEngine.system;
+using UniRx;
 
 namespace RPGEngine.system{
 	public enum GameScenes
@@ -19,7 +20,9 @@ namespace RPGEngine.system{
 		[SerializeField]
 		Fade fade = null;
 
-		private static GameScenes e_nextGameScene = GameScenes.Battle;
+		private static GameScenes e_nextGameScene = GameScenes.Map;
+
+		private Subject<Unit> onAllSceneLoaded = new Subject<Unit>();
 
 		public void Fadeout()
 		{
@@ -28,11 +31,10 @@ namespace RPGEngine.system{
 
 			fade.FadeIn (1, () =>
 			{
-				SceneManager.LoadSceneAsync(e_nextGameScene.ToString(),LoadSceneMode.Additive);
+				SceneManager.LoadScene(e_nextGameScene.ToString(),LoadSceneMode.Additive);				
 				SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
 
 				fade.FadeOut(1, ()=>{
-					
 					Scene nextScene = SceneManager.GetSceneByName(e_nextGameScene.ToString());
 					SceneManager.SetActiveScene(nextScene);
 				});
