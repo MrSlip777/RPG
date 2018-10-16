@@ -1,14 +1,14 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Threading;
 
 
-namespace UniTask
+namespace DepthFirstScheduler
 {
     /// <summary>
     /// http://blogs.msdn.com/b/toub/archive/2006/04/12/blocking-queues.aspx
     /// 
-    /// I—¹‚ğ’Ê’m‚·‚é‚É‚Ínull‚ğ“Š“ü‚·‚éè‚ªg‚¦‚é
+    /// çµ‚äº†ã‚’é€šçŸ¥ã™ã‚‹ã«ã¯nullã‚’æŠ•å…¥ã™ã‚‹æ‰‹ãŒä½¿ãˆã‚‹
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class MonitorQueue<T>

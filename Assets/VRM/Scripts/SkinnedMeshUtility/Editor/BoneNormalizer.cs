@@ -43,44 +43,40 @@ namespace VRM
             }
         }
 
-        public static GameObject Execute(GameObject go, Dictionary<Transform, Transform> boneMap, bool forceTPose)
+        static void EnforceTPose(GameObject go)
         {
-            //
-            // T-Poseにする
-            //
-            if(forceTPose)
+            var animator = go.GetComponent<Animator>();
+            if (animator == null)
             {
-                var animator = go.GetComponent<Animator>();
-                if (animator == null)
-                {
-                    throw new ArgumentException("Animator with avatar is required");
-                }
-
-                var avatar = animator.avatar;
-                if (avatar == null)
-                {
-                    throw new ArgumentException("avatar is required");
-                }
-
-                if (!avatar.isValid)
-                {
-                    throw new ArgumentException("invalid avatar");
-                }
-
-                if (!avatar.isHuman)
-                {
-                    throw new ArgumentException("avatar is not human");
-                }
-
-                HumanPoseTransfer.SetTPose(avatar, go.transform);
+                throw new ArgumentException("Animator with avatar is required");
             }
 
+            var avatar = animator.avatar;
+            if (avatar == null)
+            {
+                throw new ArgumentException("avatar is required");
+            }
+
+            if (!avatar.isValid)
+            {
+                throw new ArgumentException("invalid avatar");
+            }
+
+            if (!avatar.isHuman)
+            {
+                throw new ArgumentException("avatar is not human");
+            }
+
+            HumanPoseTransfer.SetTPose(avatar, go.transform);
+        }
+
+        static GameObject NormalizeHierarchy(GameObject go, Dictionary<Transform, Transform> boneMap)
+        {
             //
             // 回転・スケールの無いヒエラルキーをコピーする
             //
             var normalized = new GameObject(go.name + "(normalized)");
             normalized.transform.position = go.transform.position;
-
             CopyAndBuild(go.transform, normalized.transform, boneMap);
 
             //
@@ -121,254 +117,347 @@ namespace VRM
                 humanPoseTransfer.Avatar = avatar;
             }
 
+            return normalized;
+        }
+
+        class BlendShapeReport
+        {
+            string m_name;
+            int m_count;
+            struct BlendShapeStat
+            {
+                public int Index;
+                public string Name;
+                public int VertexCount;
+                public int NormalCount;
+                public int TangentCount;
+
+                public override string ToString()
+                {
+                    return string.Format("[{0}]{1}: {2}, {3}, {4}\n", Index, Name, VertexCount, NormalCount, TangentCount);
+                }
+            }
+            List<BlendShapeStat> m_stats = new List<BlendShapeStat>();
+            public int Count
+            {
+                get { return m_stats.Count; }
+            }
+            public BlendShapeReport(Mesh mesh)
+            {
+                m_name = mesh.name;
+                m_count = mesh.vertexCount;
+            }
+            public void SetCount(int index, string name, int v, int n, int t)
+            {
+                m_stats.Add(new BlendShapeStat
+                {
+                    Index =index,
+                    Name = name,
+                    VertexCount = v,
+                    NormalCount = n,
+                    TangentCount = t,
+                });
+            }
+            public override string ToString()
+            {
+                return String.Format("NormalizeSkinnedMesh: {0}({1}verts)\n{2}",
+                    m_name,
+                    m_count,
+                    String.Join("", m_stats.Select(x => x.ToString()).ToArray()));
+            }
+        }
+
+        /// <summary>
+        /// srcのSkinnedMeshRendererを正規化して、dstにアタッチする
+        /// </summary>
+        /// <param name="src">正規化前のSkinnedMeshRendererのTransform</param>
+        /// <param name="dst">正規化後のSkinnedMeshRendererのTransform</param>
+        /// <param name="boneMap">正規化前のボーンから正規化後のボーンを得る</param>
+        static void NormalizeSkinnedMesh(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap, bool clearBlendShape)
+        {
+            var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
+            if (srcRenderer == null 
+                || !srcRenderer.enabled
+                || srcRenderer.sharedMesh == null
+                || srcRenderer.sharedMesh.vertexCount == 0)
+            {
+                // 有効なSkinnedMeshRendererが無かった
+                return;
+            }
+
+            var srcMesh = srcRenderer.sharedMesh;
+            var originalSrcMesh = srcMesh;
+
+            // clear blendShape
+            if (clearBlendShape)
+            {
+                for (int i = 0; i < srcMesh.blendShapeCount; ++i)
+                {
+                    srcRenderer.SetBlendShapeWeight(i, 0);
+                }
+            }
+
+            var bones = srcRenderer.bones.Select(x => boneMap[x]).ToArray();
+            var hasBoneWeight = srcRenderer.bones!=null && srcRenderer.bones.Length > 0;
+            if (!hasBoneWeight)
+            {
+                // Before bake, bind no weight bones
+                //Debug.LogFormat("no weight: {0}", srcMesh.name);
+
+                srcMesh = srcMesh.Copy(true);
+                var bw = new BoneWeight
+                {
+                    boneIndex0 = 0,
+                    boneIndex1 = 0,
+                    boneIndex2 = 0,
+                    boneIndex3 = 0,
+                    weight0 = 1.0f,
+                    weight1 = 0.0f,
+                    weight2 = 0.0f,
+                    weight3 = 0.0f,
+                };
+                srcMesh.boneWeights = Enumerable.Range(0, srcMesh.vertexCount).Select(x => bw).ToArray();
+                srcMesh.bindposes = new Matrix4x4[] { Matrix4x4.identity };
+
+                srcRenderer.rootBone = srcRenderer.transform;
+                bones = new[] { boneMap[srcRenderer.transform] };
+                srcRenderer.bones = new[] { srcRenderer.transform };
+                srcRenderer.sharedMesh = srcMesh;
+            }
+
+            // BakeMesh
+            var mesh = srcMesh.Copy(false);
+            mesh.name = srcMesh.name + ".baked";
+            srcRenderer.BakeMesh(mesh);
+            mesh.boneWeights = srcMesh.boneWeights; // restore weights. clear when BakeMesh
+            // recalc bindposes
+            mesh.bindposes = bones.Select(x => x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
+
+            //var m = src.localToWorldMatrix; // include scaling
+            var m = default(Matrix4x4);
+            m.SetTRS(Vector3.zero, src.rotation, Vector3.one); // rotation only
+            mesh.ApplyMatrix(m);
+
+            //
+            // BlendShapes
+            //
+            var meshVertices = mesh.vertices;
+            var meshNormals = mesh.normals;
+#if VRM_NORMALIZE_BLENDSHAPE_TANGENT
+            var meshTangents = mesh.tangents.Select(x => (Vector3)x).ToArray();
+#endif
+
+            var originalBlendShapePositions = new Vector3[meshVertices.Length];
+            var originalBlendShapeNormals = new Vector3[meshVertices.Length];
+            var originalBlendShapeTangents = new Vector3[meshVertices.Length];
+
+            var report = new BlendShapeReport(srcMesh);
+            var blendShapeMesh = new Mesh();
+            for (int i = 0; i < srcMesh.blendShapeCount; ++i)
+            {
+                // check blendShape
+                srcRenderer.sharedMesh.GetBlendShapeFrameVertices(i, 0, originalBlendShapePositions, originalBlendShapeNormals, originalBlendShapeTangents);
+                var hasVertices = originalBlendShapePositions.Count(x => x != Vector3.zero);
+                var hasNormals = originalBlendShapeNormals.Count(x => x != Vector3.zero);
+#if VRM_NORMALIZE_BLENDSHAPE_TANGENT
+                var hasTangents = originalBlendShapeTangents.Count(x => x != Vector3.zero);
+#else
+                var hasTangents = 0;
+#endif
+                var name = srcMesh.GetBlendShapeName(i);
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = String.Format("{0}", i);
+                }
+
+                report.SetCount(i, name, hasVertices, hasNormals, hasTangents);
+
+                srcRenderer.SetBlendShapeWeight(i, 100.0f);
+                srcRenderer.BakeMesh(blendShapeMesh);
+                if (blendShapeMesh.vertices.Length != mesh.vertices.Length)
+                {
+                    throw new Exception("diffrent vertex count");
+                }
+                srcRenderer.SetBlendShapeWeight(i, 0);
+
+                Vector3[] vertices = blendShapeMesh.vertices;
+                for (int j = 0; j < vertices.Length; ++j)
+                {
+                    if (originalBlendShapePositions[j] == Vector3.zero)
+                    {
+                        vertices[j] = Vector3.zero;
+                    }
+                    else
+                    {
+                        vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
+                    }
+                }
+
+                Vector3[] normals = blendShapeMesh.normals;
+                for (int j = 0; j < normals.Length; ++j)
+                {
+                    if (originalBlendShapeNormals[j] == Vector3.zero)
+                    {
+                        normals[j] = Vector3.zero;
+                    }
+                    else
+                    {
+                        normals[j] = m.MultiplyVector(normals[j]) - meshNormals[j];
+                    }
+                }
+
+                Vector3[] tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
+#if VRM_NORMALIZE_BLENDSHAPE_TANGENT
+                for (int j = 0; j < tangents.Length; ++j)
+                {
+                    if (originalBlendShapeTangents[j] == Vector3.zero)
+                    {
+                        tangents[j] = Vector3.zero;
+                    }
+                    else
+                    {
+                        tangents[j] = m.MultiplyVector(tangents[j]) - meshTangents[j];
+                    }
+                }
+#endif
+
+                var weight = srcMesh.GetBlendShapeFrameWeight(i, 0);
+
+                try
+                {
+                    mesh.AddBlendShapeFrame(name,
+                        weight,
+                        vertices,
+                        hasNormals > 0 ? normals : null,
+                        hasTangents > 0 ? tangents : null
+                        );
+                }
+                catch (Exception)
+                {
+                    Debug.LogErrorFormat("fail to mesh.AddBlendShapeFrame {0}.{1}",
+                        mesh.name,
+                        srcMesh.GetBlendShapeName(i)
+                        );
+                    throw;
+                }
+            }
+
+            if (report.Count > 0)
+            {
+                Debug.LogFormat("{0}", report.ToString());
+            }
+
+            var dstRenderer = dst.gameObject.AddComponent<SkinnedMeshRenderer>();
+            dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
+            if (srcRenderer.rootBone != null)
+            {
+                dstRenderer.rootBone = boneMap[srcRenderer.rootBone];
+            }
+            dstRenderer.bones = bones;
+            dstRenderer.sharedMesh = mesh;
+
+            if (!hasBoneWeight)
+            {
+                // restore bones
+                srcRenderer.bones = new Transform[] { };
+                srcRenderer.sharedMesh = originalSrcMesh;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="dst"></param>
+        static void NormalizeNoneSkinnedMesh(Transform src, Transform dst)
+        {
+            var srcFilter = src.GetComponent<MeshFilter>();
+            if (srcFilter == null
+                || srcFilter.sharedMesh == null
+                || srcFilter.sharedMesh.vertexCount == 0)
+            {
+                return;
+            }
+
+            var srcRenderer = src.GetComponent<MeshRenderer>();
+            if (srcRenderer == null || !srcRenderer.enabled)
+            {
+                return;
+            }
+
+            // Meshに乗っているボーンの姿勢を適用する
+            var dstFilter = dst.gameObject.AddComponent<MeshFilter>();
+
+            var dstMesh = srcFilter.sharedMesh.Copy(false);
+            dstMesh.ApplyRotationAndScale(src.localToWorldMatrix);
+            dstFilter.sharedMesh = dstMesh;
+
+            // Materialをコピー
+            var dstRenderer = dst.gameObject.AddComponent<MeshRenderer>();
+            dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
+        }
+
+        public struct NormalizedResult
+        {
+            public GameObject Root;
+            public Dictionary<Transform, Transform> BoneMap;
+        }
+
+        /// <summary>
+        /// モデルの正規化を実行する
+        /// </summary>
+        /// <param name="go">対象モデルのルート</param>
+        /// <param name="forceTPose">強制的にT-Pose化するか</param>
+        /// <returns>正規化済みのモデル</returns>
+        public static NormalizedResult Execute(GameObject go, bool forceTPose, bool clearBlendShapeBeforeNormalize)
+        {
+            Dictionary<Transform, Transform> boneMap = new Dictionary<Transform, Transform>();
+
+            //
+            // T-Poseにする
+            //
+            if (forceTPose)
+            {
+                var hips = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
+                var hipsPosition = hips.position;
+                var hipsRotation = hips.rotation;
+                try
+                {
+                    EnforceTPose(go);
+                }
+                finally
+                {
+                    hips.position = hipsPosition; // restore hipsPosition
+                    hips.rotation = hipsRotation;
+                }
+            }
+
+            //
+            // 正規化されたヒエラルキーを作る
+            //
+            var normalized = NormalizeHierarchy(go, boneMap);
+
             //
             // 各メッシュから回転・スケールを取り除いてBinding行列を再計算する
             //
             foreach (var src in go.transform.Traverse())
             {
                 Transform dst;
-                if(!boneMap.TryGetValue(src, out dst))
+                if (!boneMap.TryGetValue(src, out dst))
                 {
                     continue;
                 }
 
-                {
-                    //
-                    // SkinnedMesh
-                    //
-                    var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
-                    if (srcRenderer != null && srcRenderer.enabled
-                        && srcRenderer.sharedMesh!=null
-                        && srcRenderer.sharedMesh.vertexCount>0)
-                    {
-                        // clear blendShape
-                        var srcMesh = srcRenderer.sharedMesh;
-                        for (int i = 0; i < srcMesh.blendShapeCount; ++i)
-                        {
-                            srcRenderer.SetBlendShapeWeight(i, 0);
-                        }
+                NormalizeSkinnedMesh(src, dst, boneMap, clearBlendShapeBeforeNormalize);
 
-                        var mesh = new Mesh();
-                        mesh.name = srcMesh.name + ".baked";
-#if UNITY_2017_3_OR_NEWER
-                        mesh.indexFormat = srcMesh.indexFormat;
-#endif
-
-                        srcRenderer.BakeMesh(mesh);
-
-                        //var m = src.localToWorldMatrix;
-                        var m = default(Matrix4x4);
-                        m.SetTRS(Vector3.zero, src.rotation, Vector3.one);
-
-                        mesh.vertices = mesh.vertices.Select(x => m.MultiplyPoint(x)).ToArray();
-                        mesh.normals = mesh.normals.Select(x => m.MultiplyVector(x).normalized).ToArray();
-
-                        mesh.uv = srcMesh.uv;
-                        mesh.tangents = srcMesh.tangents;
-                        mesh.subMeshCount = srcMesh.subMeshCount;
-                        for (int i = 0; i < srcMesh.subMeshCount; ++i)
-                        {
-                            mesh.SetIndices(srcMesh.GetIndices(i), srcMesh.GetTopology(i), i);
-                        }
-
-                        // boneweights
-                        var bones = srcRenderer.bones.Select(x => boneMap[x]).ToArray();
-                        if (bones.Length > 0)
-                        {
-                            mesh.boneWeights = srcMesh.boneWeights;
-                        }
-                        else
-                        {
-                            Debug.LogFormat("no weight: {0}", srcMesh.name);
-                            bones = new[] { boneMap[srcRenderer.transform] };
-                            var bw = new BoneWeight
-                            {
-                                boneIndex0 = 0,
-                                boneIndex1 = 0,
-                                boneIndex2 = 0,
-                                boneIndex3 = 0,
-                                weight0 = 1.0f,
-                                weight1 = 0.0f,
-                                weight2 = 0.0f,
-                                weight3 = 0.0f,
-                            };
-                            mesh.boneWeights = Enumerable.Range(0, srcMesh.vertexCount).Select(x => bw).ToArray();
-                        }
-
-                        var meshVertices = mesh.vertices;
-                        var meshNormals = mesh.normals;
-                        var meshTangents = mesh.tangents.Select(x => (Vector3)x).ToArray();
-
-                        var _meshVertices = new Vector3[meshVertices.Length];
-                        var _meshNormals = new Vector3[meshVertices.Length];
-                        var _meshTangents = new Vector3[meshVertices.Length];
-
-                        var blendShapeMesh = new Mesh();
-                        for (int i = 0; i < srcMesh.blendShapeCount; ++i)
-                        {
-                            // check blendShape
-                            srcRenderer.sharedMesh.GetBlendShapeFrameVertices(i, 0, _meshVertices, _meshNormals, _meshTangents);
-                            var hasVertices = !_meshVertices.All(x => x == Vector3.zero);
-                            var hasNormals = !_meshNormals.All(x => x == Vector3.zero);
-                            var hasTangents = !_meshTangents.All(x => x == Vector3.zero);
-
-                            srcRenderer.SetBlendShapeWeight(i, 100.0f);
-                            srcRenderer.BakeMesh(blendShapeMesh);
-                            if (blendShapeMesh.vertices.Length != mesh.vertices.Length)
-                            {
-                                throw new Exception("diffrent vertex count");
-                            }
-                            srcRenderer.SetBlendShapeWeight(i, 0);
-
-                            Vector3[] vertices = null;
-                            if (hasVertices)
-                            {
-                                vertices = blendShapeMesh.vertices;
-                                // to delta
-                                for (int j = 0; j < vertices.Length; ++j)
-                                {
-                                    vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
-                                }
-                            }
-                            else
-                            {
-                                vertices = new Vector3[mesh.vertexCount];
-                            }
-
-                            Vector3[] normals = null;
-                            if (hasNormals)
-                            {
-                                normals = blendShapeMesh.normals;
-                                // to delta
-                                for (int j = 0; j < normals.Length; ++j)
-                                {
-                                    normals[j] = m.MultiplyVector(normals[j]) - meshNormals[j];
-                                }
-                            }
-                            else
-                            {
-                                normals = new Vector3[mesh.vertexCount];
-                            }
-
-                            Vector3[] tangents = null;
-                            if (hasTangents)
-                            {
-                                tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
-                                // to delta
-                                for (int j = 0; j < tangents.Length; ++j)
-                                {
-                                    tangents[j] = m.MultiplyVector(tangents[j]) - meshTangents[j];
-                                }
-                            }
-                            else
-                            {
-                                tangents = new Vector3[mesh.vertexCount];
-                            }
-
-                            var name = srcMesh.GetBlendShapeName(i);
-                            if (string.IsNullOrEmpty(name))
-                            {
-                                name = String.Format("{0}", i);
-                            }
-
-                            var weight = srcMesh.GetBlendShapeFrameWeight(i, 0);
-
-                            try
-                            {
-                                mesh.AddBlendShapeFrame(name,
-                                    weight,
-                                    vertices,
-                                    normals,
-                                    tangents
-                                    );
-                            }
-                            catch (Exception)
-                            {
-                                Debug.LogErrorFormat("fail to mesh.AddBlendShapeFrame {0}.{1}",
-                                    mesh.name,
-                                    srcMesh.GetBlendShapeName(i)
-                                    );
-                                throw;
-                            }
-                        }
-
-                        // recalc bindposes
-                        mesh.bindposes = bones.Select(x =>
-                            x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
-
-                        mesh.RecalculateBounds();
-
-                        var dstRenderer = dst.gameObject.AddComponent<SkinnedMeshRenderer>();
-                        dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
-                        dstRenderer.sharedMesh = mesh;
-                        dstRenderer.bones = bones;
-                        if (srcRenderer.rootBone != null)
-                        {
-                            dstRenderer.rootBone = boneMap[srcRenderer.rootBone];
-                        }
-                    }
-                }
-
-                {
-                    //
-                    // not SkinnedMesh
-                    //
-                    var srcFilter = src.GetComponent<MeshFilter>();
-                    if (srcFilter != null 
-                        && srcFilter.sharedMesh!=null 
-                        && srcFilter.sharedMesh.vertexCount>0)
-                    {
-                        var srcRenderer = src.GetComponent<MeshRenderer>();
-                        if (srcRenderer!=null && srcRenderer.enabled)
-                        {
-                            var dstFilter = dst.gameObject.AddComponent<MeshFilter>();
-                            dstFilter.sharedMesh = TransformMesh(srcFilter.sharedMesh, src.localToWorldMatrix);
-
-                            var dstRenderer = dst.gameObject.AddComponent<MeshRenderer>();
-                            dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
-                        }
-                    }
-                }
+                NormalizeNoneSkinnedMesh(src, dst);
             }
 
-            return normalized;
-        }
-
-        static Mesh TransformMesh(Mesh src, Matrix4x4 m)
-        {
-            m.SetColumn(3, new Vector4(0, 0, 0, 1));
-
-            var mesh = new Mesh();
-            mesh.name = src.name + "(transformed)";
-
-            mesh.vertices = src.vertices.Select(x => m.MultiplyPoint(x)).ToArray();
-            if (src.normals != null && src.normals.Length > 0)
+            return new NormalizedResult
             {
-                mesh.normals = src.normals.Select(x => m.MultiplyVector(x)).ToArray();
-            }
-            if (src.tangents != null && src.tangents.Length > 0)
-            {
-                mesh.tangents = src.tangents.Select(x =>
-                {
-                    var t = m.MultiplyVector((Vector3)x);
-                    return new Vector4(t.x, t.y, t.z, x.w);
-                }).ToArray();
-            }
-
-            if (src.colors != null && src.colors.Length > 0) mesh.colors = src.colors;
-            if (src.uv != null && src.uv.Length > 0) mesh.uv = src.uv;
-            if (src.uv2 != null && src.uv2.Length > 0) mesh.uv2 = src.uv2;
-            if (src.uv3 != null && src.uv3.Length > 0) mesh.uv3 = src.uv3;
-            if (src.uv4 != null && src.uv4.Length > 0) mesh.uv4 = src.uv4;
-
-            mesh.subMeshCount = src.subMeshCount;
-            for(int i=0; i<mesh.subMeshCount; ++i)
-            {
-                mesh.SetIndices(src.GetIndices(i), src.GetTopology(i), i);
-            }
-
-            return mesh;
+                Root = normalized,
+                BoneMap = boneMap
+            };
         }
     }
 }
-
