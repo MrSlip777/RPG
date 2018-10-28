@@ -1,7 +1,7 @@
 sceneSetups:
 - path: Assets/Resources/Scenes/ManagerScene.unity
   isLoaded: 1
-  isActive: 1
-- path: Assets/Resources/Scenes/Map_temp.unity
-  isLoaded: 1
   isActive: 0
+- path: Assets/Resources/Scenes/Title.unity
+  isLoaded: 1
+  isActive: 1

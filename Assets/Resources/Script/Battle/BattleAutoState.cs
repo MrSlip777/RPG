@@ -42,6 +42,8 @@ public class BattleAutoState : MonoBehaviour {
     CharacterStatusController mCharacterStatusController = null;
     EnemyGraphicController mEnemyGraphicController = null;
 
+    GameObject m_Manager = null;
+
     void Awake(){
         GameObject parentObject = null;
         mAutoStatus = eAutoStatus.eAutoStatus_Start;
@@ -67,6 +69,7 @@ public class BattleAutoState : MonoBehaviour {
         mEnemyGraphicController 
         = parentObject.GetComponent<EnemyGraphicController>();
 
+        m_Manager = GameObject.Find("Manager");
     }
 
     //ターン開始時の初期化
@@ -134,13 +137,13 @@ public class BattleAutoState : MonoBehaviour {
                         mBattleStateDataSinglton.RemoveTopActor();
                         if(false == mBattlerAction.IsActableCharacters()){
                             //ゲームオーバー画面へ遷移
-                            TransitionManager transition = new TransitionManager();
+                            TransitionManager transition = m_Manager.GetComponent<TransitionManager>();
                             transition.nextGameScene = GameScenes.GameOver;
                             transition.Fadeout();
                         }
                         else if(false == mBattlerAction.IsActableEnemies()){
                             //戦闘終了画面へ遷移
-                            TransitionManager transition = new TransitionManager();
+                            TransitionManager transition = m_Manager.GetComponent<TransitionManager>();
                             transition.nextGameScene = GameScenes.BattleResult;
                             transition.Fadeout();
 

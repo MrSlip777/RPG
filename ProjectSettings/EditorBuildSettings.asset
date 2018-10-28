@@ -10,7 +10,7 @@ EditorBuildSettings:
     guid: 741c24dccce892e4988580d9c618d22e
   - enabled: 1
     path: Assets/Resources/Scenes/Map.unity
-    guid: da2d96b26c09dfd40a47e96afb6d3d69
+    guid: ccbf6b19d68f986418010d4e4035f64f
   - enabled: 1
     path: Assets/Resources/Scenes/Battle.unity
     guid: 1183e5b121ba47b44824a135cab36b85
